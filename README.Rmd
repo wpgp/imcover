@@ -1,11 +1,21 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
 
 # imcover
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 Demo package of spatio-temporal immunisation coverage modelling in R.
 For Edson.
+
