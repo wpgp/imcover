@@ -13,6 +13,7 @@
 #'   all possible group x vaccine x time observation? Default is \code{FALSE}.
 #' @param validate Should basic ic data checking be performed? Default is
 #'   \code{FALSE}.
+#' @param ... Additional arguments to pass to \code{ic_expand}.
 #' @return An object of class \code{ic.df} which extends \code{data.frame}-like
 #'   objects with attributes to location and preserve core data elements for
 #'   immunisation coverage.
@@ -20,25 +21,26 @@
 #'   processed dataset for immunisation coverage modelling. In particular it
 #'   requires some core data elements are present:
 #' \itemize{
-#'   \item{'group'}{Aggregate grouping for data records (e.g. country). Group
+#'   \item{'group'}{ Aggregate grouping for data records (e.g. country). Group
 #'   can be defined by more than column for a nested hierarchy of units (largest
 #'   to finest grouping). Default name is 'iso3countrycode'.}
-#'   \item{'time'}{Defines the time period of immunisation records, typically an
+#'   \item{'time'}{ Defines the time period of immunisation records, typically an
 #'   integer year. Default name is 'year'.}
-#'   \item{'vaccine'}{Code to identify the vaccine records (e.g. 'DTP1').
+#'   \item{'vaccine'}{ Code to identify the vaccine records (e.g. 'DTP1').
 #'   Default name is 'vaccine_name'.}
-#'   \item{'coverage'}{Pre-calculated coverage percentage. Default name is
+#'   \item{'coverage'}{ Pre-calculated coverage percentage. Default name is
 #'   'percentcoverage'.}
 #' }
 #'   If 'coverage' is not included, then two other elements are required to be
 #'   specified in order for percent coverage to be calculated. Else, these are
 #'   optional elements for ic data.
 #' \itemize{
-#'   \item{'dose'}{Number of vaccine doses administered. Default name is
+#'   \item{'dose'}{ Number of vaccine doses administered. Default name is
 #'   'dosesadministered'.}
-#'   \item{'population'}{Total target population for the vaccine. Default name
+#'   \item{'population'}{ Total target population for the vaccine. Default name
 #'   is 'targetgroup'.}
 #' }
+#' @seealso \code{ic_expand}, \code{ic_validate}
 #' @name ic_data
 #' @export
 ic_data <- function(X, group = 'iso3countrycode', time = 'year',
@@ -416,7 +418,9 @@ ic_core <- function(){
 
 
 #' Get the attributes of ic data
-#' Retrieve the value(s) of core attributes from an \code{ic.df} dataset.
+#' Retrieve the value(s) of attributes from an \code{ic.df} dataset. While
+#' intended to be used with the core ic attributes, it will work with any named
+#' attribute.
 #' @param X An object of class \code{ic.df}.
 #' @param attrs A vector of character names of attributes to be retrieved.
 #'   Default are all core attributes.
