@@ -90,6 +90,9 @@ ic_data.data.frame <- function(X,
     stop(paste(varnames[chk], collapse = " "), " not found in dataset.")
   }
 
+  # clean vax names
+  X[[vaccine]] <- trimws(toupper(as.character(X[[vaccine]])))
+
   # get coverage
   if(!coverage %in% names(X)){
     if(dose %in% names(X) && population %in% names(X)){
