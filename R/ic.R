@@ -128,9 +128,9 @@ ic_data.data.frame <- function(X,
     X <- ic_expand(X, ...)
   }
 
-  if(validate){
-    X <- ic_validate(X)
-  }
+  # if(validate){
+  #   X <- ic_validate(X)
+  # }
 
   return(X)
 }
@@ -280,7 +280,7 @@ is.ic_data <- function(object){
 }
 
 
-#' Expand ic data to include all potential year.
+#' Expand ic data to include all potential years.
 #'
 #' Expand the time dimension of an ic dataset to include the full set of
 #' potential observations.
@@ -308,32 +308,33 @@ ic_expand <- function(X, min = 1999, max, na.remove = TRUE){
   years <- min:max
 
   # expand groups
-  df <- unique(X[, c(attr(X, "group"), attr(X, "vaccine"))])
+  df <- unique(X[, c(attr(X, "group"), attr(X, "vaccine")), drop = TRUE])
   times <- rep(years, times=nrow(df))
   df <- df[rep(seq_len(nrow(df)), each=length(years)), ]
   df[[attr(X, "time")]] <- times
   # add NAs
-  df <- merge(df, X,
+  df <- merge(X, df, # merge.ic.df
               by = c(attr(X, "group"), attr(X, "time"), attr(X, "vaccine")),
-              all.x = TRUE, sort = FALSE, attr.x = FALSE)
+              all.y = TRUE, sort = FALSE, attr.x = TRUE)
 
   # drop group x vacc where all years = NA
   if(na.remove){
     splits <- split(df,
-                    f = df[, c(attr(df, "group"), attr(df, "vaccine"))],
+                    f = df[, c(attr(X, "group"), attr(X, "vaccine")), drop = TRUE],
                     drop = TRUE)
     empty <- lapply(splits,
-                    FUN = function(i){ all(is.na(i[[attr(df, "coverage")]])) })
+                    FUN = function(i){ all(is.na(i[[attr(X, "coverage")]])) })
     empty <- unlist(empty, use.names = FALSE)
 
     df <- do.call(rbind.data.frame, splits[which(!empty)])
   }
 
   # sort
-  sort_list <- c(attr(df, "group"), attr(df, "time"), attr(df, "vaccine"))
+  sort_list <- c(attr(X, "group"), attr(X, "time"), attr(X, "vaccine"))
   df <- df[do.call(order, df[ , match(sort_list, names(df))]),]
   row.names(df) <- seq(nrow(df))
 
+  # df <- do.call("ic_data", c(list(X=df), attributes(X)))
   return(df)
 }
 
