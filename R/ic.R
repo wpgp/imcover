@@ -236,6 +236,10 @@ is.ic_data <- function(object){
     # remake ic data - else return unclass()
     cattrs[!cattrs %in% names(x)] <- NULL
     x <- do.call("ic_data", c(list(X=x), cattrs))
+
+    # check/confirm additional cols present
+    varnames <- c("survey", "evidence", "validity", "sample")
+    attributes(x)[varnames] <- attrs[varnames]
   }
 
   return(x)
