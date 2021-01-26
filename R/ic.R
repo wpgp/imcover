@@ -89,14 +89,11 @@ ic_data.data.frame <- function(X,
   if(sum(chk) > 0){
     stop(paste(varnames[chk], collapse = " "), " not found in dataset.")
   }
-  # remove factors
-  for(i in varnames){
-    if(is.factor(X[[i]])) X[[i]] <- as.character(X[[i]])
-  }
+
   # clean vax names
   X[[vaccine]] <- trimws(toupper(as.character(X[[vaccine]])))
 
-  # get vaccine coverage
+  # get coverage
   if(!coverage %in% names(X)){
     if(dose %in% names(X) && population %in% names(X)){
       X[[coverage]] <- X[[dose]] / X[[population]] * 100
@@ -206,18 +203,18 @@ is.ic_data <- function(object){
 "[.ic.df" <- function(x, i, j, ..., drop = FALSE){
   mdrop <- missing(drop)
   nargs <- nargs() - !mdrop
-
   attrs <- attributes(x)
   cattrs <- attrs[names(attrs) %in% ic_core()]
 
-  coredf <- as.data.frame(x)[, unlist(cattrs)]
-
-  if(!missing(i) && nargs > 2){ # x[3:4,]
+  if(!missing(i) && nargs > 2){
     if(is.character(i)) i <- match(i, row.names(x))
-    coredf <- coredf[i,]
   }
 
-  class(x) <- setdiff(class(x), "ic.df") # drop to data.frame
+  class(x) <- setdiff(class(x), "ic.df") # drop
+  if(!drop){
+    coredf <- x[, unlist(cattrs)]
+  }
+
   x <- if(missing(j)){
     if(nargs == 2) {
       x[i]
@@ -227,12 +224,15 @@ is.ic_data <- function(object){
     x[i, j, drop = drop]
   }
 
-  if(!drop){ # prevent loss of core ic attributes
-    miss <- setdiff(unlist(cattrs), names(x))
-    if(length(miss) > 0){
-      x[miss] <- coredf[, miss]
-    }
+  if(!drop){
+    if(!missing(i) && (nargs > 2) || !missing(j)) coredf <- coredf[i,]
+
+    miss_nms <- cattrs[!cattrs %in% names(x)]
+    x[unlist(miss_nms)] <- coredf[, unlist(miss_nms)]
+    attributes(x)[names(miss_nms)] <- unlist(miss_nms)
+
     x <- x[, c(unlist(cattrs), setdiff(names(x), unlist(cattrs)))]
+
     # remake ic data - else return unclass()
     cattrs[!cattrs %in% names(x)] <- NULL
     x <- do.call("ic_data", c(list(X=x), cattrs))
@@ -277,6 +277,29 @@ is.ic_data <- function(object){
   # x[[name]] <- value
 
   return(x)
+  # x[[i]] <- value
+  # cl <- oldClass(x)
+  # class(x) <- NULL
+  # nrows <- .row_names_info(x, 2L)
+  # if (!is.null(value)) {
+  #   N <- NROW(value)
+  #   if (N > nrows)
+  #     stop(sprintf(ngettext(N, "replacement has %d row, data has %d",
+  #                           "replacement has %d rows, data has %d"), N, nrows),
+  #          domain = NA)
+  #   if (N < nrows)
+  #     if (N > 0L && (nrows%%N == 0L) && length(dim(value)) <=
+  #         1L)
+  #       value <- rep(value, length.out = nrows)
+  #     else stop(sprintf(ngettext(N, "replacement has %d row, data has %d",
+  #                                "replacement has %d rows, data has %d"), N, nrows),
+  #               domain = NA)
+  #     if (is.atomic(value) && !is.null(names(value)))
+  #       names(value) <- NULL
+  # }
+  # x[[name]] <- value
+  # class(x) <- cl
+  # return(x)
 }
 
 
