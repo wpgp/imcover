@@ -272,14 +272,11 @@ is.ic_data <- function(object){
 "$<-.ic.df" <- function(x, name, value){
   attrs <- get_attr(x, ic_core(), unlist = TRUE)
 
-  if(!(name %in% attrs && is.null(value))){
-    # x[[name]] <- value
+  if(name %in% attrs && is.null(value)){
+    stop("Cannot drop core 'ic' data columns.", call. = FALSE, )
   } else{
-    warning("Cannot drop core 'ic' data columns.", call. = FALSE, )
+    x[[name]] <- value
   }
-
-  # x[[name]] <- value
-
   return(x)
 }
 
