@@ -450,8 +450,6 @@ ic_core <- function(survey = FALSE){
 #' @name get_attr
 #' @export
 get_attr <- function(X, attrs = ic_core(), unlist = TRUE){
-  if(missing(attrs)) stop("Must provide one or more attribute names to match")
-
   if(unlist){
     return(unlist(attributes(X)[which(names(attributes(X)) %in% attrs)]))
   } else{
