@@ -60,11 +60,28 @@ ic_survey.data.frame <- function(X, ...,
       attr(X, "validity") <- validity
     }
 
+    # remove factors
+    for(i in varnames){
+      if(is.factor(X[[i]])) X[[i]] <- as.character(X[[i]])
+    }
+
     if(!is.logical(X[[validity]])){
       stop("Validity indicator must be a boolean (logical) value.")
     }
     # potentially missing/malformed
     X[[evidence]] <- trimws(tolower(as.character(X[[evidence]])))
+
+
+    ### bias adjustment
+    reshape(data,
+            direction = "wide",
+            idvar = c("ISO3","surveyNameEnglish","collectBegin","collectEnd","cohortYear","vaccine","ageVaccination","ageInterview","sex", "evidence"),
+            timevar = "validity")
+
+    library(reshape2)
+    test <- data[,c("ISO3","surveyNameEnglish","cohortYear","vaccine","evidence","validity","coverage")]
+    dcast(data, ISO3 + surveyNameEnglish + cohortYear + vaccine + evidence + validity ~ coverage + Sample_Size)
+    # dcast(test, ISO3 + surveyNameEnglish + cohortYear + vaccine + evidence ~ coverage)
 
     # identify groupings
     X <- mark_survey(X)
@@ -118,7 +135,7 @@ ic_survey.data.frame <- function(X, ...,
   return(X)
 }
 
-
+#' Find survey groups
 mark_survey <- function(x){
   vars <- get_attr(x, c("group", "survey", "time", "vaccine"))
   x <- within(x, N <- ave(get_attr(x, "coverage"), as.list(vars), FUN = length))
@@ -131,3 +148,4 @@ mark_survey <- function(x){
                           FUN = seq_along))
   return(x)
 }
+
