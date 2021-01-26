@@ -238,7 +238,7 @@ is.ic_data <- function(object){
     x <- do.call("ic_data", c(list(X=x), cattrs))
 
     # check/confirm additional cols present
-    varnames <- c("survey", "evidence", "validity", "sample")
+    varnames <- ic_core(survey = TRUE)
     attributes(x)[varnames] <- attrs[varnames]
   }
 
@@ -431,8 +431,13 @@ list_vaccines <- function(X){
 #' \code{ic.df} data.
 #' @name ic_core
 #' @export
-ic_core <- function(){
-  return(c("group", "time", "vaccine", "coverage", "dose", "population"))
+ic_core <- function(survey = FALSE){
+  if(survey){
+    return(c("group", "time", "vaccine", "coverage", "dose", "population",
+             "survey", "evidence", "validity", "sample"))
+  } else{
+    return(c("group", "time", "vaccine", "coverage", "dose", "population"))
+  }
 }
 
 
