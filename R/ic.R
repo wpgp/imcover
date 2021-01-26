@@ -254,7 +254,7 @@ is.ic_data <- function(object){
     x <- structure(NextMethod(),
                    class = c("ic.df", setdiff(class(x), "ic.df")))
   } else{
-    warning("Cannot drop core 'ic' data columns.", call. = FALSE, )
+    stop("Cannot drop core 'ic' data columns.", call. = FALSE, )
   }
 
   return(x)
