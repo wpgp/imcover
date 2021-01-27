@@ -39,16 +39,19 @@ merge.ic.df <- function(x, y, attr.x = TRUE, ...) {
   } else{
     attrs <- attributes(y)
   }
-  attrs <- attrs[names(attrs) %in% ic_core(survey = TRUE)]
+  attrs <- attrs[names(attrs) %in% ic_core()]
 
   df <- merge(as.data.frame(x), as.data.frame(y), ...)
 
   if(any(!unlist(attrs) %in% names(df))){
     stop("Invalid columns and attributes.")
   }
-
-  df <- do.call("ic_data", c(list(X=df), attrs))
+  attributes(df)[names(attrs)] <- attrs
+  class(df) <- list("ic.df", class(df))
+  # df <- do.call("ic_data", c(list(X=df), attrs))
   stopifnot(is.ic_data(df))
+  print(attributes(df))
 
   return(df)
 }
+
