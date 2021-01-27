@@ -429,6 +429,7 @@ list_vaccines <- function(X){
 #' @name ic_core
 #' @export
 ic_core <- function(survey = FALSE){
+  stopifnot(is.logical(survey))
   if(survey){
     return(c("group", "time", "vaccine", "coverage", "dose", "population",
              "survey", "evidence", "validity", "sample"))
