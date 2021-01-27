@@ -34,11 +34,11 @@ ic_survey.ic.df <- function(X, ...,
 
 #' @name ic_survey
 #' @export
-ic_survey.data.frame <- function(X, ...,
+ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
                                  survey = "survey_name", sample = "sample_size",
                                  evidence = "evidence", validity = "validity",
                                  minSample = NULL, biasAdjust = TRUE,
-                                 dropCols = FALSE){
+                                 adjVacc = c("DTP", "PCV")){
   if(missing(X)){
     stop("Please supply a valid dataset.")
   } else{
@@ -67,110 +67,127 @@ ic_survey.data.frame <- function(X, ...,
 
   # correct dose 3 recall
   if(biasAdjust){
-    # check for missing validity info? some empty strings. drop?
-    if(any(!X[[validity]] %in% c("crude", "valid"))){
-      stop(paste0("Validity must be 'crude' or 'valid'. Found: ",
-                  paste(unique(X[[validity]]), collapse = ", ")),
-           call. = FALSE)
+    X <- survey_adjust(X, adjVacc)
+  }
+
+  return(X)
+}
+
+
+survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
+  if(!is.ic_data(X)){ stop("Please supply a valid 'ic' dataset.") }
+
+  attrs <- get_attr(X, attrs = ic_core(survey = TRUE), unlist = FALSE)
+  corenames <- unlist(attrs)
+
+  if(any(!names(attrs) %in% ic_core(survey = TRUE))){
+    stop("Missing required 'ic' core attributes.")
+  }
+
+  # check for missing validity info? some empty strings. drop?
+  if(any(!X[[corenames['validity']]] %in% c("crude", "valid"))){
+    stop(paste0("Validity must be 'crude' or 'valid'. Found: ",
+                paste(unique(X[[validity]]), collapse = ", ")),
+         call. = FALSE)
+  }
+  # storage
+  X[["adj_factor"]] <- X[["coverage_adj"]] <- NA
+
+  for(v in adjVacc){
+    # subset vaccine to process
+    vd3 <- as.data.frame(X[X[[attrs$vaccine]] == paste0(v, 3), ])
+    vd1 <- as.data.frame(X[X[[attrs$vaccine]] == paste0(v, 1), ])
+
+    # reshape to wide - collapsing validity information
+    vd1 <- reshape(vd1, direction = "wide",
+                   idvar = corenames[c("group","survey","time",
+                                       "vaccine","evidence")],
+                   timevar = corenames["validity"])
+    # find preferred dose 1 data
+    miss <- setdiff(paste(attrs$coverage, c("valid", "crude"), sep = "."),
+                    names(vd1))
+    if(length(miss) > 1){
+      stop("Missing validity.")
+    } else if(length(miss) == 1){
+      vd1[[miss]] <- NA
     }
+    prefer <- paste(attrs$coverage, "valid", sep = ".")
 
-    X[["adj_factor"]] <- X[["coverage_adj"]] <- NA
+    vd1[[attrs$validity]] <- ifelse(is.na(vd1[[prefer]]),
+                                    "crude", "valid")
 
-    for(v in c("DTP", "PCV")){
-      # subset vaccine to process
-      vd3 <- as.data.frame(X[X[[attrs$vaccine]] == paste0(v, 3), ])
-      vd1 <- as.data.frame(X[X[[attrs$vaccine]] == paste0(v, 1), ])
+    vd1[[attrs$coverage]] <- ifelse(is.na(vd1[[prefer]]),
+                                    vd1[[paste(attrs$coverage, "crude", sep = ".")]],
+                                    vd1[[paste(attrs$coverage, "valid", sep = ".")]])
 
-      # reshape to wide - collapsing validity information
-      vd1 <- reshape(vd1, direction = "wide",
-                      idvar = corenames[c("group","survey","time",
-                                            "vaccine","evidence")],
-                      timevar = corenames["validity"])
-      # find preferred dose 1 data
-      miss <- setdiff(paste(attrs$coverage, c("valid", "crude"), sep = "."),
-                      names(vd1))
-      if(length(miss) > 1){
-        stop("Missing validity.")
-      } else if(length(miss) == 1){
-        vd1[[miss]] <- NA
-      }
-      prefer <- paste(attrs$coverage, "valid", sep = ".")
+    vd1[[attrs$sample]] <- ifelse(is.na(vd1[[prefer]]),
+                                  vd1[[paste(attrs$sample, "crude", sep = ".")]],
+                                  vd1[[paste(attrs$sample, "valid", sep = ".")]])
 
-      vd1[[attrs$validity]] <- ifelse(is.na(vd1[[prefer]]),
-                                      "crude", "valid")
+    # merge c and coh
+    vd1.coh <- merge(vd1[vd1[[attrs$evidence]] == "card or history", corenames],
+                     vd1[vd1[[attrs$evidence]] == "card", corenames],
+                     by = corenames[c('group','time','survey')],
+                     all.x = TRUE, suffixes = c(".coh", ".c"))
+    vd1 <- vd1[!vd1[[attrs$evidence]] %in% c("card", "card or history"), corenames]
+    # calculate adjustment factor
+    vd1.coh$adj_factor <- vd1.coh[, paste0(attrs$coverage, ".coh")] / vd1.coh[, paste0(attrs$coverage, ".c")]
 
-      vd1[[attrs$coverage]] <- ifelse(is.na(vd1[[prefer]]),
-                                      vd1[[paste(attrs$coverage, "crude", sep = ".")]],
-                                      vd1[[paste(attrs$coverage, "valid", sep = ".")]])
-
-      vd1[[attrs$sample]] <- ifelse(is.na(vd1[[prefer]]),
-                                    vd1[[paste(attrs$sample, "crude", sep = ".")]],
-                                    vd1[[paste(attrs$sample, "valid", sep = ".")]])
-
-      # merge c and coh
-      vd1.coh <- merge(vd1[vd1[[attrs$evidence]] == "card or history", corenames],
-                       vd1[vd1[[attrs$evidence]] == "card", corenames],
-                       by = corenames[c('group','time','survey')],
-                       all.x = TRUE, suffixes = c(".coh", ".c"))
-      vd1 <- vd1[!vd1[[attrs$evidence]] %in% c("card", "card or history"), corenames]
-
-      vd1.coh$adj_factor <- vd1.coh[, paste0(attrs$coverage, ".coh")] / vd1.coh[, paste0(attrs$coverage, ".c")]
-
-      # process dose 3
-      # reshape to wide - collapsing validity information
-      vd3 <- reshape(vd3, direction = "wide",
-                     idvar = corenames[c("group","survey","time",
-                                         "vaccine","evidence")],
-                     timevar = corenames["validity"])
-      # find preferred dose 3 data
-      miss <- setdiff(paste(attrs$coverage, c("valid", "crude"), sep = "."),
-                      names(vd3))
-      if(length(miss) > 1){
-        stop("Missing validity.")
-      } else if(length(miss) == 1){
-        vd3[[miss]] <- NA
-      }
-      prefer <- paste(attrs$coverage, "valid", sep = ".")
-
-      vd3[[attrs$validity]] <- ifelse(is.na(vd3[[prefer]]),
-                                      "crude", "valid")
-
-      vd3[[attrs$coverage]] <- ifelse(is.na(vd3[[prefer]]),
-                                      vd3[[paste(attrs$coverage, "crude", sep = ".")]],
-                                      vd3[[paste(attrs$coverage, "valid", sep = ".")]])
-
-      vd3[[attrs$sample]] <- ifelse(is.na(vd3[[prefer]]),
-                                    vd3[[paste(attrs$sample, "crude", sep = ".")]],
-                                    vd3[[paste(attrs$sample, "valid", sep = ".")]])
-
-      # adjust dose 3 'card' only data
-      vd_adj <- merge(vd3[vd3[[attrs$evidence]] == "card", corenames],
-                      vd1.coh[, c(corenames[c('group','time','survey')], "adj_factor")],
-                      by = corenames[c('group','time','survey')],
-                      all.x = TRUE, suffixes = c(".vd3", ".vd1"))
-      vd_adj$coverage_adj <- vd_adj[[attrs$coverage]] * vd_adj$adj_factor
-
-      # update dose 3 'card or history' data
-      X <- merge(X,
-                 vd_adj[, c(corenames[c('group','time','vaccine',
-                                        'survey','evidence','validity')],
-                            "adj_factor", "coverage_adj")],
-                 by = corenames[c('group','time','vaccine','survey','evidence','validity')],
-                 all.x = TRUE, suffixes = c("", ".new"))
-
-      X[["coverage_adj"]] <- ifelse(is.na(X[["coverage_adj"]]),
-                                    X[["coverage_adj.new"]],
-                                    X[["coverage_adj"]])
-
-      X[["adj_factor"]] <- ifelse(is.na(X[["adj_factor"]]),
-                                  X[["adj_factor.new"]],
-                                  X[["adj_factor"]])
-      # drop temporary columns
-      X[["coverage_adj.new"]] <- X[["adj_factor.new"]] <- NULL
+    # process dose 3
+    # reshape to wide - collapsing validity information
+    vd3 <- reshape(vd3, direction = "wide",
+                   idvar = corenames[c("group","survey","time",
+                                       "vaccine","evidence")],
+                   timevar = corenames["validity"])
+    # find preferred dose 3 data
+    miss <- setdiff(paste(attrs$coverage, c("valid", "crude"), sep = "."),
+                    names(vd3))
+    if(length(miss) > 1){
+      stop("Missing validity.")
+    } else if(length(miss) == 1){
+      vd3[[miss]] <- NA
     }
+    prefer <- paste(attrs$coverage, "valid", sep = ".")
+
+    vd3[[attrs$validity]] <- ifelse(is.na(vd3[[prefer]]),
+                                    "crude", "valid")
+
+    vd3[[attrs$coverage]] <- ifelse(is.na(vd3[[prefer]]),
+                                    vd3[[paste(attrs$coverage, "crude", sep = ".")]],
+                                    vd3[[paste(attrs$coverage, "valid", sep = ".")]])
+
+    vd3[[attrs$sample]] <- ifelse(is.na(vd3[[prefer]]),
+                                  vd3[[paste(attrs$sample, "crude", sep = ".")]],
+                                  vd3[[paste(attrs$sample, "valid", sep = ".")]])
+
+    # adjust dose 3 'card' only data
+    vd_adj <- merge(vd3[vd3[[attrs$evidence]] == "card", corenames],
+                    vd1.coh[, c(corenames[c('group','time','survey')], "adj_factor")],
+                    by = corenames[c('group','time','survey')],
+                    all.x = TRUE, suffixes = c(".vd3", ".vd1"))
+    vd_adj$coverage_adj <- vd_adj[[attrs$coverage]] * vd_adj$adj_factor
+
+    # update dose 3 'card or history' data
+    X <- merge(X,
+               vd_adj[, c(corenames[c('group','time','vaccine',
+                                      'survey','evidence','validity')],
+                          "adj_factor", "coverage_adj")],
+               by = corenames[c('group','time','vaccine','survey','evidence','validity')],
+               all.x = TRUE, suffixes = c("", ".new"))
+
+    X[["coverage_adj"]] <- ifelse(is.na(X[["coverage_adj"]]),
+                                  X[["coverage_adj.new"]],
+                                  X[["coverage_adj"]])
+
+    X[["adj_factor"]] <- ifelse(is.na(X[["adj_factor"]]),
+                                X[["adj_factor.new"]],
+                                X[["adj_factor"]])
+    # drop temporary columns
+    X[["coverage_adj.new"]] <- X[["adj_factor.new"]] <- NULL
   }
   return(X)
 }
+
 
 #' #' Find survey groups
 #' mark_survey <- function(x){
