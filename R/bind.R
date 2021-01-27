@@ -39,7 +39,7 @@ merge.ic.df <- function(x, y, attr.x = TRUE, ...) {
   } else{
     attrs <- attributes(y)
   }
-  attrs <- attrs[names(attrs) %in% ic_core()]
+  attrs <- attrs[names(attrs) %in% ic_core(survey = TRUE)]
 
   df <- merge(as.data.frame(x), as.data.frame(y), ...)
 
@@ -50,7 +50,7 @@ merge.ic.df <- function(x, y, attr.x = TRUE, ...) {
   class(df) <- list("ic.df", class(df))
   # df <- do.call("ic_data", c(list(X=df), attrs))
   stopifnot(is.ic_data(df))
-  print(attributes(df))
+  # print(attributes(df))
 
   return(df)
 }

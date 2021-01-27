@@ -165,152 +165,25 @@ ic_survey.data.frame <- function(X, ...,
       X[["adj_factor"]] <- ifelse(is.na(X[["adj_factor"]]),
                                   X[["adj_factor.new"]],
                                   X[["adj_factor"]])
-
       # drop temporary columns
       X[["coverage_adj.new"]] <- X[["adj_factor.new"]] <- NULL
-      # vd3.coh <- merge(vd3[vd3[[attrs$evidence]] == "card or history", corenames],
-      #                  vd_adj[, c(corenames[c('group','time','survey')],
-      #                             c("adj_factor","coverage_adj"))],
-      #                  by = corenames[c('group','time','survey')],
-      #                  all.x = TRUE)
-      # vd3.coh[[attrs$coverage]] <- vd3.coh[["coverage_adj"]]
-      # add rows back
-      # vd1[["adj_factor"]] <- vd3[["adj_factor"]] <- NA
-      # vd1[["coverage_adj"]] <- vd3[["coverage_adj"]] <- NA
-      # vd <- rbind(vd1, vd3.coh, vd3[vd3[[attrs$evidence]] != "card or history",
-      #                               c(corenames, "adj_factor", "coverage_adj")])
-      # dropping v and dose == 3
-      # X <- rbind(X, vd3)
     }
-
-
-
-
-
-
-#
-#     # subset vaccines to process
-#     dtp1 <- as.data.frame(X[X[[corenames['vaccine']]] == "DTP1", ])
-#     dtp3 <- as.data.frame(X[X[[get_attr(X, "vaccine")]] == "DTP3", ])
-#     # get attributes
-#     attrs <- attributes(X)
-#
-#     # reshape to wide
-#     dtp1 <- reshape(dtp1, direction = "wide",
-#                     idvar = get_attr(X, c("group","survey","time",
-#                                           "vaccine","evidence")),
-#                     timevar = get_attr(X, "validity"))
-#     # find preferred data
-#     timevar <- paste(attrs$coverage, "valid", sep = ".")
-#     vd1[[attrs$validity]] <- ifelse(is.na(vd1[[timevar]]),
-#                                      "crude", "valid")
-#
-#     vd1[[attrs$coverage]] <- ifelse(is.na(vd1[[timevar]]),
-#                                      vd1[[paste(attrs$coverage, "crude")]],
-#                                      vd1[[paste(attrs$coverage, "valid")]])
-#
-#     vd1[[attrs$sample]] <- ifelse(is.na(vd1[[timevar]]),
-#                                      vd1[[paste(attrs$sample, "crude", sep = ".")]],
-#                                      vd1[[paste(attrs$sample, "valid", sep = ".")]])
-#
-#     # merge c and coh
-#     vd1 <- merge(dtp1[dtp1[[attrs$evidence]] == "card or history", corenames],
-#                  dtp1[dtp1[[attrs$evidence]] == "card", corenames],
-#                  by = corenames[c('group','time','survey')],
-#                  all.x = TRUE, suffixes = c(".coh", ".c"))
-#
-#
-#
-#
-#
-#     dtp3 <- reshape(dtp3, direction = "wide",
-#                     idvar = get_attr(X, c("group","survey","time",
-#                                           "vaccine","evidence")),
-#                     timevar = get_attr(X, "validity"))
-    # reshape again? to account for evidence + validity
-    # process columns to find preferred data
-
-    # convert to ic data
-    # either remerge with other vacc data or update full dataset (how to ID?)
-
-
-#     ### bias adjustment
-#     redf <- reshape(as.data.frame(data),
-#             direction = "wide",
-#             idvar = c("iso3","surveynameenglish","vaccine", "evidence"),
-#             timevar = "validity")
-#     # find preferred
-#
-#     reshape(redf,
-#             direction = "long",
-#             varying = paste(c("cohortyear","coverage","sample_size","x","collectbegin","collectend","cardsseen","agevaccination","ageinterview","sex"),
-#                             rep(c("crude","valid"), times=10), sep="."))
-#
-#
-#     # identify groupings
-#     X <- mark_survey(X)
-#
-#     # process data by vaccine
-#     dd <- split(X, f = data[[get_attr(X, "vaccine")]])
-#
-#     for(v in c("DTP", "PCV")){ # change/expand here
-#       vd3 <- dd[[paste0(v, 3)]]
-#       vd1 <- dd[[paste0(v, 1)]]
-#       # mark for keepers
-#       vd3 <- mark_survey(vd3)
-#       vd1 <- mark_survey(vd1)
-#
-#       # split data to process
-#       # vd3_coh <- vd3[vd3[[get_attr(vd3, "evidence")]] == "card or history" &
-#       #                  !is.na(vd3[[get_attr(vd3, "evidence")]]), ]
-#       #
-#       # vd3_c <- vd3[vd3[[get_attr(vd3, "evidence")]] == "card" &
-#       #                !is.na(vd3[[get_attr(vd3, "evidence")]]), ]
-#
-#       vd1_coh <- vd1[vd1[[get_attr(vd1, "evidence")]] == "card or history" &
-#                        !is.na(vd1[[get_attr(vd1, "evidence")]]), ]
-#
-#       vd1_c <- vd1[vd1[[get_attr(vd1, "evidence")]] == "card" &
-#                      !is.na(vd1[[get_attr(vd1, "evidence")]]), ]
-#       # merge testing
-#       # c1 <- dtp1[dtp1$evidence == "Card" & (dtp1$vv | dtp1$N == 1) & dtp1$n == 1,]
-#       # ch1 <- dtp1[dtp1$evidence == "Card or History" & (dtp1$vv | dtp1$N ==1) & dtp1$n == 1,]
-#       #
-#       # dtp1 <- merge(c1, ch1, by = c("ISO3", "surveyNameEnglish", "cohortYear"))
-# #
-# #       vd_update <- merge(vd3_coh[(vd3_coh[[get_attr(vd3_coh, "valid")]] | vd3_coh$N == 1) & vd3_coh$n == 1, ],
-# #                          vd3_c[(vd3_c[[get_attr(vd3_c, "valid")]] | vd3_c$N == 1) & vd3_c$n == 1, ],
-# #                          by = c(get_attr(vd3_coh, c("group", "survey", "time"))))
-#
-#       vd1_update <- merge(vd1_coh[(vd1_coh[[get_attr(vd1_coh, "valid")]] | vd1_coh$N == 1) & vd1_coh$n == 1, ],
-#                           vd1_c[(vd1_c[[get_attr(vd1_c, "valid")]] | vd1_c$N == 1) & vd1_c$n == 1, ],
-#                           by = c(get_attr(vd1_coh, c("group", "survey", "time"))))
-#       vd1_update$adj_factor <- vd1_update[[paste0(get_attr(vd1_coh, "coverage"), ".x")]] * vd1_update[[paste0(get_attr(vd1_c, "coverage"), ".y")]]
-#     }
-#
-#     # DTP
-#     dtp3 <- dd[["DTP3"]]
-#     dtp1 <- dd[["DTP1"]]
-
   }
-
-  # drop group markings
-
   return(X)
 }
 
-#' Find survey groups
-mark_survey <- function(x){
-  vars <- get_attr(x, c("group", "survey", "time", "vaccine"))
-  # x <- within(x, N <- ave(get_attr(x, "coverage"), as.list(vars), FUN = length))
-  # x <- within(x, vsum <- ave(get_attr(x, "validitiy"), as.list(vars), FUN = sum))
-  x <- ave(x[[get_attr(x, "coverage")]], x[, vars, drop = TRUE], FUN = length)
-
-  x <- x[do.call(order, x[vars, drop=T], -x[[get_attr(x, "sample")]]), ]
-
-  x <- within(x, n <- ave(get_attr(x, "coverage"),
-                          as.list(c(vars, get_attr(x, "evidence"))),
-                          FUN = seq_along))
-  return(x)
-}
+#' #' Find survey groups
+#' mark_survey <- function(x){
+#'   vars <- get_attr(x, c("group", "survey", "time", "vaccine"))
+#'   # x <- within(x, N <- ave(get_attr(x, "coverage"), as.list(vars), FUN = length))
+#'   # x <- within(x, vsum <- ave(get_attr(x, "validitiy"), as.list(vars), FUN = sum))
+#'   x <- ave(x[[get_attr(x, "coverage")]], x[, vars, drop = TRUE], FUN = length)
+#'
+#'   x <- x[do.call(order, x[vars, drop=T], -x[[get_attr(x, "sample")]]), ]
+#'
+#'   x <- within(x, n <- ave(get_attr(x, "coverage"),
+#'                           as.list(c(vars, get_attr(x, "evidence"))),
+#'                           FUN = seq_along))
+#'   return(x)
+#' }
 
