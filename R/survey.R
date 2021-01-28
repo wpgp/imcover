@@ -23,6 +23,17 @@ ic_survey <- function(X, ..., dropCols = FALSE,
 
 #' @name ic_survey
 #' @export
+ic_survey.ic.svy <- function(X, ..., dropCols = FALSE,
+                            survey = "survey_name", sample = "sample_size",
+                            evidence = "evidence", validity = "validity",
+                            minSample = NULL, reduce = TRUE, expand = TRUE,
+                            biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
+  X
+}
+
+
+#' @name ic_survey
+#' @export
 ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
                             survey = "survey_name", sample = "sample_size",
                             evidence = "evidence", validity = "validity",
@@ -57,6 +68,7 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
     attr(X, "evidence") <- evidence
     attr(X, "validity") <- validity
   }
+  attr(X, "class") <- c("ic.svy", class(X))
   # potentially missing/malformed
   X[[evidence]] <- trimws(tolower(as.character(X[[evidence]])))
   X[[validity]] <- trimws(tolower(as.character(X[[validity]])))
@@ -73,6 +85,11 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
   # process to select preferred vacc record
   if(reduce){
     X <- survey_reduce(X, minSample)
+  }
+
+  # add in empty rows
+  if(expand){
+    TRUE
   }
 
   return(X)
@@ -243,11 +260,12 @@ survey_reduce <- function(X, minSample = 300){
   row.names(X) <- seq(nrow(X))
 
   attributes(X)[names(attrs)] <- attrs
-  class(X) <- list("ic.df", class(X))
+  attr(X, "class") <- c("ic.svy", "ic.df", class(X))
   stopifnot(is.ic_data(X))
 
   return(X)
 }
+
 
 #' #' Find survey groups
 #' mark_survey <- function(x){
