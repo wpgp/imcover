@@ -88,6 +88,13 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     stop("Missing required 'ic' core attributes.")
   }
 
+  # check vaccines (doses 1 and 3) are in the data
+  vdoses <- paste0(adjVacc, rep(c(1, 3), each = length(adjVacc)))
+  chk <- vdoses %in% list_vaccines(X)
+  if(any(!chk)){
+    stop("Missing vaccines: ", paste(vdoses[!chk], collapse = " "))
+  }
+
   # check for missing validity info? some empty strings. drop?
   if(any(!X[[corenames['validity']]] %in% c("crude", "valid"))){
     stop(paste0("Validity must be 'crude' or 'valid'. Found: ",
