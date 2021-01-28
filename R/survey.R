@@ -12,22 +12,22 @@
 #' @seealso \code{ic_data}
 #' @name ic_survey
 #' @export
-ic_survey <- function(X, ..., survey = "surveyname",
-                      evidence = NULL, sampleSize = NULL,
-                      minSample = NULL, reduce = TRUE, biasAdjust = TRUE,
-                      dropCols = FALSE, validate = FALSE){
+ic_survey <- function(X, ..., dropCols = FALSE,
+                      survey = "survey_name", sample = "sample_size",
+                      evidence = "evidence", validity = "validity",
+                      minSample = NULL, reduce = TRUE, expand = TRUE,
+                      biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
   UseMethod('ic_survey')
 }
 
 
 #' @name ic_survey
 #' @export
-ic_survey.ic.df <- function(X, ...,
+ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
                             survey = "survey_name", sample = "sample_size",
                             evidence = "evidence", validity = "validity",
-                            minSample = NULL, biasAdjust = TRUE,
-                            dropCols = FALSE){
-
+                            minSample = NULL, reduce = TRUE, expand = TRUE,
+                            biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
   X # add processing steps for bias and sample corrections
 }
 
@@ -37,8 +37,8 @@ ic_survey.ic.df <- function(X, ...,
 ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
                                  survey = "survey_name", sample = "sample_size",
                                  evidence = "evidence", validity = "validity",
-                                 minSample = NULL, biasAdjust = TRUE,
-                                 adjVacc = c("DTP", "PCV")){
+                                 minSample = NULL, reduce = TRUE, expand = TRUE,
+                                 biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
   if(missing(X)){
     stop("Please supply a valid dataset.")
   } else{
@@ -70,13 +70,17 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
     X <- survey_adjust(X, adjVacc)
   }
 
+  # process to select preferred vacc record
+  if(reduce){
+    X <- survey_reduce(X, minSample)
+  }
+
   return(X)
 }
 
 
 survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
   if(!is.ic_data(X)){ stop("Please supply a valid 'ic' dataset.") }
-
   attrs <- get_attr(X, attrs = ic_core(survey = TRUE), unlist = FALSE)
   corenames <- unlist(attrs)
 
@@ -188,6 +192,55 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
   return(X)
 }
 
+
+survey_reduce <- function(X, minSample = 300){
+  if(!is.ic_data(X)){ stop("Please supply a valid 'ic' dataset.") }
+  attrs <- get_attr(X, attrs = ic_core(survey = TRUE), unlist = FALSE)
+  corenames <- unlist(attrs)
+
+  # drop non-card or non-coh records??
+  X <- as.data.frame(X)
+  # store processing code (aka 'samseen')
+  # X[["pcode"]] <- NA
+
+  # create group x time x vaccine sets to process
+  xs <- split(X, X[, corenames[c("group", "time", "vaccine")]], drop = TRUE)
+  xs <- lapply(xs, FUN = function(x){
+    x <- xs[[i]]
+    if(nrow(x) == 1L){
+      if((!is.na(x[[attrs$sample]]) && x[[attrs$sample]] > minSample) || x[[attrs$validity]] == "valid"){
+        # x[["pcode"]] <-
+        return(x)
+      } else{
+        return(NULL) # skipped in binding
+      }
+    } else{
+      # find preferred records
+      xc <- x[grepl("c or h|card or history", x[[attrs$evidence]]), ]
+      if(nrow(xc) >= 1L){
+        xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
+        return(xc[1L, ])
+      } else{
+        xc <- x[grepl("c|card", x[[attrs$evidence]]), ]
+        xc <- xc[(!is.na(xc[[attrs$sample]]) && xc[[attrs$sample]] > minSample) || xc[[attrs$validity]] == "valid", ]
+        if(nrow(xc) >= 1L){
+          xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
+          return(xc[1L, ])
+        } else{
+          return(NULL)
+        }
+      }
+    }
+  })
+  X <- do.call(rbind.data.frame, xs)
+  row.names(X) <- seq(nrow(X))
+
+  attributes(X)[names(attrs)] <- attrs
+  class(X) <- list("ic.df", class(X))
+  stopifnot(is.ic_data(X))
+
+  return(X)
+}
 
 #' #' Find survey groups
 #' mark_survey <- function(x){
