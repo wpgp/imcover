@@ -15,7 +15,8 @@
 ic_survey <- function(X, ..., dropCols = FALSE,
                       survey = "survey_name", sample = "sample_size",
                       evidence = "evidence", validity = "validity",
-                      minSample = NULL, reduce = TRUE, expand = TRUE,
+                      reduce = TRUE, minSample = 300,
+                      expand = TRUE, min = 1999, max, na.remove = TRUE,
                       biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
   UseMethod('ic_survey')
 }
@@ -24,10 +25,11 @@ ic_survey <- function(X, ..., dropCols = FALSE,
 #' @name ic_survey
 #' @export
 ic_survey.ic.svy <- function(X, ..., dropCols = FALSE,
-                            survey = "survey_name", sample = "sample_size",
-                            evidence = "evidence", validity = "validity",
-                            minSample = NULL, reduce = TRUE, expand = TRUE,
-                            biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
+                             survey = "survey_name", sample = "sample_size",
+                             evidence = "evidence", validity = "validity",
+                             reduce = TRUE, minSample = 300,
+                             expand = TRUE, min = 1999, max, na.remove = TRUE,
+                             biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
   X
 }
 
@@ -37,7 +39,8 @@ ic_survey.ic.svy <- function(X, ..., dropCols = FALSE,
 ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
                             survey = "survey_name", sample = "sample_size",
                             evidence = "evidence", validity = "validity",
-                            minSample = NULL, reduce = TRUE, expand = TRUE,
+                            reduce = TRUE, minSample = 300,
+                            expand = TRUE, min = 1999, max, na.remove = TRUE,
                             biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
   X # add processing steps for bias and sample corrections
 }
@@ -48,7 +51,8 @@ ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
 ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
                                  survey = "survey_name", sample = "sample_size",
                                  evidence = "evidence", validity = "validity",
-                                 minSample = NULL, reduce = TRUE, expand = TRUE,
+                                 reduce = TRUE, minSample = 300,
+                                 expand = TRUE, min = 1999, max, na.remove = TRUE,
                                  biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
   if(missing(X)){
     stop("Please supply a valid dataset.")
@@ -89,7 +93,8 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
 
   # add in empty rows
   if(expand){
-    TRUE
+    if(missing(max)) max <- base::max(X[[attrs$time]], na.rm = TRUE)
+    X <- ic_expand(X, min = min, max = max, na.remove = TRUE)
   }
 
   return(X)

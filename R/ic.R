@@ -299,7 +299,7 @@ ic_expand <- function(X, min = 1999, max, na.remove = TRUE){
     stop("Please provide valid 'ic' data.")
   }
   # check years
-  if(missing(max)){
+  if(missing(max) || is.na(max)){
     max <- base::max(X[[attr(X, "time")]], na.rm = TRUE)
   }
 
