@@ -297,6 +297,8 @@ is.ic_data <- function(object){
   y
 }
 
+
+#' @export
 'names.ic.df' <- function(x){
   names(as.data.frame(x))
 }
