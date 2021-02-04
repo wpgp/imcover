@@ -281,7 +281,31 @@ is.ic_data <- function(object){
 }
 
 
+#' @export
+'names<-.ic.df' <- function(x, value){
+  chknames(value)
+  attrs <- get_attr(x, ic_core(survey = TRUE))
+  oldc <- setdiff(class(x), "data.frame")
+  oldnms <- which(names(x) %in% attrs)
 
+  y <- as.data.frame(x)
+  names(y) <- value
+
+  attributes(y)[names(attrs)] <- names(y)[oldnms]
+  class(y) <- c(oldc, class(y))
+
+  y
+}
+
+'names.ic.df' <- function(x){
+  names(as.data.frame(x))
+}
+
+
+chknames <- function(x) {
+  if (!identical(x, make.names(x)))
+    warning("Found potentially invalid names.")
+}
 
 
 # ic_update <- function(X, compare, validate = TRUE){
