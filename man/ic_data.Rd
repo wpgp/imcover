@@ -62,6 +62,8 @@ all possible group x vaccine x time observation? Default is \code{FALSE}.}
 
 \item{validate}{Should basic ic data checking be performed? Default is
 \code{FALSE}.}
+
+\item{...}{Additional arguments to pass to \code{ic_expand}.}
 }
 \value{
 An object of class \code{ic.df} which extends \code{data.frame}-like
@@ -77,23 +79,26 @@ defining consistent attributes for required data elements.
 processed dataset for immunisation coverage modelling. In particular it
 requires some core data elements are present:
 \itemize{
-\item{'group'}{Aggregate grouping for data records (e.g. country). Group
+\item{'group'}{ Aggregate grouping for data records (e.g. country). Group
 can be defined by more than column for a nested hierarchy of units (largest
 to finest grouping). Default name is 'iso3countrycode'.}
-\item{'time'}{Defines the time period of immunisation records, typically an
+\item{'time'}{ Defines the time period of immunisation records, typically an
 integer year. Default name is 'year'.}
-\item{'vaccine'}{Code to identify the vaccine records (e.g. 'DTP1').
+\item{'vaccine'}{ Code to identify the vaccine records (e.g. 'DTP1').
 Default name is 'vaccine_name'.}
-\item{'coverage'}{Pre-calculated coverage percentage. Default name is
+\item{'coverage'}{ Pre-calculated coverage percentage. Default name is
 'percentcoverage'.}
 }
 If 'coverage' is not included, then two other elements are required to be
 specified in order for percent coverage to be calculated. Else, these are
 optional elements for ic data.
 \itemize{
-\item{'dose'}{Number of vaccine doses administered. Default name is
+\item{'dose'}{ Number of vaccine doses administered. Default name is
 'dosesadministered'.}
-\item{'population'}{Total target population for the vaccine. Default name
+\item{'population'}{ Total target population for the vaccine. Default name
 is 'targetgroup'.}
 }
+}
+\seealso{
+\code{\link[imcover]{ic_expand}}, \code{ic_validate}
 }
