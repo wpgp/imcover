@@ -15,28 +15,28 @@
 #'   will marked \code{NA}.
 #' @name ic_update
 #' @export
-ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE){
+ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 10){
   if(!is.ic_data(admin) || !is.ic_data(denom) ||
      !is.ic_data(official) || !is.ic_data(survey)){
     stop("Please provide valid 'ic' data.")
   }
 
   if(dtpCheck){
-    if(all(c("DTP1", "DTP3") %in% list_vaccines(admin) &
+    if(!all(c("DTP1", "DTP3") %in% list_vaccines(admin) &
            c("DTP1", "DTP3") %in% list_vaccines(official) &
            c("DTP1", "DTP3") %in% list_vaccines(survey))){
+      stop("DTP vaccines not present in data.") }
 
       admin <- check_vd3(admin)
       official <- check_vd3(official)
       survey <- check_vd3(survey)
-    }
   }
 
   # denominator adjustment
   a_attrs <- get_attr(admin, ic_core())
   d_attrs <- get_attr(denom, ic_core())
   o_attrs <- get_attr(official, ic_core())
-  s_attrs <- get_attr(official, ic_core(survey = TRUE))
+  s_attrs <- get_attr(survey, ic_core(survey = TRUE))
 
   # check for missing attributes
   if(!"dose" %in% names(a_attrs)){ stop("Admin records missing 'dose' attribute.") }
@@ -72,7 +72,7 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE){
   X <- merge(X, official,
              by.x = a_attrs[c("group", "time", "vaccine")],
              by.y = paste0(o_attrs[c("group", "time", "vaccine")], ".o"),
-             all.x = TRUE, attr.x = TRUE, suffixes = c("", ".o"))
+             all.x = TRUE, attr.x = TRUE)
 
   # recalculate with new denominator
   X[["coverage_adj"]] <- X[[a_attrs["dose"]]] / X[[paste0(d_attrs["population"], ".d")]] * 100
@@ -85,6 +85,7 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE){
                            1, 0)
 
   # combine multi-dose checks/adjustments
+  # how to handle NA values?
   if(dtpCheck){
     mdadj <- X[X[[a_attrs['vaccine']]] %in% c("DTP1", "DTP3"),
                c(a_attrs[c("group", "time", "vaccine")], "off_adj"), drop = TRUE]
@@ -99,18 +100,37 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE){
   # clean up
   X <- X[, !grepl("\\.d|\\.o", names(X))]
 
+  ###
   # combine and compare with Survey records
   names(survey) <- paste0(names(survey), ".s")
   X <- merge(X, survey,
              by.x = a_attrs[c("group", "time", "vaccine")],
-             by.y = s_attrs[c("group", "time", "vaccine")],
+             by.y = paste0(s_attrs[c("group", "time", "vaccine")], ".s"),
              all.x = TRUE, attr.x = TRUE)
 
   # calculate difference
   X[["diff"]] <- abs(X[[a_attrs["coverage"]]] - X[[paste0(s_attrs["coverage"], ".s")]])
-  X[["coverage_adj"]] <- ifelse(X[["diff"]] > 10, X[[paste0(s_attrs["coverage"], ".s")]], X[["coverage_adj"]])
+  # create flag
+  X[["surv_adj"]] <- ifelse(abs(X[["diff"]]) > limit &
+                              !is.na(X[[paste0(s_attrs["coverage"], ".s")]]),
+                            1, 0)
+  # handle multi-dose comparisons
+  if(dtpCheck){
+    mdadj <- X[X[[a_attrs['vaccine']]] %in% c("DTP1", "DTP3"),
+               c(a_attrs[c("group", "time", "vaccine")], "surv_adj"), drop = TRUE]
+    i <- which(X[[a_attrs['vaccine']]] %in% c("DTP1", "DTP3"))
+    mdadj <- ave(mdadj$surv_adj, mdadj[a_attrs[c("group", "time")]], FUN = max)
+    X[i, "surv_adj"] <- mdadj
+  }
+  # adjustment
+  X$coverage_adj <- ifelse(X$surv_adj == 1, X[[paste0(s_attrs["coverage"], ".s")]], X$coverage_adj)
+
+  # clean up
+  X <- X[, !grepl("\\.s", names(X))]
 
   # check again for DTP consistency vd1 > vd3
+  X <- check_vd3(X)
+
   return(X)
 }
 
