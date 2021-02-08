@@ -27,6 +27,9 @@ ic_expand <- function(X, min = 1999, max, na.remove = TRUE){
   }
   years <- min:max
 
+  # drop other years
+  X <- X[X[[attr(X, "time")]] >= min & X[[attr(X, "time")]] <= max, ]
+
   # expand groups
   df <- unique(X[, c(attr(X, "group"), attr(X, "vaccine")), drop = TRUE])
   times <- rep(years, times=nrow(df))
