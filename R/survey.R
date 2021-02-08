@@ -89,7 +89,8 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
     attr(X, "evidence") <- evidence
     attr(X, "validity") <- validity
   }
-  attr(X, "class") <- c("ic.svy", class(X))
+
+  # class(X) <- c("ic.svy", class(X))
   # potentially missing/malformed
   X[[evidence]] <- trimws(tolower(as.character(X[[evidence]])))
   X[[validity]] <- trimws(tolower(as.character(X[[validity]])))
@@ -137,7 +138,7 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
   # check for missing validity info? some empty strings. drop?
   if(any(!X[[corenames['validity']]] %in% c("crude", "valid"))){
     stop(paste0("Validity must be 'crude' or 'valid'. Found: ",
-                paste(unique(X[[validity]]), collapse = ", ")),
+                paste(unique(X[[corenames['validity']]]), collapse = ", ")),
          call. = FALSE)
   }
   # storage
@@ -252,7 +253,7 @@ survey_reduce <- function(X, minSample = 300){
   # create group x time x vaccine sets to process
   xs <- split(X, X[, corenames[c("group", "time", "vaccine")]], drop = TRUE)
   xs <- lapply(xs, FUN = function(x){
-    x <- xs[[i]]
+    # x <- xs[[i]]
     if(nrow(x) == 1L){
       if((!is.na(x[[attrs$sample]]) && x[[attrs$sample]] > minSample) || x[[attrs$validity]] == "valid"){
         # x[["pcode"]] <-
@@ -282,7 +283,8 @@ survey_reduce <- function(X, minSample = 300){
   row.names(X) <- seq(nrow(X))
 
   attributes(X)[names(attrs)] <- attrs
-  attr(X, "class") <- c("ic.svy", "ic.df", class(X))
+  # attr(X, "class") <- c("ic.svy", "ic.df", class(X))
+  attr(X, "class") <- c("ic.df", class(X))
   stopifnot(is.ic_data(X))
 
   return(X)

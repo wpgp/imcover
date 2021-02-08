@@ -16,10 +16,10 @@ list_vaccines <- function(X){
 #' Retrieve the names of the core attributes that can be expected in
 #' \code{ic.df} data.
 #' @param survey Include survey-specific attributes or only \code{ic.df}
-#'   attributes? Default is \code{FALSE}.
+#'   attributes? Default is \code{TRUE}.
 #' @name ic_core
 #' @export
-ic_core <- function(survey = FALSE){
+ic_core <- function(survey = TRUE){
   stopifnot(is.logical(survey))
   if(survey){
     return(c("group", "time", "vaccine", "coverage", "dose", "population",
