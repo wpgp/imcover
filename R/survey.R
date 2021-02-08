@@ -7,9 +7,26 @@
 #'   ic object.
 #' @param ... Additional parameters for names of core data elements to pass on
 #'   to \code{ic_data}. See details and \code{ic_data}.
-#' @param evidence Character within \code{X} or a vector of ...
-#' @details
-#' @seealso \code{ic_data}
+#' @param survey,sample,evidence,validity Character of the name
+#'   within \code{X} which defines the core value for ic survey data.
+#' @reduce Should group-vaccine combinations which have no coverage data be
+#'   removed? Default is \code{TRUE}.
+#' @minSample Numeric. Minimum reported sample size. Default is 300.
+#' @expand Should additional empty rows be added to expand the ic data to
+#'   all possible group x vaccine x time observation? Default is \code{FALSE}.
+#' @min Start of the potential time period. Default is 1999.
+#' @max End of the potential time period.
+#' @return An object of class \code{ic.svy} which extends \code{ic.df} and
+#'   \code{data.frame}-like objects with attributes to location and preserve
+#'   core data elements for immunisation coverage.
+#' @details \code{ic_survey} is is an extension to \code{ic_data} and is used to
+#'   create a properly formed and processed dataset for immunisation coverage
+#'   modelling based on survey datasets.
+#'
+#' The parameters \code{min} and \code{max} are only needed when \code{expand =
+#' TRUE}. If \code{max} is missing, the maximum time value observed in the
+#' dataset will be used.
+#' @seealso \code{\link[imcover]{ic_data}}
 #' @name ic_survey
 #' @export
 ic_survey <- function(X, ..., dropCols = FALSE,

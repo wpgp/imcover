@@ -40,7 +40,7 @@
 #'   \item{'population'}{ Total target population for the vaccine. Default name
 #'   is 'targetgroup'.}
 #' }
-#' @seealso \code{ic_expand}, \code{ic_validate}
+#' @seealso \code{\link[imcover]{ic_expand}}, \code{ic_validate}
 #' @name ic_data
 #' @export
 ic_data <- function(X, group = 'iso3countrycode', time = 'year',

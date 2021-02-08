@@ -1,5 +1,15 @@
-
-
+#' Combine ic data objects by rows
+#'
+#' Take a sequence of \code{ic.df} data-frame arguments and combine by rows.
+#' @param ... Objects to bind together.
+#' @param fill Should missing columns be added to data objects so that they can
+#'   be combined? Default is \code{TRUE}.
+#' @param deparse.level See \code{\link{rbind}} Default is 1.
+#' @details The attributes of the ic data are used to match columns. Column
+#'   names are taken from the first object.
+#' @return An object of type \code{ic.df}.
+#' @name rbind
+#' @export
 rbind.ic.df <- function(..., fill = TRUE, deparse.level = 1){
   dots <- list(...)
   dots <- dots[!sapply(dots, is.null)]

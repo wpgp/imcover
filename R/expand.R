@@ -9,6 +9,8 @@
 #'   data be removed? Default is \code{TRUE}
 #' @details If \code{max} is missing, the maximum time value observed in the
 #'   dataset will be used.
+#' @return An object of type \code{ic.df} which has additional rows of \code{NA}
+#'   values added to expand the dataset to min and max time points.
 #' @name ic_expand
 #' @export
 ic_expand <- function(X, min = 1999, max, na.remove = TRUE){

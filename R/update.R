@@ -10,9 +10,13 @@
 #'   estimates of coverage.
 #' @param survey Object of class \code{ic.svy} containing annual survey
 #'   estimates of coverage.
-#' @param dtpCheck Logical. Should dose 3 and dose 1 of DTP vaccines be compared
-#'   for each group and time? If dose 3 coverage exceeds dose 1, these records
-#'   will marked \code{NA}.
+#' @param dtpCheck Should dose 3 and dose 1 of DTP vaccines be compared for each
+#'   group and time? If dose 3 coverage exceeds dose 1, these records will
+#'   marked \code{NA}. Default is \code{TRUE}.
+#' @param limit Maximum acceptable difference between survey and administrative
+#'   coverage records. When the difference exceeds the limit, the survey
+#'   estimate is preferred. Default is 10 percent.
+#' @seealso \code{\link[imcover]{ic_data}}
 #' @name ic_update
 #' @export
 ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 10){
