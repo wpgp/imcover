@@ -135,6 +135,8 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 1
   # check again for DTP consistency vd1 > vd3
   X <- check_vd3(X)
 
+  # set coverage attribute
+  attributes(X)["coverage"] <- "coverage_adj"
   return(X)
 }
 

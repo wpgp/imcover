@@ -251,6 +251,9 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     X <- X[!(X[[attrs$vaccine]] == paste0(v, 3) &
              X[[corenames["evidence"]]] %in% c("card or history")), ]
     X <- rbind(X, vd3.coh, fill = TRUE)
+    X[[corenames["coverage"]]] <- ifelse(!is.na(X[["coverage_adj"]]),
+                                         X[["coverage_adj"]],
+                                         X[[corenames["coverage"]]])
     X <- X[do.call(order, X[, corenames[c("group", "time", "vaccine")], drop = TRUE]), ]
 
     # # reshape to wide - collapsing validity information
