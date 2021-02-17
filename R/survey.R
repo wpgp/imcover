@@ -112,7 +112,7 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
   # add in empty rows
   if(expand){
     if(missing(max)) max <- base::max(X[[attrs$time]], na.rm = TRUE)
-    X <- ic_expand(X, min = min, max = max, na.remove = TRUE)
+    X <- ic_expand(X, min = min, max = max, na.remove = na.remove)
   }
 
   return(X)
