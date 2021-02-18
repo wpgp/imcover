@@ -310,76 +310,7 @@ chknames <- function(x) {
 }
 
 
-# ic_update <- function(X, compare, validate = TRUE){
-#   if(!is.ic_data(X)){
-#     stop("Please provide valid 'ic' data.")
-#   }
-#
-# }
 
-
-# ic_filter <- function(X, yovi = 'default'){
-#   if(!is.ic_data(X)){
-#     stop("Please provide valid 'ic' data.")
-#   }
-#
-#   if(missing(yovi)){
-#     stop("Please provide a data.frame of vaccines, or select 'default'.")
-#   }
-#
-#   if(is.character(yovi)){
-#     if(yovi == "default"){
-#       yovi <- get_yovi()
-#     }
-#   } else{
-#     stopifnot(inherits(yovi, "data.frame"))
-#   }
-#
-#   # filter
-#   return(X)
-# }
-
-
-# get_yovi <- function(X){
-#   # return full yovi table
-# }
-
-
-#' #' @name ic_update_pop
-#' #' @export
-#' ic_update_pop <- function(X, pop = "wpp", validate = TRUE){
-#'   if(!is.ic_data(X)){
-#'     stop("Please provide valid 'ic' data.")
-#'   }
-#'
-#'   TRUE
-#' }
-
-
-
-
-
-# add_region <- function(X, group, region = "who"){
-#   if(!is.ic_data(X) && missing(group)){
-#     stop("Please supply a grouping variable or 'ic' data.")
-#   }
-#
-#   if(missing(groupVar)){
-#     group <- attr(X, "group")
-#   } else if(!is.character(group)){
-#     stop("Please supply grouping variable as a character name.")
-#   }
-#
-#   if(length(group) > 1){ group <- group[1L] }
-#   if(!group %in% names(X)){ stop("Please supply a valid column name.")}
-#
-#   X[["region"]] <- lookup_region(X[[group]], region)
-# }
-
-
-# lookup_region <- function(code, region){
-#   return(region_tbl[region_tbl$code == code,][[region]])
-# }
 
 
 
