@@ -6,11 +6,11 @@
 Retrieve the names of the core attributes that can be expected in
 \code{ic.df} data.}
 \usage{
-ic_core(survey = FALSE)
+ic_core(survey = TRUE)
 }
 \arguments{
 \item{survey}{Include survey-specific attributes or only \code{ic.df}
-attributes? Default is \code{FALSE}.}
+attributes? Default is \code{TRUE}.}
 }
 \description{
 List core attributes for ic data
