@@ -104,6 +104,8 @@ filter_yovi <- function(X,
 
   if(!is.null(vaccine)){
     yovi <- yovi[yovi$vaccine %in% vaccine, ]
+  } else{
+    vaccine <- unique(yovi$vaccine)
   }
   if(nrow(yovi) < 1L) stop("No vaccine records found in YOVI table.")
 
@@ -117,7 +119,7 @@ filter_yovi <- function(X,
 
   # filter
   if(na.rm){
-    del <- which(is.na(X[[nm]]) | X[[get_attr(X, "time")]] < X[[nm]])
+    del <- which((is.na(X[[nm]]) & X[[get_attr(X, "vaccine")]] %in% vaccine) | X[[get_attr(X, "time")]] < X[[nm]])
   } else{
     del <- which(!is.na(X[[nm]]) & X[[get_attr(X, "time")]] < X[[nm]])
   }
