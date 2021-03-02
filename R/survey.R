@@ -370,12 +370,16 @@ survey_reduce <- function(X, minSample = 300){
       }
     } else{
       # find preferred records
-      xc <- x[grepl("c or h|card or history", x[[attrs$evidence]]), ]
+      # xc <- x[grepl("c or h|card or history", x[[attrs$evidence]]), ]
+      xc <- x[c(grep("card or history", x[[attrs$evidence]], value = FALSE),
+                grep("c or h", x[[attrs$evidence]], value = FALSE)), ]
       if(nrow(xc) >= 1L){
         xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
         return(xc[1L, ])
       } else{
-        xc <- x[grepl("c|card", x[[attrs$evidence]]), ]
+        # xc <- x[grepl("c|card", x[[attrs$evidence]]), ]
+        xc <- x[c(grep("card", x[[attrs$evidence]], value = FALSE),
+                  grep("c", x[[attrs$evidence]], value = FALSE)), ]
         xc <- xc[(!is.na(xc[[attrs$sample]]) && xc[[attrs$sample]] > minSample) || xc[[attrs$validity]] == "valid", ]
         if(nrow(xc) >= 1L){
           xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
