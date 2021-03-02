@@ -178,7 +178,7 @@ make_ic_svy <- function(X, dropCols, survey, sample, evidence, validity,
   }
 
   if(dropCols){
-    # drop non-core columns. must done after creation of ic survey dataset
+    X <- X[, names(X) %in% get_attr(X, ic_core(survey = TRUE))]
   }
 
   return(X)
