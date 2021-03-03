@@ -68,6 +68,7 @@ get_yovi <- function(vaccine = NULL){
   }
 }
 
+
 #' Filter ic data records based on year of vaccine introduction
 #' Exclude ic data records for years when a vaccine had not been fully
 #' introduced in a country.
@@ -97,8 +98,7 @@ filter_yovi <- function(X,
     stop("Please provide valid 'yovi' data.")
   }
 
-  if(all(!'ISO3code' %in% names(yovi)) ||
-     all(!'year_introduced' %in% names(yovi))){
+  if(any(!c('ISO3code', 'vaccine', 'year_introduced') %in% names(yovi))){
     stop("Non-matching column names in YOVI table.")
   }
 
