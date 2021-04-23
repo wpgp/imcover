@@ -413,7 +413,9 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
 }
 
 
-survey_reduce <- function(X, minSample = 300){
+survey_reduce <- function(X,
+                          minSample = 300,
+                          priority = c("card or history", "card")){
   if(!is.ic_data(X)){ stop("Please supply a valid 'ic' dataset.") }
   attrs <- get_attr(X, attrs = ic_core(survey = TRUE), unlist = FALSE)
   corenames <- unlist(attrs)
@@ -423,38 +425,51 @@ survey_reduce <- function(X, minSample = 300){
   # store processing code (aka 'samseen')
   # X[["pcode"]] <- NA
 
+  # drop other records
+  # X <- X[!is.na(X[[attrs$sample]]) | !is.na(X[[attrs$validity]]), ]
+  X <- X[(!is.na(X[[attrs$sample]]) & X[[attrs$sample]] >= minSample) |
+           (!is.na(X[[attrs$validity]]) & X[[attrs$validity]] == "valid"), ]
+
   # create group x time x vaccine sets to process
   xs <- split(X, X[, corenames[c("group", "time", "vaccine")]], drop = TRUE)
   xs <- lapply(xs, FUN = function(x){
     # x <- xs[[i]]
     if(nrow(x) == 1L){
-      if((!is.na(x[[attrs$sample]]) && x[[attrs$sample]] > minSample) || x[[attrs$validity]] == "valid"){
-        # x[["pcode"]] <-
-        return(x)
-      } else{
-        return(NULL) # skipped in binding
-      }
-    } else{
+      # if((!is.na(x[[attrs$sample]]) && x[[attrs$sample]] > minSample) || x[[attrs$validity]] == "valid"){
+      #   # x[["pcode"]] <-
+      #   return(x)
+      # } else{
+      #   return(NULL) # skipped in binding
+      # }
+      return(x)
+    } else{ # multiple rows
       # find preferred records
+      # xc <- do.call(rbind, lapply(priority, function(p){ x[grepl(p, x[[attrs$evidence]]), ] }))
+      # xc <- do.call(rbind, lapply(priority, function(p){ x[x$evidence == p, ] }))
+
+      valid_f <- factor(x[[attrs$validity]], levels = c("valid", "crude"))
+      evid_f <- factor(x[[attrs$evidence]], levels = priority)
+      x <- x[order(valid_f, evid_f, x[[attrs$sample]], decreasing = c(FALSE, FALSE, TRUE)), ]
+      return(x[1L, ])
       # xc <- x[grepl("c or h|card or history", x[[attrs$evidence]]), ]
-      xc <- x[c(grep("card or history", x[[attrs$evidence]], value = FALSE),
-                grep("c or h", x[[attrs$evidence]], value = FALSE)), ]
-      if(nrow(xc) >= 1L){
-        xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
-        return(xc[1L, ])
-      } else{
-        # xc <- x[grepl("c|card", x[[attrs$evidence]]), ]
-        xc <- x[c(grep("card", x[[attrs$evidence]], value = FALSE),
-                  grep("c", x[[attrs$evidence]], value = FALSE)), ]
-        xc <- xc[(!is.na(xc[[attrs$sample]]) && xc[[attrs$sample]] > minSample) || xc[[attrs$validity]] == "valid", ]
-        if(nrow(xc) >= 1L){
-          xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
-          return(xc[1L, ])
-        } else{
-          return(NULL)
-        }
-      }
-    }
+      # xc <- x[c(grep("card or history", x[[attrs$evidence]], value = FALSE),
+      #           grep("c or h", x[[attrs$evidence]], value = FALSE)), ]
+      # if(nrow(xc) >= 1L){ # multiple card or history
+      #   xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
+      #   return(xc[1L, ])
+      # } else{
+      #   # xc <- x[grepl("c|card", x[[attrs$evidence]]), ]
+      #   xc <- x[c(grep("card", x[[attrs$evidence]], value = FALSE),
+      #             grep("c", x[[attrs$evidence]], value = FALSE)), ]
+      #   xc <- xc[(!is.na(xc[[attrs$sample]]) && xc[[attrs$sample]] > minSample) || xc[[attrs$validity]] == "valid", ]
+      #   if(nrow(xc) >= 1L){
+      #     xc <- xc[order(xc[[attrs$sample]], decreasing = TRUE), ]
+      #     return(xc[1L, ])
+      #   } else{
+      #     return(NULL)
+      #   }
+      # }
+    } # end else
   })
   X <- do.call(rbind.data.frame, xs)
   row.names(X) <- seq(nrow(X))
