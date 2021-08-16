@@ -41,8 +41,19 @@ yovi$year_introduced <- gsub("prior to", "", yovi$year_introduced, fixed = T)
 yovi$year_introduced <- gsub("to ", "", yovi$year_introduced, fixed = T)
 
 yovi$year_introduced <- as.numeric(yovi$year_introduced)
-  table(yovi$year_introduced)
+table(yovi$year_introduced)
 
 
-usethis::use_data(yovi, internal = TRUE)
+## code to create region codes list goes here
+# download data from: https://unstats.un.org/unsd/methodology/m49/overview/
+
+path <- "data-raw"
+
+dat <-read.csv(file.path(path, 'UNSD_m49.csv'), stringsAsFactors = F)
+names(dat) <- tolower(names(dat))
+
+region <- dat
+
+## OUTPUT
+usethis::use_data(yovi, region, overwrite = TRUE, internal = TRUE)
 
