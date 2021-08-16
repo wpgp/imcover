@@ -129,24 +129,37 @@ filter_yovi <- function(X,
 }
 
 
-# add_region <- function(X, group, region = "who"){
-#   if(!is.ic_data(X) && missing(group)){
-#     stop("Please supply a grouping variable or 'ic' data.")
-#   }
-#
-#   if(missing(groupVar)){
-#     group <- attr(X, "group")
-#   } else if(!is.character(group)){
-#     stop("Please supply grouping variable as a character name.")
-#   }
-#
-#   if(length(group) > 1){ group <- group[1L] }
-#   if(!group %in% names(X)){ stop("Please supply a valid column name.")}
-#
-#   X[["region"]] <- lookup_region(X[[group]], region)
-# }
+#' Get regional groupings for country codes
+#' Retrieve a list of the region based on the ISO3c alpha codes.
+#' @param group Vector of country ISO3 codes as characters. Default is \code{NULL}
+#'   which returns all regions in the dataset.
+#' @param type The type of region grouping to return. The default \code{'who'}
+#'   returns World Health Organisation codes. The other option is 'M49' for UN
+#'   Stats Division region groupings.
+#' @details Data source of M49 regions:
+#'   \link{https://unstats.un.org/unsd/methodology/m49/overview/}
+#' @return A character vector of region codes of length equal
+#'   \code{length(group)} if \code{group} is specified or a \code{data.frame} of
+#'   the region table if \code{group} is \code{NULL}.
+#'
+#' @name get_region
+#' @export
+get_region <- function(group = NULL, type = 'who'){
 
+  if(type == 'm49'){
+    region <- imcover:::m49region
+  } else if(type == 'who'){
+    region <- imcover:::whoregion
+  } else{
+    stop('Cannot find specified region table.')
+  }
 
-# lookup_region <- function(code, region){
-#   return(region_tbl[region_tbl$code == code,][[region]])
-# }
+  if(!is.null(group)){
+    return(merge(data.frame('ISO3code' = group),
+                 region,
+                 by = 'ISO3code', all.x = T)[,'region'])
+  } else{
+    return(region)
+  }
+}
+

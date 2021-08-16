@@ -47,6 +47,7 @@ table(yovi$year_introduced)
 ## code to create region codes list goes here
 
 whoregion <- unique(yovi[, c("ISO3code", "WHOregion")])
+names(whoregion) <- c("ISO3code", "region")
 
 # download data from: https://unstats.un.org/unsd/methodology/m49/overview/
 
@@ -55,9 +56,9 @@ path <- "data-raw"
 dat <-read.csv(file.path(path, 'UNSD_m49.csv'), stringsAsFactors = F)
 names(dat) <- tolower(names(dat))
 
-region <- dat[, c("iso.alpha3.code", "region.name", "sub.region.name")]
-names(region) <- c("ISO3code", "Region", "SubRegion")
+m49region <- dat[, c("iso.alpha3.code", "region.name", "sub.region.name")]
+names(m49region) <- c("ISO3code", "region", "subregion")
 
 ## OUTPUT
-usethis::use_data(yovi, region, whoregion, overwrite = TRUE, internal = TRUE)
+usethis::use_data(yovi, m49region, whoregion, overwrite = TRUE, internal = TRUE)
 
