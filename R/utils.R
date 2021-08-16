@@ -22,10 +22,11 @@ list_vaccines <- function(X){
 ic_core <- function(survey = TRUE){
   stopifnot(is.logical(survey))
   if(survey){
-    return(c("group", "time", "vaccine", "coverage", "dose", "population",
-             "survey", "evidence", "validity", "sample"))
+    return(c("region", "group", "time", "vaccine", "coverage", "source", "dose",
+             "population", "source", "survey", "evidence", "validity", "sample"))
   } else{
-    return(c("group", "time", "vaccine", "coverage", "dose", "population"))
+    return(c("region", "group", "time", "vaccine", "coverage",
+             "source", "dose", "population"))
   }
 }
 

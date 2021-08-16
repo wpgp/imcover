@@ -11,11 +11,16 @@
 #'   which defines the core value for ic survey data.
 #' @param reduce Should group-vaccine combinations which have no coverage data
 #'   be removed? Default is \code{TRUE}.
-#' @param minSample Numeric. Minimum reported sample size. Default is 300.
+#' @param minSample Numeric. Minimum reported sample size needed to keep
+#'   records. Default is 300.
 #' @param expand Should additional empty rows be added to expand the ic data to
 #'   all possible group x vaccine x time observation? Default is \code{FALSE}.
-#' @param min Start of the potential time period. Default is 1999.
-#' @param max End of the potential time period.
+#' @param min Start of the potential time period. Default is 1999. Only used
+#'   when \code{expand} is \code{TRUE}.
+#' @param max End of the potential time period. Only used when \code{expand} is
+#'   \code{TRUE}.
+#' @param na.remove Should missing observations be dropped? Passed to
+#'   \code{ic_expand} when \code{expand} is \code{TRUE}.
 #' @return An object of class \code{ic.df} which extends \code{data.frame}-like
 #'   objects with attributes to location and preserve core data elements for
 #'   immunisation coverage.
