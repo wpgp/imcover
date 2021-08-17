@@ -1,5 +1,4 @@
 
-
 #' Create an ic data object
 #' @description Create an ic data object from survey data on immunisation
 #'   coverage.
@@ -8,19 +7,11 @@
 #' @param ... Additional parameters for names of core data elements to pass on
 #'   to \code{ic_data}. See details and \code{ic_data}.
 #' @param survey,sample,evidence,validity Character of the name within \code{X}
-#'   which defines the core value for ic survey data.
-#' @param reduce Should group-vaccine combinations which have no coverage data
-#'   be removed? Default is \code{TRUE}.
+#'   which defines the core values for ic survey data.
+#' @param reduce Should group-vaccine combinations which have insufficient
+#'   coverage data be removed? Default is \code{TRUE}.
 #' @param minSample Numeric. Minimum reported sample size needed to keep
-#'   records. Default is 300.
-#' @param expand Should additional empty rows be added to expand the ic data to
-#'   all possible group x vaccine x time observation? Default is \code{FALSE}.
-#' @param min Start of the potential time period. Default is 1999. Only used
-#'   when \code{expand} is \code{TRUE}.
-#' @param max End of the potential time period. Only used when \code{expand} is
-#'   \code{TRUE}.
-#' @param na.remove Should missing observations be dropped? Passed to
-#'   \code{ic_expand} when \code{expand} is \code{TRUE}.
+#'   coverage records. Default is 300.
 #' @return An object of class \code{ic.df} which extends \code{data.frame}-like
 #'   objects with attributes to location and preserve core data elements for
 #'   immunisation coverage.
@@ -35,40 +26,32 @@
 #' @name ic_survey
 #' @export
 ic_survey <- function(X, ...,
-                      survey = "survey_name", sample = "sample_size",
+                      survey = "surveyNameEnglish", sample = "Sample_Size",
                       evidence = "evidence", validity = "validity",
-                      reduce = TRUE, minSample = 300,
-                      expand = TRUE, min = 1999, max, na.remove = TRUE,
-                      biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
+                      reduce = TRUE, minSample = 300){
   UseMethod('ic_survey')
 }
-
-
-#' #' @name ic_survey
-#' #' @export
-#' ic_survey.ic.svy <- function(X, ..., dropCols = FALSE,
-#'                              survey = "survey_name", sample = "sample_size",
-#'                              evidence = "evidence", validity = "validity",
-#'                              reduce = TRUE, minSample = 300,
-#'                              expand = TRUE, min = 1999, max, na.remove = TRUE,
-#'                              biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
-#'   X
-#' }
 
 
 #' @name ic_survey
 #' @export
 ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
-                            survey = "survey_name", sample = "sample_size",
+                            survey = "surveyNameEnglish", sample = "Sample_Size",
                             evidence = "evidence", validity = "validity",
-                            reduce = TRUE, minSample = 300,
-                            expand = TRUE, min = 1999, max, na.remove = TRUE,
-                            biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
+                            reduce = TRUE, minSample = 300){
+  X
+}
+
+
+#' @name ic_survey
+#' @export
+ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
+                            survey = "surveyNameEnglish", sample = "Sample_Size",
+                            evidence = "evidence", validity = "validity",
+                            reduce = TRUE, minSample = 300){
 
   X <- make_ic_svy(X, dropCols, survey, sample, evidence, validity,
-                   reduce, minSample,
-                   expand, min, max, na.remove,
-                   biasAdjust, adjVacc)
+                   reduce, minSample)
 
   return(X)
 }
@@ -77,11 +60,10 @@ ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
 #' @name ic_survey
 #' @export
 ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
-                                 survey = "survey_name", sample = "sample_size",
+                                 survey = "surveyNameEnglish",
+                                 sample = "Sample_Size",
                                  evidence = "evidence", validity = "validity",
-                                 reduce = TRUE, minSample = 300,
-                                 expand = TRUE, min = 1999, max, na.remove = TRUE,
-                                 biasAdjust = TRUE, adjVacc = c("DTP", "PCV")){
+                                 reduce = TRUE, minSample = 300){
   if(missing(X)){
     stop("Please supply a valid dataset.")
   } else{
@@ -91,18 +73,14 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
 
   # call internal maker function
   X <- make_ic_svy(X, dropCols, survey, sample, evidence, validity,
-                   reduce, minSample,
-                   expand, min, max, na.remove,
-                   biasAdjust, adjVacc)
+                   reduce, minSample)
 
   return(X)
 }
 
 
 make_ic_svy <- function(X, dropCols, survey, sample, evidence, validity,
-                        reduce, minSample,
-                        expand, min, max, na.remove,
-                        biasAdjust, adjVacc){
+                        reduce, minSample){
 
   # check/confirm additional cols present
   varnames <- c(survey, evidence, validity, sample)
@@ -116,7 +94,6 @@ make_ic_svy <- function(X, dropCols, survey, sample, evidence, validity,
     attr(X, "validity") <- validity
   }
 
-  # class(X) <- c("ic.svy", class(X))
   # potentially missing/malformed
   X[[evidence]] <- trimws(tolower(as.character(X[[evidence]])))
   X[[validity]] <- trimws(tolower(as.character(X[[validity]])))
@@ -125,20 +102,9 @@ make_ic_svy <- function(X, dropCols, survey, sample, evidence, validity,
   corenames <- unlist(attrs)
   X <- X[, c(corenames, setdiff(names(X), corenames))]
 
-  # correct dose 3 recall
-  if(biasAdjust){
-    X <- survey_adjust(X, adjVacc)
-  }
-
   # process to select preferred vacc record
   if(reduce){
     X <- survey_reduce(X, minSample)
-  }
-
-  # add in empty rows
-  if(expand){
-    if(missing(max)) max <- base::max(X[[attrs$time]], na.rm = TRUE)
-    X <- ic_expand(X, min = min, max = max, na.remove = na.remove)
   }
 
   if(dropCols){
