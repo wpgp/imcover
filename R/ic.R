@@ -244,6 +244,22 @@ is.ic_data <- function(object){
 }
 
 
+#' #' @export
+#' "[<-.ic.df" <- function(x, i, j, value){
+#'   attrs <- get_attr(x, ic_core(), unlist = F)
+#'   class(x) <- setdiff(class(x), "ic.df")
+#'
+#'   if(!(i %in% unlist(attrs) && is.null(value))){
+#'     x <- structure(NextMethod(),
+#'                    class = c("ic.df", setdiff(class(x), "ic.df")))
+#'   } else{
+#'     stop("Cannot drop core 'ic' data columns.", call. = FALSE, )
+#'   }
+#'
+#'   return(x)
+#' }
+
+
 #' @export
 "[[<-.ic.df" <- function(x, i, value){
   attrs <- get_attr(x, ic_core(), unlist = TRUE)

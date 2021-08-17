@@ -1,4 +1,4 @@
 library(testthat)
 library(imcover)
 
-test_check("imcover")
+test_check("ic")
