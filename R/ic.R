@@ -4,7 +4,7 @@
 #' Create an ic data object, which extends \code{data.frame}-like objects by
 #' defining consistent attributes for required data elements.
 #' @param X An \code{R} object to process and convert to ic data.
-#' @param region,group,time,vaccine,coverage,dose,population Character of the
+#' @param region,country,time,vaccine,coverage,dose,population Character of the
 #'   name within \code{X} which defines the core value for ic data.
 #' @param dropCols Should other columns in \code{X} be dropped if they are not
 #'   core attributes? Default is \code{FALSE} to retain all data from \code{X}.
@@ -17,7 +17,7 @@
 #'   requires some core data elements are present:
 #' \itemize{
 #'   \item{'region'}{ Larger grouping. Used to apply separate models.}
-#'   \item{'group'}{ Aggregate grouping for data records (e.g. country). Group
+#'   \item{'country'}{ Aggregate grouping for data records (e.g. country). Country
 #'   can be defined by more than column for a nested hierarchy of units (largest
 #'   to finest grouping). Default name is 'code' referring to an ISO3 code.}
 #'   \item{'time'}{ Defines the time period of immunisation records, typically
@@ -44,7 +44,7 @@
 #' @seealso \code{\link[imcover]{ic_expand}}, \code{ic_validate}
 #' @name ic_data
 #' @export
-ic_data <- function(X, region = 'region', group = 'code', time = 'year',
+ic_data <- function(X, region = 'region', country = 'code', time = 'year',
                     vaccine = 'antigen', coverage = 'coverage',
                     source = 'coverage_category', dose = 'doses',
                     population = 'target_number', dropCols = FALSE, ...){
@@ -54,7 +54,7 @@ ic_data <- function(X, region = 'region', group = 'code', time = 'year',
 
 #' @name ic_data
 #' @export
-ic_data.ic.df <- function(X, region = 'region', group = 'code', time = 'year',
+ic_data.ic.df <- function(X, region = 'region', country = 'code', time = 'year',
                           vaccine = 'antigen', coverage = 'coverage',
                           source = 'coverage_category', dose = 'doses',
                           population = 'target_number', dropCols = FALSE, ...){
@@ -64,7 +64,7 @@ ic_data.ic.df <- function(X, region = 'region', group = 'code', time = 'year',
 
 #' @name ic_data
 #' @export
-ic_data.data.frame <- function(X, region = 'region', group = 'code', time = 'year',
+ic_data.data.frame <- function(X, region = 'region', country = 'code', time = 'year',
                                vaccine = 'antigen', coverage = 'coverage',
                                source = 'coverage_category', dose = 'doses',
                                population = 'target_number', dropCols = FALSE, ...){
@@ -84,7 +84,7 @@ ic_data.data.frame <- function(X, region = 'region', group = 'code', time = 'yea
     stop("Please provide valid column names.")
   }
 
-  varnames <- c(region, group, time, vaccine, source)
+  varnames <- c(region, country, time, vaccine, source)
   chk <- !varnames %in% names(X)
   if(sum(chk) > 0){
     stop(paste(varnames[chk], collapse = " "), " not found in dataset.")
@@ -118,7 +118,7 @@ ic_data.data.frame <- function(X, region = 'region', group = 'code', time = 'yea
   # set attributes
   class(X) <- list("ic.df", class(X))
   attr(X, "region") <- region
-  attr(X, "group") <- group
+  attr(X, "country") <- country
   attr(X, "time") <- time
   attr(X, "vaccine") <- vaccine
   attr(X, "coverage") <- coverage
@@ -137,7 +137,7 @@ ic_data.data.frame <- function(X, region = 'region', group = 'code', time = 'yea
 #' @param object Any \code{R} object.
 #' @param ... Elements to be combined into an \code{ic.df} object.
 #' @details Core \code{ic.df} data elements are expected. Specifically, data for
-#'   'region', 'group', 'time', 'vaccine', 'coverage', and 'source' (optionally
+#'   'region', 'country', 'time', 'vaccine', 'coverage', and 'source' (optionally
 #'   'dose', 'population') are required in this order. The names of these
 #'   elements from \code{...} are passed to \code{ic_data}.
 #'
@@ -159,17 +159,17 @@ as.ic_data <- function(...){
   if(any(is.null(varnames))){ stop("Missing data names not allowed.") }
 
   if(length(varnames) < 6){
-    stop("Not enough columns. Expecting data for: group, time, vaccine,
+    stop("Not enough columns. Expecting data for: country, time, vaccine,
          (doses, target population,) and coverage.")
   }
 
   # set attributes
   class(x) <- list("ic.df", class(x))
   if(length(varnames) == 6){
-    attributes(x)[c("region", "group", "time",
+    attributes(x)[c("region", "country", "time",
                     "vaccine", "coverage", "source")] <- varnames[1:6]
   } else{
-    attributes(x)[c("region", "group", "time", "vaccine",
+    attributes(x)[c("region", "country", "time", "vaccine",
                     "coverage", "source", "dose",
                     "population")] <- varnames[1:8]
   }

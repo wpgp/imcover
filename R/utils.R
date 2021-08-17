@@ -22,10 +22,10 @@ list_vaccines <- function(X){
 ic_core <- function(survey = TRUE){
   stopifnot(is.logical(survey))
   if(survey){
-    return(c("region", "group", "time", "vaccine", "coverage", "source", "dose",
+    return(c("region", "country", "time", "vaccine", "coverage", "source", "dose",
              "population", "source", "survey", "evidence", "validity", "sample"))
   } else{
-    return(c("region", "group", "time", "vaccine", "coverage",
+    return(c("region", "country", "time", "vaccine", "coverage",
              "source", "dose", "population"))
   }
 }
@@ -111,7 +111,7 @@ filter_yovi <- function(X,
   if(nrow(yovi) < 1L) stop("No vaccine records found in YOVI table.")
 
   X <- merge(X, yovi[, c("ISO3code", "vaccine", "year_introduced")],
-             by.x = get_attr(X, attrs = c("group", "vaccine")),
+             by.x = get_attr(X, attrs = c("country", "vaccine")),
              by.y = c("ISO3code", "vaccine"),
              suffixes = c("", ".yovi"),
              all.x = TRUE, sort = FALSE)
@@ -132,7 +132,7 @@ filter_yovi <- function(X,
 
 #' Get regional groupings for country codes
 #' Retrieve a list of the region based on the ISO3c alpha codes.
-#' @param group Vector of country ISO3 codes as characters. Default is \code{NULL}
+#' @param country Vector of country ISO3 codes as characters. Default is \code{NULL}
 #'   which returns all regions in the dataset.
 #' @param type The type of region grouping to return. The default \code{'who'}
 #'   returns World Health Organisation codes. The other option is 'M49' for UN
@@ -140,12 +140,12 @@ filter_yovi <- function(X,
 #' @details Data source of M49 regions:
 #'   \link{https://unstats.un.org/unsd/methodology/m49/overview/}
 #' @return A character vector of region codes of length equal
-#'   \code{length(group)} if \code{group} is specified or a \code{data.frame} of
-#'   the region table if \code{group} is \code{NULL}.
+#'   \code{length(country)} if \code{country} is specified or a \code{data.frame} of
+#'   the region table if \code{country} is \code{NULL}.
 #'
 #' @name get_region
 #' @export
-get_region <- function(group = NULL, type = 'who'){
+get_region <- function(country = NULL, type = 'who'){
 
   if(type == 'm49'){
     region <- imcover:::m49region
@@ -155,8 +155,8 @@ get_region <- function(group = NULL, type = 'who'){
     stop('Cannot find specified region table.')
   }
 
-  if(!is.null(group)){
-    return(merge(data.frame('ISO3code' = group),
+  if(!is.null(country)){
+    return(merge(data.frame('ISO3code' = country),
                  region,
                  by = 'ISO3code', all.x = T)[,'region'])
   } else{

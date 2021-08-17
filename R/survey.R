@@ -8,7 +8,7 @@
 #'   to \code{ic_data}. See details and \code{ic_data}.
 #' @param survey,sample,evidence,validity Character of the name within \code{X}
 #'   which defines the core values for ic survey data.
-#' @param reduce Should group-vaccine combinations which have insufficient
+#' @param reduce Should country-vaccine combinations which have insufficient
 #'   coverage data be removed? Default is \code{TRUE}.
 #' @param minSample Numeric. Minimum reported sample size needed to keep
 #'   coverage records. Default is 300.
@@ -153,7 +153,7 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     vd1.coh <- vd1[vd1[[corenames["evidence"]]] %in% c("card or history"), ]
 
     # find preferred data
-    vd1s <- split(vd1.c, vd1.c[, corenames[c("group", "time")]], drop = TRUE)
+    vd1s <- split(vd1.c, vd1.c[, corenames[c("country", "time")]], drop = TRUE)
     vd1s <- lapply(vd1s, FUN = function(vd){
       if(nrow(vd) > 1L){
         if(any(vd[[corenames["validity"]]] == "valid")){
@@ -168,7 +168,7 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     })
     vd1.c <- do.call(rbind, vd1s)
 
-    vd1s <- split(vd1.coh, vd1.coh[, corenames[c("group", "time")]], drop = TRUE)
+    vd1s <- split(vd1.coh, vd1.coh[, corenames[c("country", "time")]], drop = TRUE)
     vd1s <- lapply(vd1s, FUN = function(vd){
       if(nrow(vd) > 1L){
         if(any(vd[[corenames["validity"]]] == "valid")){
@@ -184,8 +184,8 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     vd1.coh <- do.call(rbind, vd1s)
 
     # calculate adjustment factors
-    vd1.coh <- merge(vd1.coh, vd1.c[, corenames[c("group","time","coverage")]],
-                     by = corenames[c("group","time")],
+    vd1.coh <- merge(vd1.coh, vd1.c[, corenames[c("country","time","coverage")]],
+                     by = corenames[c("country","time")],
                      suffixes = c("", ".c"))
     vd1.coh$adj_factor <- vd1.coh[[corenames["coverage"]]] / vd1.coh[[paste0(corenames["coverage"], ".c")]]
 
@@ -195,7 +195,7 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     vd3.coh <- vd3[vd3[[corenames["evidence"]]] %in% c("card or history"), ]
 
     # find preferred data
-    vd3s <- split(vd3.c, vd3.c[, corenames[c("group", "time")]], drop = TRUE)
+    vd3s <- split(vd3.c, vd3.c[, corenames[c("country", "time")]], drop = TRUE)
     vd3s <- lapply(vd3s, FUN = function(vd){
       if(nrow(vd) > 1L){
         if(any(vd[[corenames["validity"]]] == "valid")){
@@ -212,13 +212,13 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
 
     # calculate adjusted coverage
     vd3.c <- merge(vd3.c,
-                   vd1.coh[, c(corenames[c("group","time")], "adj_factor")],
-                   by = corenames[c("group", "time")])
+                   vd1.coh[, c(corenames[c("country","time")], "adj_factor")],
+                   by = corenames[c("country", "time")])
 
     vd3.c$coverage_adj <- vd3.c[[corenames["coverage"]]] * vd3.c[["adj_factor"]]
 
     # update vd3.coh
-    vd3s <- split(vd3.coh, vd3.coh[, corenames[c("group", "time")]], drop = TRUE)
+    vd3s <- split(vd3.coh, vd3.coh[, corenames[c("country", "time")]], drop = TRUE)
     vd3s <- lapply(vd3s, FUN = function(vd){
       if(nrow(vd) > 1L){
         if(any(vd[[corenames["validity"]]] == "valid")){
@@ -234,9 +234,9 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     vd3.coh <- do.call(rbind, vd3s)
 
     vd3.coh <- merge(vd3.coh,
-                     vd3.c[, c(corenames[c("group","time")],
+                     vd3.c[, c(corenames[c("country","time")],
                                "adj_factor", "coverage_adj")],
-                     by = corenames[c("group", "time")],
+                     by = corenames[c("country", "time")],
                      all.x = TRUE)
 
     attributes(vd3.coh)[names(attrs)] <- attrs
@@ -250,7 +250,7 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     X[[corenames["coverage"]]] <- ifelse(!is.na(X[["coverage_adj"]]),
                                          X[["coverage_adj"]],
                                          X[[corenames["coverage"]]])
-    X <- X[do.call(order, X[, corenames[c("group", "time", "vaccine")], drop = TRUE]), ]
+    X <- X[do.call(order, X[, corenames[c("country", "time", "vaccine")], drop = TRUE]), ]
   }
   return(X)
 }
@@ -270,8 +270,8 @@ survey_reduce <- function(X,
   X <- X[(!is.na(X[[attrs$sample]]) & X[[attrs$sample]] >= minSample) |
            (!is.na(X[[attrs$validity]]) & X[[attrs$validity]] == "valid"), ]
 
-  # create group x time x vaccine sets to process
-  xs <- split(X, X[, corenames[c("group", "time", "vaccine")]], drop = TRUE)
+  # create country x time x vaccine sets to process
+  xs <- split(X, X[, corenames[c("country", "time", "vaccine")]], drop = TRUE)
   xs <- lapply(xs, FUN = function(x){
     # x <- xs[[i]]
     if(nrow(x) == 1L){
@@ -299,12 +299,12 @@ survey_reduce <- function(X,
 #' #' Find survey groups
 #' mark_survey <- function(x){
 #'   if(!is.ic_data(x)){ stop("Please supply a valid 'ic' dataset.") }
-#'   vars <- get_attr(x, c("group", "survey", "time", "vaccine", "coverage", "sample"))
+#'   vars <- get_attr(x, c("country", "survey", "time", "vaccine", "coverage", "sample"))
 #'
 #'   x <- as.data.frame(x)
-#'   x$N <- ave(x[[vars["coverage"]]], x[, vars[c("group", "survey", "time")]], FUN = length)
+#'   x$N <- ave(x[[vars["coverage"]]], x[, vars[c("country", "survey", "time")]], FUN = length)
 #'
-#'   x <- x[do.call(order, x[, vars[c("group", "survey", "time")]]), ]
+#'   x <- x[do.call(order, x[, vars[c("country", "survey", "time")]]), ]
 #'
 #'   x <- within(x, n <- ave(get_attr(x, "coverage"),
 #'                           as.list(c(vars, get_attr(x, "evidence"))),

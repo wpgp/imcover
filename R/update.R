@@ -11,7 +11,7 @@
 #' @param survey Object of class \code{ic.svy} containing annual survey
 #'   estimates of coverage.
 #' @param dtpCheck Should dose 3 and dose 1 of DTP vaccines be compared for each
-#'   group and time? If dose 3 coverage exceeds dose 1, these records will
+#'   country and time? If dose 3 coverage exceeds dose 1, these records will
 #'   marked \code{NA}. Default is \code{TRUE}.
 #' @param limit Maximum acceptable difference between survey and administrative
 #'   coverage records. When the difference exceeds the limit, the survey
@@ -48,19 +48,19 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 1
 
   # check for duplicates
   if(sum(duplicated(admin[,
-                          a_attrs[c("group", "time", "vaccine")],
+                          a_attrs[c("country", "time", "vaccine")],
                           drop = TRUE])) > 0){
     stop("Duplicate records found in 'admin' dataset.")
   }
 
   if(sum(duplicated(official[,
-                             o_attrs[c("group", "time", "vaccine")],
+                             o_attrs[c("country", "time", "vaccine")],
                              drop = TRUE])) > 0){
     stop("Duplicate records found in 'official' dataset.")
   }
 
   if(sum(duplicated(survey[,
-                           s_attrs[c("group", "time", "vaccine")],
+                           s_attrs[c("country", "time", "vaccine")],
                            drop = TRUE])) > 0){
     stop("Duplicate records found in 'survey' dataset.")
   }
@@ -68,14 +68,14 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 1
   # combine admin - denom - official estimates
   names(denom) <- paste0(names(denom), ".d")
   X <- merge(admin, denom,
-             by.x = a_attrs[c("group", "time", "vaccine")],
-             by.y = paste0(d_attrs[c("group", "time", "vaccine")], ".d"),
+             by.x = a_attrs[c("country", "time", "vaccine")],
+             by.y = paste0(d_attrs[c("country", "time", "vaccine")], ".d"),
              all.x = TRUE, attr.x = TRUE)
 
   names(official) <- paste0(names(official), ".o")
   X <- merge(X, official,
-             by.x = a_attrs[c("group", "time", "vaccine")],
-             by.y = paste0(o_attrs[c("group", "time", "vaccine")], ".o"),
+             by.x = a_attrs[c("country", "time", "vaccine")],
+             by.y = paste0(o_attrs[c("country", "time", "vaccine")], ".o"),
              all.x = TRUE, attr.x = TRUE)
 
   # recalculate with new denominator
@@ -92,9 +92,9 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 1
   # how to handle NA values?
   if(dtpCheck){
     mdadj <- X[X[[a_attrs['vaccine']]] %in% c("DTP1", "DTP3"),
-               c(a_attrs[c("group", "time", "vaccine")], "off_adj"), drop = TRUE]
+               c(a_attrs[c("country", "time", "vaccine")], "off_adj"), drop = TRUE]
     i <- which(X[[a_attrs['vaccine']]] %in% c("DTP1", "DTP3"))
-    mdadj <- ave(mdadj$off_adj, mdadj[a_attrs[c("group", "time")]], FUN = max)
+    mdadj <- ave(mdadj$off_adj, mdadj[a_attrs[c("country", "time")]], FUN = max)
     X[i, "off_adj"] <- mdadj
   }
   # adjustment
@@ -108,8 +108,8 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 1
   # combine and compare with Survey records
   names(survey) <- paste0(names(survey), ".s")
   X <- merge(X, survey,
-             by.x = a_attrs[c("group", "time", "vaccine")],
-             by.y = paste0(s_attrs[c("group", "time", "vaccine")], ".s"),
+             by.x = a_attrs[c("country", "time", "vaccine")],
+             by.y = paste0(s_attrs[c("country", "time", "vaccine")], ".s"),
              all.x = TRUE, attr.x = TRUE)
 
   # calculate difference
@@ -121,9 +121,9 @@ ic_update <- function(admin, denom, official, survey, dtpCheck = TRUE, limit = 1
   # handle multi-dose comparisons
   if(dtpCheck){
     mdadj <- X[X[[a_attrs['vaccine']]] %in% c("DTP1", "DTP3"),
-               c(a_attrs[c("group", "time", "vaccine")], "surv_adj"), drop = TRUE]
+               c(a_attrs[c("country", "time", "vaccine")], "surv_adj"), drop = TRUE]
     i <- which(X[[a_attrs['vaccine']]] %in% c("DTP1", "DTP3"))
-    mdadj <- ave(mdadj$surv_adj, mdadj[a_attrs[c("group", "time")]], FUN = max)
+    mdadj <- ave(mdadj$surv_adj, mdadj[a_attrs[c("country", "time")]], FUN = max)
     X[i, "surv_adj"] <- mdadj
   }
   # adjustment
@@ -146,7 +146,7 @@ check_vd3 <- function(x){
   # set DTP3 coverage to NA when > dose 1 coverage
   x <- merge(x,
              x[x[[attrs["vaccine"]]] == "DTP1", ],
-             by = attrs[c("group", "time")],
+             by = attrs[c("country", "time")],
              all.x = TRUE, attr.x = TRUE, suffixes = c("", ".y"))
 
   x[[attrs["coverage"]]] <- ifelse(x[[attrs["vaccine"]]] == "DTP3" &
