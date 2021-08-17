@@ -7,6 +7,8 @@
 #' downloaded file is saved.
 #' @param url Optional. A character string naming the URL of the resource to
 #'   download. Default is the .xlsx from the WHO immunization data website.
+#' @param use_cache Logical. Look for an already downloaded file is the
+#'   \code{destfile} location? Default is \code{TRUE}.
 #' @param quiet Should status messages and progress bars be hidden? Default is
 #'   \code{FALSE}.
 #' @param attempts integer of the number of attempts to download the file.
@@ -26,7 +28,7 @@
 #' @seealso \code{\link[imcover]{ic_data}}
 #' @name download
 #' @export
-download_wuenic <- function(destfile, url,
+download_wuenic <- function(destfile, url, use_cache = TRUE,
                             quiet = FALSE, attempts = 3, mode = 'wb',
                             return_ic = FALSE, ...){
   if(missing(url)){
@@ -34,11 +36,15 @@ download_wuenic <- function(destfile, url,
   }
 
   if(missing(destfile)){
-    destfile <- tempfile(fileext = '.xlsx')
+    destfile <- file.path(tempdir(), 'wuenic.xlsx') # tempfile(fileext = '.xlsx')
   }
 
   tries <- 1
   retval <- 1
+
+  if(use_cache){
+    if(file.exists(destfile)) retval <- 0
+  }
 
   while(retval != 0L && tries <= attempts){
     retval <- download.file(url,
@@ -87,7 +93,7 @@ download_wuenic <- function(destfile, url,
 
 #' @name download
 #' @export
-download_coverage <- function(destfile, url,
+download_coverage <- function(destfile, url, use_cache = TRUE,
                               quiet = FALSE, attempts = 3, mode = 'wb',
                               return_ic = TRUE, ...){
   if(missing(url)){
@@ -95,11 +101,15 @@ download_coverage <- function(destfile, url,
   }
 
   if(missing(destfile)){
-    destfile <- tempfile(fileext = '.xlsx')
+    destfile <- file.path(tempdir(), 'coverage.xlsx')  # tempfile(fileext = '.xlsx')
   }
 
   tries <- 1
   retval <- 1
+
+  if(use_cache){
+    if(file.exists(destfile)) retval <- 0
+  }
 
   while(retval != 0L && tries <= attempts){
     retval <- download.file(url,
@@ -137,7 +147,7 @@ download_coverage <- function(destfile, url,
 
 #' @name download
 #' @export
-download_survey <- function(destfile, url,
+download_survey <- function(destfile, url, use_cache = TRUE,
                             quiet = FALSE, attempts = 3, mode = 'wb',
                             return_ic = TRUE,
                             ic_reduce = TRUE, ic_minSample = 300, ...){
@@ -147,11 +157,15 @@ download_survey <- function(destfile, url,
   }
 
   if(missing(destfile)){
-    destfile <- tempfile(fileext = '.xls')
+    destfile <- file.path(tempdir(), 'survey.xls')  # tempfile(fileext = '.xls')
   }
 
   tries <- 1
   retval <- 1
+
+  if(use_cache){
+    if(file.exists(destfile)) retval <- 0
+  }
 
   while(retval != 0L && tries <= attempts){
     retval <- download.file(url,
