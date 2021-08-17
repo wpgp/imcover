@@ -15,6 +15,10 @@
 #'   to write binary files.
 #' @param return_ic Should an object of type \code{ic.df} be returned? Default
 #'   is \code{TRUE}.
+#' @param ic_reduce For surveys only, should records with insufficient coverage
+#'   be dropped? Default is \code{TRUE}.
+#' @param ic_minSample For surveys only, what is the minimum sample size to keep
+#'   survey records? Default is 300.
 #' @param ... additional arguments to be passed on to \code{download.file}.
 #' @return The functions return a \code{data.frame} while
 #'   \code{download_coverage} and \code{downlaod_survey} return objects of type
@@ -56,8 +60,8 @@ download_wuenic <- function(destfile, url,
 #' @name download
 #' @export
 download_coverage <- function(destfile, url,
-                               quiet = FALSE, attempts = 3, mode = 'wb',
-                               return_ic = TRUE, ...){
+                              quiet = FALSE, attempts = 3, mode = 'wb',
+                              return_ic = TRUE, ...){
   if(missing(url)){
     url <- 'https://whowiise.blob.core.windows.net/upload/coverage--2020.xlsx'
   }
@@ -105,6 +109,51 @@ download_coverage <- function(destfile, url,
 
 #' @name download
 #' @export
-download_survey <- function(){
+download_survey <- function(destfile, url,
+                            quiet = FALSE, attempts = 3, mode = 'wb',
+                            return_ic = TRUE,
+                            ic_reduce = TRUE, ic_minSample = 300, ...){
 
+  if(missing(url)){
+    url <- 'https://immunizationdata.who.int/assets/additional-data/coverage_survey_data.xls'
+  }
+
+  if(missing(destfile)){
+    destfile <- tempfile(fileext = '.xls')
+  }
+
+  tries <- 1
+  retval <- 1
+
+  while(retval != 0L && tries <= attempts){
+    retval <- download.file(url,
+                            destfile,
+                            method = 'auto',
+                            quiet = quiet,
+                            mode = mode,
+                            ...)
+  }
+
+  if(retval != 0){
+    stop('Error downloading file.')
+  }
+
+  # data cleaning
+  dat <- data.frame(readxl::read_excel(destfile, skip = 1, sheet = 2))
+
+  # drop empty records
+  dat <- dat[!is.na(dat$coverage), ]
+  # add source
+  dat$source <- 'survey'
+  # add regional ID
+  dat$region <- get_region(dat$ISO3, type = 'm49')
+
+  if(return_ic){
+    dat <- ic_survey(dat, region = 'region', country = 'ISO3',
+                     time = 'cohortYear', vaccine = 'vaccine',
+                     coverage = 'coverage', source = 'source',
+                     reduce = ic_reduce, minSample = ic_minSample)
+  } else{
+    return(dat)
+  }
 }
