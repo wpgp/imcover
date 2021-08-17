@@ -27,7 +27,8 @@
 #' @name download
 #' @export
 download_wuenic <- function(destfile, url,
-                            quiet = FALSE, attempts = 3, mode = 'wb', ...){
+                            quiet = FALSE, attempts = 3, mode = 'wb',
+                            return_ic = FALSE, ...){
   if(missing(url)){
     url <- 'https://immunizationdata.who.int/assets/additional-data/wuenic_input_to_pdf.xlsx'
   }
@@ -52,7 +53,34 @@ download_wuenic <- function(destfile, url,
     strop('Error downloading file.')
   }
 
-  dat <- data.frame(readxl::read_excel(destfile, sheet = 2))
+  dat <- data.frame(readxl::read_excel(destfile, sheet = 2, na = c("", "NA")))
+
+  if(return_ic){
+    admin <- dat[, c("ISOCountryCode", "Year", "Vaccine", "AdministrativeCoverage")]
+    admin$ISOCountryCode <- toupper(admin$ISOCountryCode)
+    names(admin)[4] <- 'coverage'
+    admin$source <- "admin"
+    admin$region <- get_region(admin$ISOCountryCode, type = 'm49')
+
+    offic <- dat[, c("ISOCountryCode", "Year", "Vaccine", "GovernmentEstimate")]
+    offic$ISOCountryCode <- toupper(offic$ISOCountryCode)
+    names(offic)[4] <- 'coverage'
+    offic$source <- "official"
+    offic$region <- get_region(offic$ISOCountryCode, type = 'm49')
+
+    dat <- rbind(admin, offic)
+    # drop missing
+    dat <- dat[!is.na(dat$coverage), ]
+
+    dat <- ic_data(dat,
+                   region = 'region',
+                   country = 'ISOCountryCode',
+                   time = 'Year',
+                   vaccine = 'Vaccine',
+                   coverage = 'coverage',
+                   source = 'source')
+  }
+
   return(dat)
 }
 
