@@ -23,12 +23,21 @@ rbind.ic.df <- function(..., fill = TRUE, deparse.level = 1){
   attrs <- get_attr(dots[[1L]], ic_core())
   dots <- lapply(dots, function(i){
     i_attr <- get_attr(i, ic_core())
-    miss_nms <- names(which(attrs != i_attr))
+    # miss_nms <- names(which(attrs != i_attr))
+    #
+    # for(n in miss_nms){
+    #   names(i)[names(i) == i_attr[[n]]] <- attrs[[n]]
+    #   attr(i, n) <- attrs[[n]]
+    # }
 
-    for(n in miss_nms){
+    match_attr <- intersect(names(attrs), names(i_attr))
+    tofix <- which(!get_attr(i, match_attr) %in% attrs[match_attr])
+
+    for(n in match_attr[tofix]){
       names(i)[names(i) == i_attr[[n]]] <- attrs[[n]]
       attr(i, n) <- attrs[[n]]
     }
+
     return(i)
   })
 
