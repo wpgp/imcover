@@ -17,12 +17,12 @@
 #'   requires some core data elements are present:
 #' \itemize{
 #'   \item{'region'}{ Larger grouping. Used to apply separate models.}
-#'   \item{'country'}{ Aggregate grouping for data records (e.g. country). Country
-#'   can be defined by more than column for a nested hierarchy of units (largest
-#'   to finest grouping). Default name is 'code' referring to an ISO3 code.}
+#'   \item{'country'}{ Aggregate grouping for data records, e.g. country. Country
+#'   can be defined by more than column for a nested hierarchy of units, largest
+#'   to finest grouping. Default name is 'code' referring to an ISO3 code.}
 #'   \item{'time'}{ Defines the time period of immunisation records, typically
 #'   an integer year. Default name is 'year'.}
-#'   \item{'vaccine'}{ Code to identify the vaccine records (e.g. 'DTP1').
+#'   \item{'vaccine'}{ Code to identify the vaccine records, e.g. 'DTP1'.
 #'   Default name is 'antigen'.}
 #'   \item{'coverage'}{ Pre-calculated coverage percentage. Default name is
 #'   'coverage'.}
@@ -38,8 +38,6 @@
 #'   \item{'population'}{ Total target population for the vaccine. Default name
 #'   is 'target_number.}
 #' }
-#'
-#' @return An object of type \code{ic.df}.
 #'
 #' @seealso \code{\link[imcover]{ic_expand}}, \code{ic_validate}
 #' @name ic_data
@@ -242,22 +240,6 @@ is.ic_data <- function(object){
 
   return(x)
 }
-
-
-#' #' @export
-#' "[<-.ic.df" <- function(x, i, j, value){
-#'   attrs <- get_attr(x, ic_core(), unlist = F)
-#'   class(x) <- setdiff(class(x), "ic.df")
-#'
-#'   if(!(i %in% unlist(attrs) && is.null(value))){
-#'     x <- structure(NextMethod(),
-#'                    class = c("ic.df", setdiff(class(x), "ic.df")))
-#'   } else{
-#'     stop("Cannot drop core 'ic' data columns.", call. = FALSE, )
-#'   }
-#'
-#'   return(x)
-#' }
 
 
 #' @export
