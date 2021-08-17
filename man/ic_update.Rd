@@ -20,7 +20,7 @@ estimates of coverage.}
 estimates of coverage.}
 
 \item{dtpCheck}{Should dose 3 and dose 1 of DTP vaccines be compared for each
-group and time? If dose 3 coverage exceeds dose 1, these records will
+country and time? If dose 3 coverage exceeds dose 1, these records will
 marked \code{NA}. Default is \code{TRUE}.}
 
 \item{limit}{Maximum acceptable difference between survey and administrative

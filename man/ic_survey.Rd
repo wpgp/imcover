@@ -2,7 +2,6 @@
 % Please edit documentation in R/survey.R
 \name{ic_survey}
 \alias{ic_survey}
-\alias{ic_survey.ic.svy}
 \alias{ic_survey.ic.df}
 \alias{ic_survey.data.frame}
 \title{Create an ic data object}
@@ -10,73 +9,48 @@
 ic_survey(
   X,
   ...,
-  dropCols = FALSE,
-  survey = "survey_name",
-  sample = "sample_size",
+  survey = "surveyNameEnglish",
+  sample = "Sample_Size",
   evidence = "evidence",
   validity = "validity",
   reduce = TRUE,
-  minSample = 300,
-  expand = TRUE,
-  min = 1999,
-  max,
-  na.remove = TRUE,
-  biasAdjust = TRUE,
-  adjVacc = c("DTP", "PCV")
-)
-
-\method{ic_survey}{ic.svy}(
-  X,
-  ...,
-  dropCols = FALSE,
-  survey = "survey_name",
-  sample = "sample_size",
-  evidence = "evidence",
-  validity = "validity",
-  reduce = TRUE,
-  minSample = 300,
-  expand = TRUE,
-  min = 1999,
-  max,
-  na.remove = TRUE,
-  biasAdjust = TRUE,
-  adjVacc = c("DTP", "PCV")
+  minSample = 300
 )
 
 \method{ic_survey}{ic.df}(
   X,
   ...,
   dropCols = FALSE,
-  survey = "survey_name",
-  sample = "sample_size",
+  survey = "surveyNameEnglish",
+  sample = "Sample_Size",
   evidence = "evidence",
   validity = "validity",
   reduce = TRUE,
-  minSample = 300,
-  expand = TRUE,
-  min = 1999,
-  max,
-  na.remove = TRUE,
-  biasAdjust = TRUE,
-  adjVacc = c("DTP", "PCV")
+  minSample = 300
+)
+
+\method{ic_survey}{ic.df}(
+  X,
+  ...,
+  dropCols = FALSE,
+  survey = "surveyNameEnglish",
+  sample = "Sample_Size",
+  evidence = "evidence",
+  validity = "validity",
+  reduce = TRUE,
+  minSample = 300
 )
 
 \method{ic_survey}{data.frame}(
   X,
   ...,
   dropCols = FALSE,
-  survey = "survey_name",
-  sample = "sample_size",
+  survey = "surveyNameEnglish",
+  sample = "Sample_Size",
   evidence = "evidence",
   validity = "validity",
   reduce = TRUE,
-  minSample = 300,
-  expand = TRUE,
-  min = 1999,
-  max,
-  na.remove = TRUE,
-  biasAdjust = TRUE,
-  adjVacc = c("DTP", "PCV")
+  minSample = 300
 )
 }
 \arguments{
@@ -87,24 +61,18 @@ ic object.}
 to \code{ic_data}. See details and \code{ic_data}.}
 
 \item{survey, sample, evidence, validity}{Character of the name within \code{X}
-which defines the core value for ic survey data.}
+which defines the core values for ic survey data.}
 
-\item{reduce}{Should group-vaccine combinations which have no coverage data
-be removed? Default is \code{TRUE}.}
+\item{reduce}{Should country-vaccine combinations which have insufficient
+coverage data be removed? Default is \code{TRUE}.}
 
-\item{minSample}{Numeric. Minimum reported sample size. Default is 300.}
-
-\item{expand}{Should additional empty rows be added to expand the ic data to
-all possible group x vaccine x time observation? Default is \code{FALSE}.}
-
-\item{min}{Start of the potential time period. Default is 1999.}
-
-\item{max}{End of the potential time period.}
+\item{minSample}{Numeric. Minimum reported sample size needed to keep
+coverage records. Default is 300.}
 }
 \value{
-An object of class \code{ic.svy} which extends \code{ic.df} and
-\code{data.frame}-like objects with attributes to location and preserve
-core data elements for immunisation coverage.
+An object of class \code{ic.df} which extends \code{data.frame}-like
+objects with attributes to location and preserve core data elements for
+immunisation coverage.
 }
 \description{
 Create an ic data object from survey data on immunisation

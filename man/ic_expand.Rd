@@ -13,7 +13,7 @@ ic_expand(X, min = 1999, max, na.remove = TRUE)
 
 \item{max}{End of the potential time period.}
 
-\item{na.remove}{Should group-vaccine combinations which have no coverage
+\item{na.remove}{Should country-vaccine combinations which have no coverage
 data be removed? Default is \code{TRUE}}
 }
 \value{

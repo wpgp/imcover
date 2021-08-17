@@ -8,62 +8,56 @@
 \usage{
 ic_data(
   X,
-  group = "iso3countrycode",
+  region = "region",
+  country = "code",
   time = "year",
-  vaccine = "vaccine_name",
-  coverage = "percentcoverage",
-  dose = "dosesadministered",
-  population = "targetgroup",
+  vaccine = "antigen",
+  coverage = "coverage",
+  source = "coverage_category",
+  dose = "doses",
+  population = "target_number",
   dropCols = FALSE,
-  expand = FALSE,
-  validate = FALSE,
   ...
 )
 
 \method{ic_data}{ic.df}(
   X,
-  group = "iso3countrycode",
+  region = "region",
+  country = "code",
   time = "year",
-  vaccine = "vaccine_name",
-  coverage = "percentcoverage",
-  dose = "dosesadministered",
-  population = "targetgroup",
+  vaccine = "antigen",
+  coverage = "coverage",
+  source = "coverage_category",
+  dose = "doses",
+  population = "target_number",
   dropCols = FALSE,
-  expand = FALSE,
-  validate = FALSE,
   ...
 )
 
 \method{ic_data}{data.frame}(
   X,
-  group = "iso3countrycode",
+  region = "region",
+  country = "code",
   time = "year",
-  vaccine = "vaccine_name",
-  coverage = "percentcoverage",
-  dose = "dosesadministered",
-  population = "targetgroup",
+  vaccine = "antigen",
+  coverage = "coverage",
+  source = "coverage_category",
+  dose = "doses",
+  population = "target_number",
   dropCols = FALSE,
-  expand = FALSE,
-  validate = FALSE,
   ...
 )
 }
 \arguments{
 \item{X}{An \code{R} object to process and convert to ic data.}
 
-\item{group, time, vaccine, coverage, dose, population}{Character of the name
-within \code{X} which defines the core value for ic data.}
+\item{region, country, time, vaccine, coverage, dose, population}{Character of the
+name within \code{X} which defines the core value for ic data.}
 
 \item{dropCols}{Should other columns in \code{X} be dropped if they are not
 core attributes? Default is \code{FALSE} to retain all data from \code{X}.}
 
-\item{expand}{Should additional empty rows be added to expand the ic data to
-all possible group x vaccine x time observation? Default is \code{FALSE}.}
-
-\item{validate}{Should basic ic data checking be performed? Default is
-\code{FALSE}.}
-
-\item{...}{Additional arguments to pass to \code{ic_expand}.}
+\item{...}{Additional arguments. Not currently used.}
 }
 \value{
 An object of class \code{ic.df} which extends \code{data.frame}-like
@@ -79,24 +73,27 @@ defining consistent attributes for required data elements.
 processed dataset for immunisation coverage modelling. In particular it
 requires some core data elements are present:
 \itemize{
-\item{'group'}{ Aggregate grouping for data records (e.g. country). Group
-can be defined by more than column for a nested hierarchy of units (largest
-to finest grouping). Default name is 'iso3countrycode'.}
-\item{'time'}{ Defines the time period of immunisation records, typically an
-integer year. Default name is 'year'.}
-\item{'vaccine'}{ Code to identify the vaccine records (e.g. 'DTP1').
-Default name is 'vaccine_name'.}
+\item{'region'}{ Larger grouping. Used to apply separate models.}
+\item{'country'}{ Aggregate grouping for data records, e.g. country. Country
+can be defined by more than column for a nested hierarchy of units, largest
+to finest grouping. Default name is 'code' referring to an ISO3 code.}
+\item{'time'}{ Defines the time period of immunisation records, typically
+an integer year. Default name is 'year'.}
+\item{'vaccine'}{ Code to identify the vaccine records, e.g. 'DTP1'.
+Default name is 'antigen'.}
 \item{'coverage'}{ Pre-calculated coverage percentage. Default name is
-'percentcoverage'.}
+'coverage'.}
+\item{'source'}{ Character identifying the source of the data. Default is
+'coverage_category'.}
 }
 If 'coverage' is not included, then two other elements are required to be
 specified in order for percent coverage to be calculated. Else, these are
 optional elements for ic data.
 \itemize{
 \item{'dose'}{ Number of vaccine doses administered. Default name is
-'dosesadministered'.}
+'doses'.}
 \item{'population'}{ Total target population for the vaccine. Default name
-is 'targetgroup'.}
+is 'target_number.}
 }
 }
 \seealso{

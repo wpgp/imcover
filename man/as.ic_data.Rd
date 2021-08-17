@@ -14,15 +14,18 @@ is.ic_data(object)
 
 \item{object}{Any \code{R} object.}
 }
+\value{
+An object of type \code{ic.df}.
+}
 \description{
 Functions to check if an object is an ic data object, or coerce
 it to one if possible.
 }
 \details{
 Core \code{ic.df} data elements are expected. Specifically, data for
-'group', 'time', 'vaccine', (optionally 'dose', 'population'), and
-'coverage' are required in this order. The names of these elements from
-\code{...} are passed to \code{ic_data}.
+'region', 'country', 'time', 'vaccine', 'coverage', and 'source' (optionally
+'dose', 'population') are required in this order. The names of these
+elements from \code{...} are passed to \code{ic_data}.
 }
 \seealso{
 \code{ic_data}
