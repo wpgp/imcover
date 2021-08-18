@@ -2,21 +2,24 @@
 % Please edit documentation in R/adjust.R
 \name{ic_adjust}
 \alias{ic_adjust}
+\alias{ic_ratio}
 \title{Adjust 'ic' coverage data}
 \usage{
 ic_adjust(
   X,
-  ratioAdj = TRUE,
+  ratio_adj = FALSE,
   numerator = "DTP3",
   denominator = "DTP1",
-  coverageAdj = TRUE
+  coverage_adj = TRUE
 )
+
+ic_ratio(X, numerator = "DTP3", denominator = "DTP1")
 }
 \arguments{
 \item{X}{Object of class \code{ic.df} to adjust}
 
-\item{ratioAdj}{Logical. Should multi-dose vaccine coverages be adjusted by
-their ratio when coverage > 100\%? Default is \code{TRUE}.}
+\item{ratio_adj}{Logical. Should multi-dose vaccine coverages be adjusted by
+their ratio when coverage > 100\%? Default is \code{FALSE}.}
 
 \item{numerator}{Character vector of vaccine identifiers (with dose numbers)
 to calculate the ratio adjustment. Default is 'DTP3'.}
@@ -24,7 +27,7 @@ to calculate the ratio adjustment. Default is 'DTP3'.}
 \item{denominator}{Character vector of vaccine identifiers (with dose
 numbers) to calculate the ratio adjustment. Default is 'DTP1'.}
 
-\item{coverageAdj}{Logical. Should coverage percentage be changed to be >0\%
+\item{coverage_adj}{Logical. Should coverage percentage be changed to be >0\%
 and <100\%? Default is \code{TRUE}.}
 }
 \description{

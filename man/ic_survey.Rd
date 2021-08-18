@@ -9,6 +9,7 @@
 ic_survey(
   X,
   ...,
+  drop_cols = FALSE,
   survey = "surveyNameEnglish",
   sample = "Sample_Size",
   evidence = "evidence",
@@ -20,7 +21,7 @@ ic_survey(
 \method{ic_survey}{ic.df}(
   X,
   ...,
-  dropCols = FALSE,
+  drop_cols = FALSE,
   survey = "surveyNameEnglish",
   sample = "Sample_Size",
   evidence = "evidence",
@@ -32,7 +33,7 @@ ic_survey(
 \method{ic_survey}{ic.df}(
   X,
   ...,
-  dropCols = FALSE,
+  drop_cols = FALSE,
   survey = "surveyNameEnglish",
   sample = "Sample_Size",
   evidence = "evidence",
@@ -44,7 +45,7 @@ ic_survey(
 \method{ic_survey}{data.frame}(
   X,
   ...,
-  dropCols = FALSE,
+  drop_cols = FALSE,
   survey = "surveyNameEnglish",
   sample = "Sample_Size",
   evidence = "evidence",
@@ -59,6 +60,9 @@ ic object.}
 
 \item{...}{Additional parameters for names of core data elements to pass on
 to \code{ic_data}. See details and \code{ic_data}.}
+
+\item{drop_cols}{Should other columns in \code{X} be dropped if they are not
+core attributes? Default is \code{FALSE} to retain all data from \code{X}.}
 
 \item{survey, sample, evidence, validity}{Character of the name within \code{X}
 which defines the core values for ic survey data.}

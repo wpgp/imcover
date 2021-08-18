@@ -16,7 +16,7 @@ ic_data(
   source = "coverage_category",
   dose = "doses",
   population = "target_number",
-  dropCols = FALSE,
+  drop_cols = FALSE,
   ...
 )
 
@@ -30,7 +30,7 @@ ic_data(
   source = "coverage_category",
   dose = "doses",
   population = "target_number",
-  dropCols = FALSE,
+  drop_cols = FALSE,
   ...
 )
 
@@ -44,7 +44,7 @@ ic_data(
   source = "coverage_category",
   dose = "doses",
   population = "target_number",
-  dropCols = FALSE,
+  drop_cols = FALSE,
   ...
 )
 }
@@ -54,7 +54,7 @@ ic_data(
 \item{region, country, time, vaccine, coverage, dose, population}{Character of the
 name within \code{X} which defines the core value for ic data.}
 
-\item{dropCols}{Should other columns in \code{X} be dropped if they are not
+\item{drop_cols}{Should other columns in \code{X} be dropped if they are not
 core attributes? Default is \code{FALSE} to retain all data from \code{X}.}
 
 \item{...}{Additional arguments. Not currently used.}
