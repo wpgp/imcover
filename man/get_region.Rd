@@ -12,7 +12,7 @@ get_region(country = NULL, type = "who")
 which returns all regions in the dataset.}
 
 \item{type}{The type of region grouping to return. The default \code{'who'}
-returns World Health Organisation codes. The other option is 'M49' for UN
+returns World Health Organisation codes. The other option is 'm49' for UN
 Stats Division region groupings.}
 }
 \value{

@@ -5,29 +5,54 @@
 \alias{download_wuenic}
 \alias{download_coverage}
 \alias{download_survey}
+\alias{download_denom}
 \title{Download WUENIC data files}
 \usage{
-download_wuenic(destfile, url, quiet = FALSE, attempts = 3, mode = "wb", ...)
+download_wuenic(
+  destfile,
+  url,
+  use_cache = TRUE,
+  quiet = FALSE,
+  attempts = 3,
+  mode = "wb",
+  return_ic = FALSE,
+  add_region = "who",
+  ...
+)
 
 download_coverage(
   destfile,
   url,
+  use_cache = TRUE,
   quiet = FALSE,
   attempts = 3,
   mode = "wb",
   return_ic = TRUE,
+  add_region = "who",
   ...
 )
 
 download_survey(
   destfile,
   url,
+  use_cache = TRUE,
   quiet = FALSE,
   attempts = 3,
   mode = "wb",
   return_ic = TRUE,
   ic_reduce = TRUE,
   ic_minSample = 300,
+  add_region = "who",
+  ...
+)
+
+download_denom(
+  destfile,
+  url,
+  use_cache = TRUE,
+  quiet = FALSE,
+  attempts = 3,
+  mode = "wb",
   ...
 )
 }
@@ -38,6 +63,9 @@ downloaded file is saved.}
 \item{url}{Optional. A character string naming the URL of the resource to
 download. Default is the .xlsx from the WHO immunization data website.}
 
+\item{use_cache}{Logical. Look for an already downloaded file is the
+\code{destfile} location? Default is \code{TRUE}.}
+
 \item{quiet}{Should status messages and progress bars be hidden? Default is
 \code{FALSE}.}
 
@@ -47,10 +75,13 @@ Default is 3.}
 \item{mode}{a character string specifying the write mode. 'wb' is most common
 to write binary files.}
 
-\item{...}{additional arguments to be passed on to \code{download.file}.}
-
 \item{return_ic}{Should an object of type \code{ic.df} be returned? Default
 is \code{TRUE}.}
+
+\item{add_region}{Optional. Character string for the type of region code to
+add based on the ISO3 code of the country. Options are: 'who' or 'm49'.}
+
+\item{...}{additional arguments to be passed on to \code{download.file}.}
 
 \item{ic_reduce}{For surveys only, should records with insufficient coverage
 be dropped? Default is \code{TRUE}.}
