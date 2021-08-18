@@ -75,7 +75,7 @@ download_wuenic <- function(destfile, url, use_cache = TRUE,
     names(offic)[4] <- 'coverage'
     offic$source <- "official"
 
-    if(!missing(add_region)){
+    if(!is.null(add_region)){
       stopifnot(length(add_region) == 1L && add_region %in% c('who', 'm49'))
       admin$region <- get_region(admin$ISOCountryCode, type = add_region)
       offic$region <- get_region(offic$ISOCountryCode, type = add_region)
@@ -142,7 +142,7 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
   # drop empty records
   dat <- dat[!is.na(dat$coverage) | (!is.na(dat$target_number) & !is.na(dat$doses)), ]
   # add regional ID
-  if(!missing(add_region)){
+  if(!is.null(add_region)){
     stopifnot(length(add_region) == 1L && add_region %in% c('who', 'm49'))
     dat$region <- get_region(dat$code, type = add_region)
   }
@@ -200,9 +200,9 @@ download_survey <- function(destfile, url, use_cache = TRUE,
   # add source
   dat$source <- 'survey'
   # add regional ID
-  if(!missing(add_region)){
+  if(!is.null(add_region)){
     stopifnot(length(add_region) == 1L && add_region %in% c('who', 'm49'))
-    dat$region <- get_region(dat$code, type = add_region)
+    dat$region <- get_region(dat$ISO3, type = add_region)
   }
 
   if(return_ic){
