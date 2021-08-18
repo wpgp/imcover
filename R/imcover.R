@@ -9,8 +9,8 @@
 #' @import Rcpp
 #' @import methods
 #' @importFrom rstan sampling
-#' @useDynLib imcover .registration = TRUE
+#' @useDynLib imcover, .registration = TRUE
 #'
 #' @docType package
-#' @name imcover
+#' @name imcover-package
 NULL
