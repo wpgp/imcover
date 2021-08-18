@@ -2,12 +2,13 @@
 #' Multi-source immunisation coverage model with Stan
 #'
 #' @param X Object of \code{ic.df} for analysis
+#' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
 #' @name multi_lik_stan
 #' @export
-multi_lik_stan <- function(X, ...) {
+multi_lik_stan <- function(X, verbose = TRUE, ...) {
   if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
 
   # check if a ratio adjust was performed
@@ -22,6 +23,7 @@ multi_lik_stan <- function(X, ...) {
 
   # main processing loop
   out <- lapply(regions, function(r){
+    if(verbose) print(r)
     # subset
     dat <- X[X[[get_attr(X, 'region')]] == r, ]
 
@@ -29,7 +31,8 @@ multi_lik_stan <- function(X, ...) {
     vax_data <- ic_to_stan(dat, make_index = TRUE)
 
     fit <- rstan::sampling(stanmodels$multi_lik,
-                           data = vax_data
+                           data = vax_data,
+                           show_messages = verbose,
                            ...)
     return(fit)
   })
