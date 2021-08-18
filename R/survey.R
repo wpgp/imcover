@@ -8,6 +8,8 @@
 #'   to \code{ic_data}. See details and \code{ic_data}.
 #' @param survey,sample,evidence,validity Character of the name within \code{X}
 #'   which defines the core values for ic survey data.
+#' @param drop_cols Should other columns in \code{X} be dropped if they are not
+#'   core attributes? Default is \code{FALSE} to retain all data from \code{X}.
 #' @param reduce Should country-vaccine combinations which have insufficient
 #'   coverage data be removed? Default is \code{TRUE}.
 #' @param minSample Numeric. Minimum reported sample size needed to keep
@@ -25,7 +27,7 @@
 #' @seealso \code{\link[imcover]{ic_data}}
 #' @name ic_survey
 #' @export
-ic_survey <- function(X, ...,
+ic_survey <- function(X, ..., drop_cols = FALSE,
                       survey = "surveyNameEnglish", sample = "Sample_Size",
                       evidence = "evidence", validity = "validity",
                       reduce = TRUE, minSample = 300){
@@ -35,7 +37,7 @@ ic_survey <- function(X, ...,
 
 #' @name ic_survey
 #' @export
-ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
+ic_survey.ic.df <- function(X, ..., drop_cols = FALSE,
                             survey = "surveyNameEnglish", sample = "Sample_Size",
                             evidence = "evidence", validity = "validity",
                             reduce = TRUE, minSample = 300){
@@ -45,12 +47,12 @@ ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
 
 #' @name ic_survey
 #' @export
-ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
+ic_survey.ic.df <- function(X, ..., drop_cols = FALSE,
                             survey = "surveyNameEnglish", sample = "Sample_Size",
                             evidence = "evidence", validity = "validity",
                             reduce = TRUE, minSample = 300){
 
-  X <- make_ic_svy(X, dropCols, survey, sample, evidence, validity,
+  X <- make_ic_svy(X, drop_cols, survey, sample, evidence, validity,
                    reduce, minSample)
 
   return(X)
@@ -59,7 +61,7 @@ ic_survey.ic.df <- function(X, ..., dropCols = FALSE,
 
 #' @name ic_survey
 #' @export
-ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
+ic_survey.data.frame <- function(X, ..., drop_cols = FALSE,
                                  survey = "surveyNameEnglish",
                                  sample = "Sample_Size",
                                  evidence = "evidence", validity = "validity",
@@ -67,19 +69,19 @@ ic_survey.data.frame <- function(X, ..., dropCols = FALSE,
   if(missing(X)){
     stop("Please supply a valid dataset.")
   } else{
-    X <- ic_data(X, ..., dropCols = FALSE, expand = FALSE, validate = FALSE)
+    X <- ic_data(X, ..., drop_cols = FALSE, expand = FALSE, validate = FALSE)
   }
   stopifnot(is.ic_data(X))
 
   # call internal maker function
-  X <- make_ic_svy(X, dropCols, survey, sample, evidence, validity,
+  X <- make_ic_svy(X, drop_cols, survey, sample, evidence, validity,
                    reduce, minSample)
 
   return(X)
 }
 
 
-make_ic_svy <- function(X, dropCols, survey, sample, evidence, validity,
+make_ic_svy <- function(X, drop_cols, survey, sample, evidence, validity,
                         reduce, minSample){
 
   # check/confirm additional cols present
@@ -107,7 +109,7 @@ make_ic_svy <- function(X, dropCols, survey, sample, evidence, validity,
     X <- survey_reduce(X, minSample)
   }
 
-  if(dropCols){
+  if(drop_cols){
     X <- X[, names(X) %in% get_attr(X, ic_core(survey = TRUE))]
   }
 

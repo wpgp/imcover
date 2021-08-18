@@ -6,7 +6,7 @@
 #' @param X An \code{R} object to process and convert to ic data.
 #' @param region,country,time,vaccine,coverage,dose,population Character of the
 #'   name within \code{X} which defines the core value for ic data.
-#' @param dropCols Should other columns in \code{X} be dropped if they are not
+#' @param drop_cols Should other columns in \code{X} be dropped if they are not
 #'   core attributes? Default is \code{FALSE} to retain all data from \code{X}.
 #' @param ... Additional arguments. Not currently used.
 #' @return An object of class \code{ic.df} which extends \code{data.frame}-like
@@ -45,7 +45,7 @@
 ic_data <- function(X, region = 'region', country = 'code', time = 'year',
                     vaccine = 'antigen', coverage = 'coverage',
                     source = 'coverage_category', dose = 'doses',
-                    population = 'target_number', dropCols = FALSE, ...){
+                    population = 'target_number', drop_cols = FALSE, ...){
   UseMethod("ic_data")
 }
 
@@ -55,7 +55,7 @@ ic_data <- function(X, region = 'region', country = 'code', time = 'year',
 ic_data.ic.df <- function(X, region = 'region', country = 'code', time = 'year',
                           vaccine = 'antigen', coverage = 'coverage',
                           source = 'coverage_category', dose = 'doses',
-                          population = 'target_number', dropCols = FALSE, ...){
+                          population = 'target_number', drop_cols = FALSE, ...){
   X
 }
 
@@ -65,7 +65,7 @@ ic_data.ic.df <- function(X, region = 'region', country = 'code', time = 'year',
 ic_data.data.frame <- function(X, region = 'region', country = 'code', time = 'year',
                                vaccine = 'antigen', coverage = 'coverage',
                                source = 'coverage_category', dose = 'doses',
-                               population = 'target_number', dropCols = FALSE, ...){
+                               population = 'target_number', drop_cols = FALSE, ...){
 
   # check data types
   if(missing(X)){
@@ -106,7 +106,7 @@ ic_data.data.frame <- function(X, region = 'region', country = 'code', time = 'y
   if(!population %in% names(X)){ population <- NULL }
 
   keepnames <- c(varnames, dose, population, coverage)
-  if(dropCols){
+  if(drop_cols){
     X <- X[, keepnames]
   } else{
     othernames <- names(X)[!names(X) %in% keepnames]

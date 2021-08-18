@@ -4,13 +4,13 @@
 #' Make adjustments to vaccination coverage to ensure reported coverages
 #' preserve the ratio of multi-dose vaccines and that coverage is >0% and <100%.
 #' @param X Object of class \code{ic.df} to adjust
-#' @param ratioAdj Logical. Should multi-dose vaccine coverages be adjusted by
+#' @param ratio_adj Logical. Should multi-dose vaccine coverages be adjusted by
 #'   their ratio when coverage > 100%? Default is \code{TRUE}.
 #' @param numerator Character vector of vaccine identifiers (with dose numbers)
 #'   to calculate the ratio adjustment. Default is 'DTP3'.
 #' @param denominator Character vector of vaccine identifiers (with dose
 #'   numbers) to calculate the ratio adjustment. Default is 'DTP1'.
-#' @param coverageAdj Logical. Should coverage percentage be changed to be >0%
+#' @param coverage_adj Logical. Should coverage percentage be changed to be >0%
 #'   and <100%? Default is \code{TRUE}.
 #' @details This function provides minimal adjustments to immunisation data to
 #'   ensure that the coverages are suitable for statistical modelling. Ratio
@@ -23,9 +23,9 @@
 #' @seealso \code{\link[imcover]{ic_data}}
 #' @name ic_adjust
 #' @export
-ic_adjust <- function(X, ratioAdj = TRUE,
+ic_adjust <- function(X, ratio_adj = TRUE,
                       numerator = 'DTP3', denominator = 'DTP1',
-                      coverageAdj = TRUE){
+                      coverage_adj = TRUE){
   if(missing(X) || !inherits(X, 'ic.df')){
     stop('Please provide valid `ic` data')
   }
@@ -38,7 +38,7 @@ ic_adjust <- function(X, ratioAdj = TRUE,
     stop('Length of numerator and denominator for ratio adjustment do not match.')
   }
 
-  if(ratioAdj){
+  if(ratio_adj){
     for(i in 1:length(numerator)){
       num <- as.data.frame(X[X[[attr(X, 'vaccine')]] == numerator[[i]], ])
       den <- as.data.frame(X[X[[attr(X, 'vaccine')]] == denominator[[i]], ])
@@ -81,7 +81,7 @@ ic_adjust <- function(X, ratioAdj = TRUE,
     }
   }
 
-  if(coverageAdj){
+  if(coverage_adj){
     X[[attr(X, 'coverage')]] <- ifelse(X[[attr(X, 'coverage')]] >= 100,
                                        99.9,
                                        X[[attr(X, 'coverage')]])
