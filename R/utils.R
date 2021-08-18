@@ -135,7 +135,7 @@ filter_yovi <- function(X,
 #' @param country Vector of country ISO3 codes as characters. Default is \code{NULL}
 #'   which returns all regions in the dataset.
 #' @param type The type of region grouping to return. The default \code{'who'}
-#'   returns World Health Organisation codes. The other option is 'M49' for UN
+#'   returns World Health Organisation codes. The other option is 'm49' for UN
 #'   Stats Division region groupings.
 #' @details Data source of M49 regions:
 #'   \link{https://unstats.un.org/unsd/methodology/m49/overview/}

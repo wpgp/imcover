@@ -21,6 +21,8 @@
 #'   be dropped? Default is \code{TRUE}.
 #' @param ic_minSample For surveys only, what is the minimum sample size to keep
 #'   survey records? Default is 300.
+#' @param add_region Optional. Character string for the type of region code to
+#'   add based on the ISO3 code of the country. Options are: 'who' or 'm49'.
 #' @param ... additional arguments to be passed on to \code{download.file}.
 #' @return The functions return a \code{data.frame} while
 #'   \code{download_coverage} and \code{downlaod_survey} return objects of type
@@ -30,7 +32,8 @@
 #' @export
 download_wuenic <- function(destfile, url, use_cache = TRUE,
                             quiet = FALSE, attempts = 3, mode = 'wb',
-                            return_ic = FALSE, ...){
+                            return_ic = FALSE,
+                            add_region = 'who', ...){
   if(missing(url)){
     url <- 'https://immunizationdata.who.int/assets/additional-data/wuenic_input_to_pdf.xlsx'
   }
@@ -66,13 +69,17 @@ download_wuenic <- function(destfile, url, use_cache = TRUE,
     admin$ISOCountryCode <- toupper(admin$ISOCountryCode)
     names(admin)[4] <- 'coverage'
     admin$source <- "admin"
-    admin$region <- get_region(admin$ISOCountryCode, type = 'm49')
 
     offic <- dat[, c("ISOCountryCode", "Year", "Vaccine", "GovernmentEstimate")]
     offic$ISOCountryCode <- toupper(offic$ISOCountryCode)
     names(offic)[4] <- 'coverage'
     offic$source <- "official"
-    offic$region <- get_region(offic$ISOCountryCode, type = 'm49')
+
+    if(!missing(add_region)){
+      stopifnot(length(add_region) == 1L && add_region %in% c('who', 'm49'))
+      admin$region <- get_region(admin$ISOCountryCode, type = add_region)
+      offic$region <- get_region(offic$ISOCountryCode, type = add_region)
+    }
 
     dat <- rbind(admin, offic)
     # drop missing
@@ -95,7 +102,8 @@ download_wuenic <- function(destfile, url, use_cache = TRUE,
 #' @export
 download_coverage <- function(destfile, url, use_cache = TRUE,
                               quiet = FALSE, attempts = 3, mode = 'wb',
-                              return_ic = TRUE, ...){
+                              return_ic = TRUE,
+                              add_region = 'who', ...){
   if(missing(url)){
     url <- 'https://whowiise.blob.core.windows.net/upload/coverage--2020.xlsx'
   }
@@ -134,7 +142,10 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
   # drop empty records
   dat <- dat[!is.na(dat$coverage) | (!is.na(dat$target_number) & !is.na(dat$doses)), ]
   # add regional ID
-  dat$region <- get_region(dat$code, type = 'm49')
+  if(!missing(add_region)){
+    stopifnot(length(add_region) == 1L && add_region %in% c('who', 'm49'))
+    dat$region <- get_region(dat$code, type = add_region)
+  }
 
   if(return_ic){
     dat <- ic_data(dat)
@@ -150,7 +161,8 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
 download_survey <- function(destfile, url, use_cache = TRUE,
                             quiet = FALSE, attempts = 3, mode = 'wb',
                             return_ic = TRUE,
-                            ic_reduce = TRUE, ic_minSample = 300, ...){
+                            ic_reduce = TRUE, ic_minSample = 300,
+                            add_region = 'who', ...){
 
   if(missing(url)){
     url <- 'https://immunizationdata.who.int/assets/additional-data/coverage_survey_data.xls'
@@ -188,7 +200,10 @@ download_survey <- function(destfile, url, use_cache = TRUE,
   # add source
   dat$source <- 'survey'
   # add regional ID
-  dat$region <- get_region(dat$ISO3, type = 'm49')
+  if(!missing(add_region)){
+    stopifnot(length(add_region) == 1L && add_region %in% c('who', 'm49'))
+    dat$region <- get_region(dat$code, type = add_region)
+  }
 
   if(return_ic){
     dat <- ic_survey(dat, region = 'region', country = 'ISO3',
@@ -199,3 +214,47 @@ download_survey <- function(destfile, url, use_cache = TRUE,
     return(dat)
   }
 }
+
+
+#' @name download
+#' @export
+download_denom <- function(destfile, url, use_cache = TRUE,
+                           quiet = FALSE, attempts = 3, mode = 'wb', ...){
+  if(missing(url)){
+    url <- 'https://immunizationdata.who.int/assets/additional-data/wuenic_input_to_pdf.xlsx'
+  }
+
+  if(missing(destfile)){
+    destfile <- file.path(tempdir(), 'wuenic.xlsx') # tempfile(fileext = '.xlsx')
+  }
+
+  tries <- 1
+  retval <- 1
+
+  if(use_cache){
+    if(file.exists(destfile)) retval <- 0
+  }
+
+  while(retval != 0L && tries <= attempts){
+    retval <- download.file(url,
+                            destfile,
+                            method = 'auto',
+                            quiet = quiet,
+                            mode = mode,
+                            ...)
+  }
+
+  if(retval != 0){
+    strop('Error downloading file.')
+  }
+
+  dat <- data.frame(readxl::read_excel(destfile, sheet = 2, na = c("", "NA")))
+
+  denom <- dat[, c("ISOCountryCode", "Year", "Vaccine", "SurvivingInfantsUNPD")]
+  denom$ISOCountryCode <- toupper(denom$ISOCountryCode)
+  denom$Vaccine <- toupper(denom$Vaccine)
+  names(denom)[4] <- 'population'
+
+  return(denom)
+}
+
