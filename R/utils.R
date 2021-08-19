@@ -164,3 +164,14 @@ get_region <- function(country = NULL, type = 'who'){
   }
 }
 
+
+#' @export
+#' @param x Numeric vector.
+#' @return A numeric vector the same length as \code{x}.
+logit <- function(x) stats::qlogis(x)
+
+
+#' @rdname logit
+#' @export
+invlogit <- function(x) stats::plogis(x)
+

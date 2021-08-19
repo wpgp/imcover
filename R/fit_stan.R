@@ -2,13 +2,17 @@
 #' Multi-source immunisation coverage model with Stan
 #'
 #' @param X Object of \code{ic.df} for analysis
+#' @param min_year,max_year Numeric values for the minimum and maximum years to
+#'   be analysed in \code{X}.
 #' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
 #' @name multi_lik_stan
 #' @export
-multi_lik_stan <- function(X, verbose = TRUE, ...) {
+multi_lik_stan <- function(X,
+                           min_year, max_year,
+                           verbose = TRUE, ...) {
   if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
 
   # check if a ratio adjust was performed
@@ -20,6 +24,12 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
   # get regions
   regions <- unique(X[[get_attr(X, 'region')]])
   regions <- regions[!is.na(regions)]
+
+  if(lenth(regions) > 1){
+
+  } else{
+
+  }
 
   # main processing loop
   out <- lapply(regions, function(r){
@@ -37,6 +47,9 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
     return(fit)
   })
   names(out) <- regions
+
+  attr(out, 'ratio') <- ratioed
+  class(out) <- list("icfit", class(out))
 
   return(out)
 }
@@ -63,7 +76,7 @@ ic_to_stan <- function(X, make_index = TRUE){
 
   # modify outcome
   X$coverage <- X$coverage / 100
-  X$cov.logit <-  log(X$coverage / (1 - X$coverage))
+  X$cov.logit <-  logit(X$coverage)  # log(X$coverage / (1 - X$coverage))
 
   # create index values
   X$v <- as.numeric(factor(X$vaccine))
