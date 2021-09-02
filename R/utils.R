@@ -1,14 +1,61 @@
-#' List vaccines
+#' List unique attributes
 #'
-#' Retrieve the unique list of vaccines observed in an ic dataset.
+#' Retrieve the unique list of attributes observed in an ic dataset.
 #' @param X Object of class \code{ic.df}.
 #' @name list_vaccines
 #' @export
 list_vaccines <- function(X){
-  if(!is.ic_data(X)){
-    stop("Please supply valid 'ic' data")
-  }
+  UseMethod("list_vaccines")
+}
+
+#' @name list_vaccines
+#' @export
+list_vaccines.ic.df <- function(X){
   return(unique(X[[attr(X, "vaccine")]]))
+}
+
+#' @name list_vaccines
+#' @export
+list_vaccines.icfit <- function(X){
+  return(unique(X[['posterior']][['vaccine']]))
+}
+
+
+#' @rdname list_vaccines
+#' @export
+list_countries <- function(X){
+  UseMethod("list_countries")
+}
+
+#' @rdname list_vaccines
+#' @export
+list_countries.ic.df <- function(X){
+  return(unique(X[[attr(X, "country")]]))
+}
+
+#' @rdname list_vaccines
+#' @export
+list_countries.icfit <- function(X){
+  return(unique(X[['posterior']][['country']]))
+}
+
+
+#' @rdname list_vaccines
+#' @export
+list_times <- function(X){
+  UseMethod("list_times")
+}
+
+#' @rdname list_vaccines
+#' @export
+list_times.ic.df <- function(X){
+  return(unique(X[[attr(X, "time")]]))
+}
+
+#' @rdname list_vaccines
+#' @export
+list_times.icfit <- function(X){
+  return(unique(X[['posterior']][['time']]))
 }
 
 
@@ -165,9 +212,12 @@ get_region <- function(country = NULL, type = 'who'){
 }
 
 
-#' @export
+#' Logit calculations
+#' Helper function to calculate the logit and inverse-logit transforms.
 #' @param x Numeric vector.
 #' @return A numeric vector the same length as \code{x}.
+#' @name logit
+#' @export
 logit <- function(x) stats::qlogis(x)
 
 
