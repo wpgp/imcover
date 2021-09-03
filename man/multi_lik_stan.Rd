@@ -4,12 +4,12 @@
 \alias{multi_lik_stan}
 \title{Multi-source immunisation coverage model with Stan}
 \usage{
-multi_lik_stan(x, y, ...)
+multi_lik_stan(X, verbose = TRUE, ...)
 }
 \arguments{
-\item{x}{Numeric vector of input values.}
+\item{X}{Object of \code{ic.df} for analysis}
 
-\item{y}{Numberic vector of output values.}
+\item{verbose}{Logical. Should messages be displayed? Default is \code{TRUE}.}
 
 \item{...}{Arguments passed to \code{rstan::sampling} (e.g. iter, chains).}
 }

@@ -2,13 +2,37 @@
 % Please edit documentation in R/utils.R
 \name{list_vaccines}
 \alias{list_vaccines}
-\title{List vaccines}
+\alias{list_vaccines.ic.df}
+\alias{list_vaccines.icfit}
+\alias{list_countries}
+\alias{list_countries.ic.df}
+\alias{list_countries.icfit}
+\alias{list_times}
+\alias{list_times.ic.df}
+\alias{list_times.icfit}
+\title{List unique attributes}
 \usage{
 list_vaccines(X)
+
+\method{list_vaccines}{ic.df}(X)
+
+\method{list_vaccines}{icfit}(X)
+
+list_countries(X)
+
+\method{list_countries}{ic.df}(X)
+
+\method{list_countries}{icfit}(X)
+
+list_times(X)
+
+\method{list_times}{ic.df}(X)
+
+\method{list_times}{icfit}(X)
 }
 \arguments{
 \item{X}{Object of class \code{ic.df}.}
 }
 \description{
-Retrieve the unique list of vaccines observed in an ic dataset.
+Retrieve the unique list of attributes observed in an ic dataset.
 }
