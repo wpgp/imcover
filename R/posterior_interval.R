@@ -16,7 +16,6 @@
 #' @aliases posterior_interval
 #' @method posterior_interval icfit
 #' @importFrom rstantools posterior_interval
-#' @export
 #' @export posterior_interval
 posterior_interval.icfit <- function(X,
                                      pars = 'mu',
@@ -61,7 +60,6 @@ posterior_interval.icfit <- function(X,
 #' @aliases posterior_interval
 #' @method posterior_interval iclist
 #' @importFrom rstantools posterior_interval
-#' @export
 #' @export posterior_interval
 posterior_interval.iclist <- function(X,
                                       pars = 'mu',

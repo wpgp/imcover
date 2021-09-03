@@ -144,6 +144,8 @@ ic_ratio <- function(X, numerator = 'DTP3', denominator = 'DTP1'){
   }
 
   # add non-core attribute to flag data have been modified
-  attr(X, 'ratio') <- numerator
+  attr(X, 'numerator') <- numerator
+  attr(X, 'denominator') <- denominator
+
   return(X)
 }

@@ -11,13 +11,13 @@ list_vaccines <- function(X){
 #' @name list_vaccines
 #' @export
 list_vaccines.ic.df <- function(X){
-  return(unique(X[[attr(X, "vaccine")]]))
+  return(sort(unique(X[[attr(X, "vaccine")]])))
 }
 
 #' @name list_vaccines
 #' @export
 list_vaccines.icfit <- function(X){
-  return(unique(X[['posterior']][['vaccine']]))
+  return(sort(unique(X[['posterior']][['vaccine']])))
 }
 
 
@@ -30,13 +30,13 @@ list_countries <- function(X){
 #' @rdname list_vaccines
 #' @export
 list_countries.ic.df <- function(X){
-  return(unique(X[[attr(X, "country")]]))
+  return(sort(unique(X[[attr(X, "country")]])))
 }
 
 #' @rdname list_vaccines
 #' @export
 list_countries.icfit <- function(X){
-  return(unique(X[['posterior']][['country']]))
+  return(sort(unique(X[['posterior']][['country']])))
 }
 
 
@@ -49,13 +49,13 @@ list_times <- function(X){
 #' @rdname list_vaccines
 #' @export
 list_times.ic.df <- function(X){
-  return(unique(X[[attr(X, "time")]]))
+  return(sort(unique(X[[attr(X, "time")]])))
 }
 
 #' @rdname list_vaccines
 #' @export
 list_times.icfit <- function(X){
-  return(unique(X[['posterior']][['time']]))
+  return(sort(unique(X[['posterior']][['time']])))
 }
 
 
@@ -209,6 +209,25 @@ get_region <- function(country = NULL, type = 'who'){
   } else{
     return(region)
   }
+}
+
+
+#' Convert attributes to column names
+#' @keywords internal
+swap_names <- function(X){
+  stopifnot(is.ic_data(X))
+
+  nn <- get_attr(X, ic_core())
+  X <- data.frame(X)
+  idx <- match(nn, names(X))
+  names(X)[na.omit(idx)] <- names(nn)[which(!is.na(idx))]
+  # convert back
+  X <- ic_data(X,
+               region = 'region', country = 'country',
+               time = 'time', vaccine = 'vaccine',
+               coverage = 'coverage', source = 'source')
+
+  return(X)
 }
 
 
