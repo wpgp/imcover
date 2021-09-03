@@ -6,9 +6,9 @@
 \alias{ic_plot.iclist}
 \title{Plot ic fit objects}
 \usage{
-ic_plot(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE, yovi)
+ic_plot(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE)
 
-\method{ic_plot}{icfit}(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE, yovi)
+\method{ic_plot}{icfit}(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE)
 
 \method{ic_plot}{iclist}(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE, yovi)
 }
@@ -24,9 +24,6 @@ to be used to calculate the upper and lower credible intervals.}
 
 \item{filter_yovi}{Logical. Should the estimates be filtered by year of
 vaccine introduction?}
-
-\item{yovi}{Table containing years of vaccine introduction. WHO standard
-tables are used by default.}
 }
 \value{
 A plot of the coverage estimates extracted from the fit, including
