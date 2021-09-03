@@ -251,10 +251,11 @@ download_denom <- function(destfile, url, use_cache = TRUE,
   dat <- data.frame(readxl::read_excel(destfile, sheet = 2, na = c("", "NA")))
 
   denom <- dat[, c("ISOCountryCode", "Year", "Vaccine", "SurvivingInfantsUNPD")]
-  denom$ISOCountryCode <- toupper(denom$ISOCountryCode)
-  denom$Vaccine <- toupper(denom$Vaccine)
-  names(denom)[4] <- 'population'
+  denom$country <- toupper(denom$ISOCountryCode)
+  denom$vaccine <- toupper(denom$Vaccine)
+  denom$time <- denom$Year
+  names(denom)[which(names(denom) == "SurvivingInfantsUNPD")] <- 'population'
 
-  return(denom)
+  return(denom[, c('country', 'time', 'vaccine', 'population')])
 }
 
