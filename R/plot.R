@@ -75,7 +75,7 @@ ic_plot.icfit <- function(X, observed,
   }
 
   for(v in vaccine){
-    plot <- ggplot2::ggplot() +
+    plotobj <- ggplot2::ggplot() +
       ggplot2::geom_line(data = mu_hat[mu_hat$vaccine == v, ],
                          ggplot2::aes(x = .data$time, y = mean),
                          color = "black") +
@@ -84,13 +84,13 @@ ic_plot.icfit <- function(X, observed,
                            alpha = 0.2, color = 'grey50')
 
     if(!missing(observed)){
-      plot <- plot +
-        ggplot2::geom_point(data = observed[observed$vaccine == v, ],
+      plotobj <- plotobj +
+        ggplot2::geom_point(data = observed[observed$vaccine == v & observed$country %in% mu_hat$country, ],
                             ggplot2::aes(x = .data$time, y = coverage,
                                          color = factor(source)))
     }
 
-    plot <- plot +
+    plotobj <- plotobj +
       ggplot2::facet_wrap(. ~ country, scale = 'free', ncol = 4) +
       ggplot2::ggtitle(v) +
       ggplot2::scale_x_continuous(breaks = lbls,
@@ -99,7 +99,7 @@ ic_plot.icfit <- function(X, observed,
       ggplot2::theme(legend.position = 'bottom',
                      legend.title = ggplot2::element_blank())
 
-    print(plot)
+    print(plotobj)
   }
 }
 
@@ -112,6 +112,6 @@ ic_plot.iclist <- function(X, observed,
                            filter_yovi = TRUE, yovi){
 
   for(i in X){
-    ic_plot(i, observed, prob, vaccine, filter_yovi, yovi)
+    ic_plot(i, observed, prob, vaccine, filter_yovi)
   }
 }
