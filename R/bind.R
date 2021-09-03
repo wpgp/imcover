@@ -52,6 +52,14 @@ rbind.ic.df <- function(..., fill = TRUE, deparse.level = 1){
 }
 
 
+#' Merge two ic data objects
+#' Merge two \code{ic.df} data objects by common columns while preserving the
+#' attributes
+#' @param x,y \code{ic.df} objects to merge
+#' @param attr.x Logical. Should the attributes (i.e. core field names) be based
+#'   on the ic object 'x' or 'y' (when \code{FALSE})?
+#' @param ... arguments to be based on \code{merge}.
+#' @export
 merge.ic.df <- function(x, y, attr.x = TRUE, ...) {
   if(attr.x){
     attrs <- attributes(x)
