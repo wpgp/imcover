@@ -10,8 +10,6 @@
 #' @param vaccine Optional. Character vector to subset which vaccines to plot
 #' @param filter_yovi Logical. Should the estimates be filtered by year of
 #'   vaccine introduction?
-#' @param yovi Table containing years of vaccine introduction. WHO standard
-#'   tables are used by default.
 #' @return  A plot of the coverage estimates extracted from the fit, including
 #'   credible intervals.
 #'
@@ -27,7 +25,7 @@
 ic_plot <- function(X, observed,
                     prob = c(0.025, 0.975),
                     vaccine,
-                    filter_yovi = TRUE, yovi){
+                    filter_yovi = TRUE){
   UseMethod("ic_plot")
 }
 
@@ -37,7 +35,7 @@ ic_plot <- function(X, observed,
 ic_plot.icfit <- function(X, observed,
                           prob = c(0.025, 0.975),
                           vaccine,
-                          filter_yovi = TRUE, yovi){
+                          filter_yovi = TRUE){
 
   stopifnot(length(prob) == 2)
 
@@ -55,15 +53,19 @@ ic_plot.icfit <- function(X, observed,
   }
 
   # get the summary of the estimates ('mu')
-  mu_hat <- posterior_interval(X, prob = prob)
-  # find names to plot
-  mu_hat[['lo']] <- mu_hat[[paste0(prob[1] * 100, '%')]]
-  mu_hat[['hi']] <- mu_hat[[paste0(prob[2] * 100, '%')]]
+  X[['posterior']] <- posterior_interval(X, prob = prob)
 
   # filter by year of introduction
   if(filter_yovi){
-
+    X <- filter_yovi(X, na.rm = TRUE)
   }
+
+  # extract posterior values
+  mu_hat <- X$posterior
+
+  # find names to plot
+  mu_hat[['lo']] <- mu_hat[[paste0(prob[1] * 100, '%')]]
+  mu_hat[['hi']] <- mu_hat[[paste0(prob[2] * 100, '%')]]
 
   # find vaccine subsets
   if(missing(vaccine)){
