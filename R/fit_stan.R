@@ -2,21 +2,15 @@
 #' Multi-source immunisation coverage model with Stan
 #'
 #' @param X Object of \code{ic.df} for analysis
-#' @param min_year,max_year Numeric values for the minimum and maximum years to
-#'   be analysed in \code{X}.
 #' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
 #' @name multi_lik_stan
 #' @export
-multi_lik_stan <- function(X,
-                           min_year, max_year,
-                           verbose = TRUE, ...) {
+multi_lik_stan <- function(X, verbose = TRUE, ...) {
   if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
 
-  # check if a ratio adjust was performed
-  ratioed <- attr(X, 'ratio')
   # check data
   X <- X[!is.na(X[[get_attr(X, 'coverage')]]), ]
   X <- X[!is.na(X[[get_attr(X, 'region')]]), ]
@@ -25,31 +19,23 @@ multi_lik_stan <- function(X,
   regions <- unique(X[[get_attr(X, 'region')]])
   regions <- regions[!is.na(regions)]
 
-  if(lenth(regions) > 1){
-
+  if(length(regions) == 1){
+    # calculate
+    out <- ic_fit(dat, verbose, ...)
   } else{
+    # main processing loop
+    out <- lapply(regions, function(r){
+      if(verbose) print(r)
+      # subset
+      dat <- X[X[[get_attr(X, 'region')]] == r, ]
+      # calculate
+      fit <- ic_fit(dat, verbose, ...)
 
+      return(fit)
+    })
+    names(out) <- regions
+    class(out) <- list("iclist", class(out))
   }
-
-  # main processing loop
-  out <- lapply(regions, function(r){
-    if(verbose) print(r)
-    # subset
-    dat <- X[X[[get_attr(X, 'region')]] == r, ]
-
-    # data prep
-    vax_data <- ic_to_stan(dat, make_index = TRUE)
-
-    fit <- rstan::sampling(stanmodels$multi_lik,
-                           data = vax_data,
-                           show_messages = verbose,
-                           ...)
-    return(fit)
-  })
-  names(out) <- regions
-
-  attr(out, 'ratio') <- ratioed
-  class(out) <- list("icfit", class(out))
 
   return(out)
 }
@@ -100,3 +86,62 @@ ic_to_stan <- function(X, make_index = TRUE){
 
   return(vax_dat)
 }
+
+
+ic_fit <- function(X, verbose, ...){
+  # data prep
+  vax_data <- ic_to_stan(X, make_index = TRUE)
+
+  out <- rstan::sampling(stanmodels$multi_lik,
+                         data = vax_data,
+                         show_messages = verbose,
+                         ...)
+
+  # calculate prediction ('mu')
+  posterior <- t(as.data.frame(out, 'mu'))
+  posterior <- invlogit(posterior)
+
+  # create an index to the 'mu' parameter
+  mu_idx <- strsplit(gsub('\\[|\\]', '',
+                          regmatches(row.names(posterior),
+                                     gregexpr("\\[.*?\\]",
+                                              row.names(posterior)))),
+                     ',', fixed = T)
+  mu_idx <- do.call(rbind.data.frame, mu_idx)
+  names(mu_idx) <- c("country", "time", "vaccine")
+  mu_idx <- as.data.frame(lapply(mu_idx, function(x) as.numeric(x)))
+
+  # name the indices
+  mu_names <- cbind.data.frame(
+    'country' = levels(factor(X[[get_attr(X, 'country')]]))[mu_idx$country],
+    'time' = as.numeric(levels(factor(X[[get_attr(X, 'time')]]))[mu_idx$time]),
+    'vaccine' = sort(unique(X[[get_attr(X, 'vaccine')]]))[mu_idx$vaccine]
+  )
+
+  # ratio adjustment
+  if(!is.null(attr(X, 'numerator'))){
+    numerator <- attr(X, 'numerator')
+    denominator <- attr(X, 'denominator')
+
+    # apply ratio to dose 1 to calc new dose 3
+    for(i in 1:length(numerator)){
+      num <- posterior[which(mu_names$vaccine == numerator[i]), ]
+      den <- posterior[which(mu_names$vaccine == denominator[i]), ]
+
+      num <- den * num
+      # reassemble
+      posterior[which(mu_names$vaccine == numerator[i]), ] <- num
+    }
+  }
+
+  # convert to coverage percentage
+  posterior <- posterior * 100
+
+  # apply labels
+  posterior <- cbind(mu_names, posterior)
+
+  out <- list('fit' = out, 'posterior' = posterior, 'data' = vax_data)
+  class(out) <- list('icfit', class(out))
+  return(out)
+}
+
