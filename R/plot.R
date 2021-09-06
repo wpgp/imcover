@@ -1,3 +1,30 @@
+#' Plot ic fit objects
+#'
+#' Provides methods to plot estimated time trends of vaccine coverage for
+#' countries.
+#' @param X Object of type \code{icfit} or \code{iclist}
+#' @param ... Additional arguments passed to \code{ic_plot}.
+#' @return Plot
+#'
+#' @export
+plot.icfit <- function(X, ...){
+  ic_plot(X, ...)
+}
+
+
+#' Plot ic fit objects
+#'
+#' Provides methods to plot estimated time trends of vaccine coverage for
+#' countries.
+#' @param X Object of type \code{icfit} or \code{iclist}
+#' @param ... Additional arguments passed to \code{ic_plot}.
+#' @return Plot
+#'
+#' @export
+plot.iclist <- function(X, ...){
+  ic_plot(X, ...)
+}
+
 
 #' Plot ic fit objects
 #'
