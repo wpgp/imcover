@@ -1,6 +1,6 @@
 Package: imcover
-Title: Spatio-Temporal Modelling of Immunisation Coverage in R
-Version: 0.0.0.9000
+Title: Modelling of Immunisation Coverage in R
+Version: 0.1.0
 Authors@R: 
     c(person(given = "Warren",
            family = "Jochem",
@@ -11,9 +11,8 @@ Authors@R:
             family = "Utazi",
             role = c("aut"))
       )
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+Description: Provides access to WUENIC immunisation data and a Bayesian statistical modelling framework to produces country- and region-specific temporal trends in immunisation coverage.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
