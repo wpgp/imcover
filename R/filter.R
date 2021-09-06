@@ -163,13 +163,15 @@ filter_yovi.ic.df <- function(X,
 
   # filter
   if(na.rm){
-    del <- which((is.na(X[[nm]]) & X[[get_attr(X, "vaccine")]] %in% vaccine) | X[[get_attr(X, "time")]] <= X[[nm]])
+    # del <- which((is.na(X[[nm]]) & X[[get_attr(X, "vaccine")]] %in% vaccine) | X[[get_attr(X, "time")]] <= X[[nm]])
+    del <- ifelse((is.na(X[[nm]]) & X[[get_attr(X, "vaccine")]] %in% vaccine) | X[[get_attr(X, "time")]] <= X[[nm]], TRUE, FALSE)
   } else{
-    del <- which(!is.na(X[[nm]]) & X[[get_attr(X, "time")]] <= X[[nm]])
+    # del <- which(!is.na(X[[nm]]) & X[[get_attr(X, "time")]] <= X[[nm]])
+    del <- ifelse(!is.na(X[[nm]]) & X[[get_attr(X, "time")]] <= X[[nm]], TRUE, FALSE)
   }
   X[[nm]] <- NULL
 
-  return(X[-del, ])
+  return(X[which(!del), ])
 }
 
 
@@ -209,13 +211,15 @@ filter_yovi.icfit <- function(X,
 
   # filter
   if(na.rm){
-    del <- which((is.na(dat[[nm]]) & dat[["vaccine"]] %in% vaccine) | dat[["time"]] <= dat[[nm]])
+    # del <- which((is.na(dat[[nm]]) & dat[["vaccine"]] %in% vaccine) | dat[["time"]] <= dat[[nm]])
+    del <- ifelse((is.na(dat[[nm]]) & dat[['vaccine']] %in% vaccine) | dat[['time']] <= dat[[nm]], TRUE, FALSE)
   } else{
-    del <- which(!is.na(dat[[nm]]) & dat[["time"]] <= dat[[nm]])
+    # del <- which(!is.na(dat[[nm]]) & dat[["time"]] <= dat[[nm]])
+    del <- ifelse(!is.na(dat[[nm]]) & dat[['time']] <= dat[[nm]], TRUE, FALSE)
   }
   dat[[nm]] <- NULL
 
-  X[['posterior']] <- dat[-del, ]
+  X[['posterior']] <- dat[which(!del), ]
 
   return(X)
 }

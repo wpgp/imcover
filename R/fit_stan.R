@@ -2,7 +2,7 @@
 #' Multi-source immunisation coverage model with Stan
 #'
 #' @param X Object of \code{ic.df} for analysis
-#' @param region Logical. Should region-specific models be generated?. Default
+#' @param region Logical. Should region-specific models be generated? Default
 #'   is \code{TRUE}.
 #' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
