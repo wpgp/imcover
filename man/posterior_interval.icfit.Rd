@@ -3,9 +3,17 @@
 \name{posterior_interval.icfit}
 \alias{posterior_interval.icfit}
 \alias{posterior_interval}
+\alias{posterior_interval.iclist}
 \title{Summarise posterior estimates of immunisation coverage}
 \usage{
 \method{posterior_interval}{icfit}(
+  X,
+  pars = "mu",
+  stat = c("mean", "median", "sd", "quantile"),
+  prob = c(0.025, 0.25, 0.5, 0.75, 0.975)
+)
+
+\method{posterior_interval}{iclist}(
   X,
   pars = "mu",
   stat = c("mean", "median", "sd", "quantile"),

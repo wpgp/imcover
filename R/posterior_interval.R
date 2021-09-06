@@ -14,9 +14,10 @@
 #'   observations of immunisation coverage.
 #'
 #' @aliases posterior_interval
-#' @method posterior_interval icfit
 #' @importFrom rstantools posterior_interval
-#' @export posterior_interval
+#' @export
+#' @method posterior_interval icfit
+#' @rdname posterior_interval.icfit
 posterior_interval.icfit <- function(X,
                                      pars = 'mu',
                                      stat = c('mean', 'median', 'sd', 'quantile'),
@@ -58,9 +59,10 @@ posterior_interval.icfit <- function(X,
 
 
 #' @aliases posterior_interval
-#' @method posterior_interval iclist
 #' @importFrom rstantools posterior_interval
-#' @export posterior_interval
+#' @export
+#' @method posterior_interval iclist
+#' @rdname posterior_interval.icfit
 posterior_interval.iclist <- function(X,
                                       pars = 'mu',
                                       stat = c('mean', 'median', 'sd', 'quantile'),
