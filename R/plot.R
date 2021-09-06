@@ -1,3 +1,4 @@
+
 #' Plot ic fit objects
 #'
 #' Provides methods to plot estimated time trends of vaccine coverage for

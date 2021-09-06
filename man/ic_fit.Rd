@@ -12,7 +12,7 @@ ic_fit(X, region = TRUE, verbose = TRUE, ...)
 \arguments{
 \item{X}{Object of \code{ic.df} for analysis}
 
-\item{region}{Logical. Should region-specific models be generated?. Default
+\item{region}{Logical. Should region-specific models be generated? Default
 is \code{TRUE}.}
 
 \item{verbose}{Logical. Should messages be displayed? Default is \code{TRUE}.}
