@@ -33,7 +33,7 @@ ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
   # calculation
   if(!region || length(regions) == 1){
     # calculate
-    out <- multi_lik_stan(dat, verbose, ...)
+    out <- multi_lik_stan(X, verbose, ...)
   } else{
     # main processing loop
     out <- lapply(regions, function(r){
