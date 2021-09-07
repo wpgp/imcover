@@ -63,7 +63,8 @@ ic_plot <- function(X, observed,
 ic_plot.icfit <- function(X, observed,
                           prob = c(0.025, 0.975),
                           vaccine,
-                          filter_yovi = TRUE){
+                          filter_yovi = TRUE,
+                          ncol = 4){
 
   stopifnot(length(prob) == 2)
 
@@ -119,7 +120,7 @@ ic_plot.icfit <- function(X, observed,
     }
 
     plotobj <- plotobj +
-      ggplot2::facet_wrap(. ~ country, scale = 'free', ncol = 4) +
+      ggplot2::facet_wrap(. ~ country, scale = 'free', ncol = ncol) +
       ggplot2::ggtitle(v) +
       ggplot2::scale_x_continuous(breaks = lbls,
                                   labels = lbls) +
@@ -137,9 +138,10 @@ ic_plot.icfit <- function(X, observed,
 ic_plot.iclist <- function(X, observed,
                            prob = c(0.025, 0.975),
                            vaccine,
-                           filter_yovi = TRUE, yovi){
+                           filter_yovi = TRUE, yovi,
+                           ncol = 4){
 
   for(i in X){
-    ic_plot(i, observed, prob, vaccine, filter_yovi)
+    ic_plot(i, observed, prob, vaccine, filter_yovi, ncol)
   }
 }

@@ -26,7 +26,7 @@ ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
     X <- X[!is.na(X[[get_attr(X, 'region')]]), ]
 
     # get regions
-    regions <- unique(X[[get_attr(X, 'region')]])
+    regions <- sort(unique(X[[get_attr(X, 'region')]]))
     regions <- regions[!is.na(regions)]
   }
 
@@ -48,6 +48,31 @@ ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
     names(out) <- regions
     class(out) <- list("iclist", class(out))
   }
+
+  return(out)
+}
+
+
+#' Multi-source immunisation coverage model with Stan
+#'
+#' @param X Object of \code{ic.df} for analysis
+#' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
+#' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
+#' @return An object of class `stanfit` returned by `rstan::sampling`
+#'
+#' @name multi_lik_stan
+#' @keywords internal
+multi_lik_stan <- function(X, verbose = TRUE, ...) {
+  if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
+
+  # data prep
+  vax_data <- ic_to_stan(X, make_index = TRUE)
+
+  # call stan model
+  out <- rstan::sampling(stanmodels$multi_lik,
+                         data = vax_data,
+                         show_messages = verbose,
+                         ...)
 
   # calculate prediction ('mu')
   posterior <- t(as.data.frame(out, 'mu'))
@@ -94,30 +119,7 @@ ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
 
   out <- list('fit' = out, 'posterior' = posterior, 'data' = vax_data)
   class(out) <- list('icfit', class(out))
-  return(out)
-}
 
-
-#' Multi-source immunisation coverage model with Stan
-#'
-#' @param X Object of \code{ic.df} for analysis
-#' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
-#' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
-#' @return An object of class `stanfit` returned by `rstan::sampling`
-#'
-#' @name multi_lik_stan
-#' @keywords internal
-multi_lik_stan <- function(X, verbose = TRUE, ...) {
-  if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
-
-  # data prep
-  vax_data <- ic_to_stan(X, make_index = TRUE)
-
-  # call stan model
-  out <- rstan::sampling(stanmodels$multi_lik,
-                         data = vax_data,
-                         show_messages = verbose,
-                         ...)
   return(out)
 }
 
