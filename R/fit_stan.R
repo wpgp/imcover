@@ -66,7 +66,7 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
   if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
 
   # data prep
-  vax_data <- ic_to_stan(X, make_index = TRUE)
+  vax_data <- ic_to_stan(X)
   lbls <- vax_data[[2]]
 
   # call stan model
@@ -91,9 +91,9 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
 
   # name the indices
   mu_names <- cbind.data.frame(
-    'country' = levels(factor(X[[get_attr(X, 'country')]]))[mu_idx$country],
-    'time' = as.numeric(levels(factor(X[[get_attr(X, 'time')]]))[mu_idx$time]),
-    'vaccine' = sort(unique(X[[get_attr(X, 'vaccine')]]))[mu_idx$vaccine]
+    'country' = lbls$lbl_c[mu_idx$country],
+    'time' = lbls$lbl_t[mu_idx$time],
+    'vaccine' = lbls$lbl_v[mu_idx$vaccine]
   )
 
   # ratio adjustment
@@ -122,6 +122,7 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
               'posterior' = posterior,
               'data' = vax_data[[1]],
               'labels' = lbls)
+
   class(out) <- list('icfit', class(out))
 
   return(out)
@@ -162,10 +163,11 @@ ic_to_stan <- function(X){
   # labels for unique values
   lbl_v <- levels(f_v)
   lbl_c <- levels(f_c)
-  lbl_t <- levels(f_t)
+  lbl_t <- as.numeric(levels(f_t))
   lbl_s <- levels(f_s)
 
-  lbls <- list(lbl_v, lbl_c, lbl_t, lbl_s)
+  lbls <- list('lbl_v' = lbl_v, 'lbl_c' = lbl_c,
+               'lbl_t' = lbl_t, 'lbl_s' = lbl_s)
 
   vax_dat <- list(y = X$cov.logit,
                   i = X$i,
