@@ -6,18 +6,40 @@
 \alias{ic_plot.iclist}
 \title{Plot ic fit objects}
 \usage{
-ic_plot(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE)
+ic_plot(
+  X,
+  observed,
+  probs = c(0.025, 0.975),
+  vaccine,
+  filter_yovi = TRUE,
+  ncol = 4
+)
 
-\method{ic_plot}{icfit}(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE)
+\method{ic_plot}{icfit}(
+  X,
+  observed,
+  probs = c(0.025, 0.975),
+  vaccine,
+  filter_yovi = TRUE,
+  ncol = 4
+)
 
-\method{ic_plot}{iclist}(X, observed, prob = c(0.025, 0.975), vaccine, filter_yovi = TRUE, yovi)
+\method{ic_plot}{iclist}(
+  X,
+  observed,
+  probs = c(0.025, 0.975),
+  vaccine,
+  filter_yovi = TRUE,
+  yovi,
+  ncol = 4
+)
 }
 \arguments{
 \item{X}{Object of type \code{icfit} or \code{iclist}}
 
 \item{observed}{Object of type \code{ic.df}}
 
-\item{prob}{Numeric vector of length 2 for probabilities with values in \link{0,1}
+\item{probs}{Numeric vector of length 2 for probabilities with values in \link{0,1}
 to be used to calculate the upper and lower credible intervals.}
 
 \item{vaccine}{Optional. Character vector to subset which vaccines to plot}

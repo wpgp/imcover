@@ -67,10 +67,11 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
 
   # data prep
   vax_data <- ic_to_stan(X, make_index = TRUE)
+  lbls <- vax_data[[2]]
 
   # call stan model
   out <- rstan::sampling(stanmodels$multi_lik,
-                         data = vax_data,
+                         data = vax_data[[1]],
                          show_messages = verbose,
                          ...)
 
@@ -117,7 +118,10 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
   # apply labels
   posterior <- cbind(mu_names, posterior)
 
-  out <- list('fit' = out, 'posterior' = posterior, 'data' = vax_data)
+  out <- list('fit' = out,
+              'posterior' = posterior,
+              'data' = vax_data[[1]],
+              'labels' = lbls)
   class(out) <- list('icfit', class(out))
 
   return(out)
@@ -127,11 +131,10 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
 #' Prepare 'ic' data for Stan model
 #'
 #' @param X Object of \code{ic.df} to be converted
-#' @param make_index Logical. Should indices for e.g. 'country' be created?
 #' @return A list with named objects suitable for use as Stan data.
 #'   Default is \code{TRUE}.
 #' @keywords internal
-ic_to_stan <- function(X, make_index = TRUE){
+ic_to_stan <- function(X){
   stopifnot(is.ic_data(X))
 
   # swap names
@@ -146,10 +149,23 @@ ic_to_stan <- function(X, make_index = TRUE){
   X$cov.logit <-  logit(X$coverage)  # log(X$coverage / (1 - X$coverage))
 
   # create index values
-  X$v <- as.numeric(factor(X$vaccine))
-  X$i <- as.numeric(factor(X$country))
-  X$t <- as.numeric(factor(X$time)) # temporal trend per country
-  X$s <- as.numeric(factor(X$source))
+  f_v <- factor(X$vaccine)
+  f_c <- factor(X$country)
+  f_t <- factor(X$time)
+  f_s <- factor(X$source)
+
+  X$v <- as.numeric(f_v)
+  X$i <- as.numeric(f_c)
+  X$t <- as.numeric(f_t) # temporal trend per country
+  X$s <- as.numeric(f_s)
+
+  # labels for unique values
+  lbl_v <- levels(f_v)
+  lbl_c <- levels(f_c)
+  lbl_t <- levels(f_t)
+  lbl_s <- levels(f_s)
+
+  lbls <- list(lbl_v, lbl_c, lbl_t, lbl_s)
 
   vax_dat <- list(y = X$cov.logit,
                   i = X$i,
@@ -165,6 +181,6 @@ ic_to_stan <- function(X, make_index = TRUE){
                   start_o = min(which(tolower(X$source) == "official")),
                   start_s = min(which(tolower(X$source) == "survey")))
 
-  return(vax_dat)
+  return(list(vax_dat, lbls))
 }
 

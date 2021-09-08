@@ -5,7 +5,7 @@
 #' @param X Object of \code{icfit} or \code{iclist} from model fitting
 #' @param denom Population denominator data. Default is downloaded from WHO.
 #' @param stat Character vector of summary statistics to apply.
-#' @param prob Numeric vector of probabilities with values in [0,1] to be used
+#' @param probs Numeric vector of probabilities with values in [0,1] to be used
 #'   for \code{stat} "quantile".
 #' @param filter_yovi Logical. Should the estimates be filtered by year of
 #'   vaccine introduction?
@@ -15,7 +15,7 @@
 ic_regional <- function(X,
                         denom,
                         stat = c('mean', 'median', 'sd', 'quantile'),
-                        prob = c(0.025, 0.25, 0.5, 0.75, 0.975),
+                        probs = c(0.025, 0.25, 0.5, 0.75, 0.975),
                         filter_yovi = TRUE){
   UseMethod("ic_regional")
 }
@@ -26,7 +26,7 @@ ic_regional <- function(X,
 ic_regional.icfit <- function(X,
                               denom,
                               stat = c('mean', 'median', 'sd', 'quantile'),
-                              prob = c(0.025, 0.25, 0.5, 0.75, 0.975),
+                              probs = c(0.025, 0.25, 0.5, 0.75, 0.975),
                               filter_yovi = TRUE){
 
   if(missing(denom)){
@@ -68,7 +68,7 @@ ic_regional.icfit <- function(X,
   # summarise
   psummary <- lapply(stat, FUN = function(st){
     if(st == 'quantile'){
-      t(apply(dat[,-c(1:2)], 1, st, prob, na.rm = TRUE))
+      t(apply(dat[,-c(1:2)], 1, st, probs, na.rm = TRUE))
     } else{
       apply(dat[,-c(1:2)], 1, st, na.rm = TRUE)
     }
@@ -79,7 +79,7 @@ ic_regional.icfit <- function(X,
   summarynm <- stat
   if('quantile' %in% stat){
     summarynm <- stat[-which(stat == 'quantile')]
-    summarynm <- c(summarynm, paste0(prob * 100, '%'))
+    summarynm <- c(summarynm, paste0(probs * 100, '%'))
   }
   names(psummary) <- summarynm
 
@@ -93,10 +93,10 @@ ic_regional.icfit <- function(X,
 ic_regional.iclist <- function(X,
                                denom,
                                stat = c('mean', 'median', 'sd', 'quantile'),
-                               prob = c(0.025, 0.25, 0.5, 0.75, 0.975),
+                               probs = c(0.025, 0.25, 0.5, 0.75, 0.975),
                                filter_yovi = TRUE){
 
-  out <- lapply(X, function(i){ ic_regional(i, stat = stat, prob = prob, filter_yovi = filter_yovi) })
+  out <- lapply(X, function(i){ ic_regional(i, stat = stat, probs = probs, filter_yovi = filter_yovi) })
 
   return(out)
 }

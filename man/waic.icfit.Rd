@@ -3,43 +3,17 @@
 \name{waic.icfit}
 \alias{waic.icfit}
 \alias{waic}
-\alias{loo.icfit}
-\alias{loo}
-\alias{loo.iclist}
+\alias{waic.iclist}
 \title{Widely applicable information criterion (WAIC)}
 \usage{
 \method{waic}{icfit}(X, ...)
 
-\method{loo}{icfit}(
-  X,
-  pars = "log_lik",
-  ...,
-  save_psis = FALSE,
-  cores = getOption("mc.cores", 1)
-)
-
-\method{loo}{iclist}(
-  X,
-  pars = "log_lik",
-  ...,
-  save_psis = FALSE,
-  cores = getOption("mc.cores", 1)
-)
+\method{waic}{iclist}(X, ...)
 }
 \arguments{
 \item{X}{Object of type \code{icfit} or \code{iclist}.}
 
-\item{...}{Additional arguments passed to \code{loo::loo()}.}
-
-\item{pars}{Character names of parameters to extract. Default is the
-log-likelihood.}
-
-\item{save_psis}{Should the "psis" object created internally by loo() be
-saved in the returned object? Default is \code{FALSE}.}
-
-\item{cores}{The number of cores to use for parallelization. This defaults to
-the option mc.cores which can be set for an entire R session by
-options(mc.cores = NUMBER).}
+\item{...}{Additional arguments. See \code{loo::waic()}.}
 }
 \value{
 A named list (of class \code{c("waic", "loo")}) with components:
@@ -65,9 +39,10 @@ Implementation of \code{waic()} methods from \code{loo} to compute WAIC from the
 pointwise log-likelihood.
 }
 \details{
-The developers of \code{stan} recommend LOO-CV using PSIS (as
-implemented by the \code{loo::loo()} function) because PSIS provides useful
-diagnostics as well as effective sample size and Monte Carlo estimates.
+For more details see \pkg{loo}. The developers of \code{stan}
+recommend LOO-CV using PSIS (as implemented by the \code{loo::loo()}
+function) because PSIS provides useful diagnostics as well as effective
+sample size and Monte Carlo estimates.
 }
 \references{
 Watanabe, S. (2010). Asymptotic equivalence of Bayes cross validation and
@@ -75,5 +50,5 @@ widely application information criterion in singular learning theory.
 \emph{Journal of Machine Learning Research} \strong{11}, 3571-3594.
 }
 \seealso{
-\code{[loo](waic)}
+\code{\link[loo]{waic}}
 }

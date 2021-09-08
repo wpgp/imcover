@@ -33,7 +33,7 @@ plot.iclist <- function(X, ...){
 #' countries.
 #' @param X Object of type \code{icfit} or \code{iclist}
 #' @param observed Object of type \code{ic.df}
-#' @param prob Numeric vector of length 2 for probabilities with values in [0,1]
+#' @param probs Numeric vector of length 2 for probabilities with values in [0,1]
 #'   to be used to calculate the upper and lower credible intervals.
 #' @param vaccine Optional. Character vector to subset which vaccines to plot
 #' @param filter_yovi Logical. Should the estimates be filtered by year of
@@ -51,9 +51,10 @@ plot.iclist <- function(X, ...){
 #' @name ic_plot
 #' @export
 ic_plot <- function(X, observed,
-                    prob = c(0.025, 0.975),
+                    probs = c(0.025, 0.975),
                     vaccine,
-                    filter_yovi = TRUE){
+                    filter_yovi = TRUE,
+                    ncol = 4){
   UseMethod("ic_plot")
 }
 
@@ -61,12 +62,12 @@ ic_plot <- function(X, observed,
 #' @name ic_plot
 #' @export
 ic_plot.icfit <- function(X, observed,
-                          prob = c(0.025, 0.975),
+                          probs = c(0.025, 0.975),
                           vaccine,
                           filter_yovi = TRUE,
                           ncol = 4){
 
-  stopifnot(length(prob) == 2)
+  stopifnot(length(probs) == 2)
 
   # find years to plot
   tt <- ggplot2::cut_interval(list_times(X), length = 5)  # 5-year groups
@@ -82,7 +83,7 @@ ic_plot.icfit <- function(X, observed,
   }
 
   # get the summary of the estimates ('mu')
-  X[['posterior']] <- posterior_interval(X, prob = prob)
+  X[['posterior']] <- ic_coverage(X, probs = probs)
 
   # filter by year of introduction
   if(filter_yovi){
@@ -93,8 +94,8 @@ ic_plot.icfit <- function(X, observed,
   mu_hat <- X$posterior
 
   # find names to plot
-  mu_hat[['lo']] <- mu_hat[[paste0(prob[1] * 100, '%')]]
-  mu_hat[['hi']] <- mu_hat[[paste0(prob[2] * 100, '%')]]
+  mu_hat[['lo']] <- mu_hat[[paste0(probs[1] * 100, '%')]]
+  mu_hat[['hi']] <- mu_hat[[paste0(probs[2] * 100, '%')]]
 
   # find vaccine subsets
   if(missing(vaccine)){
@@ -136,12 +137,12 @@ ic_plot.icfit <- function(X, observed,
 #' @name ic_plot
 #' @export
 ic_plot.iclist <- function(X, observed,
-                           prob = c(0.025, 0.975),
+                           probs = c(0.025, 0.975),
                            vaccine,
                            filter_yovi = TRUE, yovi,
                            ncol = 4){
 
   for(i in X){
-    ic_plot(i, observed, prob, vaccine, filter_yovi, ncol)
+    ic_plot(i, observed, probs, vaccine, filter_yovi, ncol)
   }
 }
