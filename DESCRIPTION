@@ -12,7 +12,7 @@ Authors@R:
             role = c("aut"))
       )
 Description: Provides access to WUENIC immunisation data and a Bayesian statistical modelling framework to produces country- and region-specific temporal trends in immunisation coverage.
-License: MIT + file LICENSE
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
