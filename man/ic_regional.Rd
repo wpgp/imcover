@@ -10,7 +10,7 @@ ic_regional(
   X,
   denom,
   stat = c("mean", "median", "sd", "quantile"),
-  prob = c(0.025, 0.25, 0.5, 0.75, 0.975),
+  probs = c(0.025, 0.25, 0.5, 0.75, 0.975),
   filter_yovi = TRUE
 )
 
@@ -18,7 +18,7 @@ ic_regional(
   X,
   denom,
   stat = c("mean", "median", "sd", "quantile"),
-  prob = c(0.025, 0.25, 0.5, 0.75, 0.975),
+  probs = c(0.025, 0.25, 0.5, 0.75, 0.975),
   filter_yovi = TRUE
 )
 
@@ -26,7 +26,7 @@ ic_regional(
   X,
   denom,
   stat = c("mean", "median", "sd", "quantile"),
-  prob = c(0.025, 0.25, 0.5, 0.75, 0.975),
+  probs = c(0.025, 0.25, 0.5, 0.75, 0.975),
   filter_yovi = TRUE
 )
 }
@@ -37,7 +37,7 @@ ic_regional(
 
 \item{stat}{Character vector of summary statistics to apply.}
 
-\item{prob}{Numeric vector of probabilities with values in \link{0,1} to be used
+\item{probs}{Numeric vector of probabilities with values in \link{0,1} to be used
 for \code{stat} "quantile".}
 
 \item{filter_yovi}{Logical. Should the estimates be filtered by year of

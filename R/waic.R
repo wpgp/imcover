@@ -1,22 +1,46 @@
 
+#' Extract  posterior sample of the pointwise log-likelihood from a icfit object.
+#'
+#' Convenience function to extract a log-likelihood matrix or array from the
+#' fitted Stan model in an \code{icfit} object.
+#' @param X object of type \code{icfit}
+#' @param permuted Logical. Should the draws from each chain be permuted and
+#'   merged?. Default is \code{TRUE} to merge.
+#' @param ... Not currently used.
+#'
+#' @return An S x N matrix containing pointwise log-likelihood samples, where S
+#'   is the number of samples and N is the number of observations in the data.
+#'   If \code{permuted} is \code{FALSE} then an S x N x R array is returned,
+#'   where R is the number of chains.
+#'
+#' @seealso \code{\link[loo]{extract_log_lik}}
+#'
+#' @aliases log_lik
+#' @importFrom rstantools log_lik
+#' @importFrom loo extract_log_lik
+#' @method log_lik icfit
+#' @export
+#' @export log_lik
+log_lik.icfit <- function(X, permuted = TRUE, ...){
+
+  log_lik <- loo::extract_log_lik(stanfit = X$fit,
+                                  parameter_name = 'log_lik',
+                                  merge_chains = permuted)
+
+  return(log_lik)
+}
+
+
 #' Widely applicable information criterion (WAIC)
 #'
 #' Implementation of `waic()` methods from \code{loo} to compute WAIC from the
 #' pointwise log-likelihood.
 #' @param X Object of type \code{icfit} or \code{iclist}.
-#' @param pars Character names of parameters to extract. Default is the
-#'   log-likelihood.
-#' @param ... Additional arguments. See \code{loo::loo()} and
-#'   \code{loo::waic()}.
-#' @param save_psis Should the "psis" object created internally by loo() be
-#'   saved in the returned object? Default is \code{FALSE}.
-#' @param cores The number of cores to use for parallelization. This defaults to
-#'   the option mc.cores which can be set for an entire R session by
-#'   options(mc.cores = NUMBER).
-#' @param ... Additional arguments passed to \code{loo::loo()}.
-#' @details The developers of \code{stan} recommend LOO-CV using PSIS (as
-#'   implemented by the \code{loo::loo()} function) because PSIS provides useful
-#'   diagnostics as well as effective sample size and Monte Carlo estimates.
+#' @param ... Additional arguments. See \code{loo::waic()}.
+#' @details For more details see \pkg{loo}. The developers of \code{stan}
+#'   recommend LOO-CV using PSIS (as implemented by the \code{loo::loo()}
+#'   function) because PSIS provides useful diagnostics as well as effective
+#'   sample size and Monte Carlo estimates.
 #'
 #' @return A named list (of class `c("waic", "loo")`) with components:
 #'
@@ -41,67 +65,62 @@
 #' widely application information criterion in singular learning theory.
 #' *Journal of Machine Learning Research* **11**, 3571-3594.
 #'
-#' @seealso \code{[loo](waic)}
+#' @seealso \code{\link[loo]{waic}}
 #'
 #' @aliases waic
-#' @importFrom loo waic waic.function waic.matrix is.waic
-#' @export
+#' @importFrom loo waic
 #' @method waic icfit
+#' @export waic
+#' @export
 waic.icfit <- function(X, ...){
-  LLarray <- loo::extract_log_lik(stanfit = X$fit,
-                                  parameter_name = 'log_lik',
-                                  merge_chains = TRUE)
-  loo::waic(LLarray, ...)
+  LLarray <- log_lik.icfit(X)
+
+  return(loo::waic(LLarray, ...))
 }
 
 
 #' @aliases waic
-#' @importFrom loo waic waic.function waic.matrix is.waic
-#' @export
+#' @rdname waic.icfit
+#' @importFrom loo waic
 #' @method waic iclist
+#' @export waic
+#' @export
 waic.iclist <- function(X, ...){
 
   lapply(X, FUN = function(dat){ waic(dat, ...) })
 }
 
 
+#' Leave-one-out cross-validation
+#'
+#' The \code{loo} method for \code{icfit} objects. computes the approximate
+#' leave-one-out cross-validation using Pareto smoothed importance sampling
+#' (PSIS-LOO CV).
+#' @param X Object of type \code{icfit} or \code{iclist}
+#' @param ... Additional parameters used by \code{rstan::loo}.
+#' @return an object of class \code{loo} with the PSIS results.
+#' @seealso \code{\link[loo]{loo}}, \code{\link[rstan]{loo}}
+#'
 #' @aliases loo
-#' @importFrom loo loo loo.function loo.matrix is.loo
-#' @export
+#' @importFrom rstan loo
 #' @method loo icfit
-#' @rdname waic.icfit
-loo.icfit <- function(X,
-                      pars = "log_lik",
-                      ...,
-                      save_psis = FALSE,
-                      cores = getOption("mc.cores", 1)){
+#' @export loo
+#' @export
+loo.icfit <- function(X, ...){
 
-  stopifnot(length(pars) == 1L)
-
-  LLarray <- loo::extract_log_lik(stanfit = X$fit,
-                                  parameter_name = pars,
-                                  merge_chains = FALSE)
-
-  r_eff <- loo::relative_eff(x = exp(LLarray), cores = cores)
-
-  loo::loo.array(LLarray,
-                 r_eff = r_eff,
-                 cores = cores,
-                 save_psis = save_psis)
+  return(rstan::loo(X$fit, ...))
 }
 
 
 #' @aliases loo
-#' @importFrom loo loo loo.function loo.matrix is.loo
-#' @export
+#' @rdname loo.icfit
+#' @importFrom rstan loo
 #' @method loo iclist
-#' @rdname waic.icfit
-loo.iclist <- function(X,
-                       pars = "log_lik",
-                       ...,
-                       save_psis = FALSE,
-                       cores = getOption("mc.cores", 1)){
+#' @export loo
+#' @export
+loo.iclist <- function(X, ...){
 
-  lapply(X, FUN = function(dat){ loo(dat, pars, ..., save_psis, cores) })
+  lapply(X, FUN = function(dat){ loo(dat, ...) })
+
 }
 
