@@ -5,40 +5,35 @@
 #'   called 'credible intervals' for the estimated immunisation coverage term
 #'   ('mu').
 #' @param X A fitted model object of type \code{icfit} or \code{iclist}.
-#' @param pars The parameters to calculate the intervals for.
 #' @param stat Character vector of summary statistics to apply.
-#' @param prob Numeric vector of probabilities with values in [0,1] to be used
+#' @param probs Numeric vector of probabilities with values in [0,1] to be used
 #'   for \code{stat} "quantile".
 #' @return A \code{data.frame} with columns for 'country', 'time', and 'vaccine'
 #'   labels and summary statistics, and as many rows as there are 'mu'
 #'   observations of immunisation coverage.
 #'
-#' @aliases posterior_interval
-#' @importFrom rstantools posterior_interval
+#' @name ic_coverage
 #' @export
-#' @method posterior_interval icfit
-#' @rdname posterior_interval.icfit
-posterior_interval.icfit <- function(X,
-                                     pars = 'mu',
-                                     stat = c('mean', 'median', 'sd', 'quantile'),
-                                     prob = c(0.025, 0.25, 0.5, 0.75, 0.975)){
+ic_coverage <- function(X,
+                        stat = c('mean', 'median', 'sd', 'quantile'),
+                        probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
+  UseMethod("ic_coverage")
+}
 
-  if(length(pars) > 1) pars <- pars[1L]
-
-  if(pars != 'mu'){
-    draws <- rstan::extract(X$fit, pars = pars)
-    interval <- rstantools::posterior_interval(draws, prob)
-    return(interval)
-  }
+#' @name ic_coverage
+#' @export
+ic_coverage.icfit <- function(X,
+                              stat = c('mean', 'median', 'sd', 'quantile'),
+                              probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
 
   match.arg(stat)
-  stopifnot(all(prob >= 0 & prob <= 1))
+  stopifnot(all(probs >= 0 & probs <= 1))
 
   X <- X[['posterior']]
 
   psummary <- lapply(stat, FUN = function(st){
     if(st == 'quantile'){
-      t(apply(X[,-c(1:3)], 1, st, prob))
+      t(apply(X[,-c(1:3)], 1, st, probs))
     } else{
       apply(X[,-c(1:3)], 1, st)
     }
@@ -49,7 +44,7 @@ posterior_interval.icfit <- function(X,
   summarynm <- stat
   if('quantile' %in% stat){
     summarynm <- stat[-which(stat == 'quantile')]
-    summarynm <- c(summarynm, paste0(prob * 100, '%'))
+    summarynm <- c(summarynm, paste0(probs * 100, '%'))
   }
   names(psummary) <- summarynm
 
@@ -58,17 +53,13 @@ posterior_interval.icfit <- function(X,
 }
 
 
-#' @aliases posterior_interval
-#' @importFrom rstantools posterior_interval
+#' @name ic_coverage
 #' @export
-#' @method posterior_interval iclist
-#' @rdname posterior_interval.icfit
-posterior_interval.iclist <- function(X,
-                                      pars = 'mu',
-                                      stat = c('mean', 'median', 'sd', 'quantile'),
-                                      prob = c(0.025, 0.25, 0.5, 0.75, 0.975)){
+ic_coverage.iclist <- function(X,
+                               stat = c('mean', 'median', 'sd', 'quantile'),
+                               probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
   out <- lapply(X, function(Xpost){
-    posterior_interval(Xpost, pars, stat, prob)
+    ic_coverage(Xpost, stat, probs)
   })
 
   return(out)
