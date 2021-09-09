@@ -12,9 +12,9 @@
 #'   abbreviations (e.g. 'DTP1')
 #' @return A new object with type matching \code{X} with the selected records.
 #' @details For \code{icfit} and \code{iclist} objects, filtering will only
-#'   affect the posterior estimates. When a selection parameter is omitted, then
-#'   all possible values will be selected. Selection parameters which are not
-#'   present in \code{X} will be ignored.
+#'   affect the posterior estimates and prediction (if present). When a
+#'   selection parameter is omitted, then all possible values will be selected.
+#'   Selection parameters which are not present in \code{X} will be ignored.
 #'
 #' @name ic_filter
 #' @export
@@ -54,23 +54,46 @@ ic_filter.ic.df <- function(X, region, country, time, vaccine){
 #' @export
 ic_filter.icfit <- function(X, country, time, vaccine){
   post <- X[['posterior']]
+  pred <- X[['prediction']]
 
   if(!missing(country)){
     post <- post[post$country %in% country, ]
+
+    if(!is.null(pred)){
+      pred <- pred[pred$country %in% country, ]
+    }
+
     if(nrow(post) == 0) return(NULL)
   }
 
   if(!missing(time)){
     post <- post[post$time %in% time, ]
+
+    if(!is.null(pred)){
+      pred <- pred[pred$time %in% time, ]
+    }
+
     if(nrow(post) == 0) return(NULL)
   }
 
   if(!missing(vaccine)){
     post <- post[post$vaccine %in% vaccine, ]
+
+    if(!is.null(pred)){
+      pred <- pred[pred$vaccine %in% vaccine, ]
+    }
+
     if(nrow(post) == 0) return(NULL)
   }
 
-  out <- list('fit' = X$fit, 'posterior' = post, 'data' = X$vax_data)
+  out <- list('fit' = X$fit,
+              'posterior' = post,
+              'data' = X$vax_data,
+              'labels' = X$labels,
+              'numerator' = X$numerator,
+              'denominator' = X$denominator,
+              'prediction' = pred)
+
   class(out) <- list('icfit', class(out))
 
   return(out)
