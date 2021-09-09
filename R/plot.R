@@ -38,6 +38,8 @@ plot.iclist <- function(X, ...){
 #' @param vaccine Optional. Character vector to subset which vaccines to plot
 #' @param filter_yovi Logical. Should the estimates be filtered by year of
 #'   vaccine introduction?
+#' @param prediction Logical. If predictions are found in the \code{icfit}
+#'   object, should they be overlaid on the plot? Default is \code{TRUE}.
 #' @return  A plot of the coverage estimates extracted from the fit, including
 #'   credible intervals.
 #'
@@ -54,6 +56,7 @@ ic_plot <- function(X, observed,
                     probs = c(0.025, 0.975),
                     vaccine,
                     filter_yovi = TRUE,
+                    prediction = TRUE,
                     ncol = 4){
   UseMethod("ic_plot")
 }
@@ -65,6 +68,7 @@ ic_plot.icfit <- function(X, observed,
                           probs = c(0.025, 0.975),
                           vaccine,
                           filter_yovi = TRUE,
+                          prediction = TRUE,
                           ncol = 4){
 
   stopifnot(length(probs) == 2)
@@ -83,7 +87,7 @@ ic_plot.icfit <- function(X, observed,
   }
 
   # get the summary of the estimates ('mu')
-  X[['posterior']] <- ic_coverage(X, probs = probs)
+  X[['posterior']] <- ic_coverage(X, "posterior", probs = probs)
 
   # filter by year of introduction
   if(filter_yovi){
@@ -92,6 +96,18 @@ ic_plot.icfit <- function(X, observed,
 
   # extract posterior values
   mu_hat <- X$posterior
+
+  # set-up for predictions
+  if(prediction){
+    if(!is.null(X$prediction)){
+      pred <- ic_coverage(X, "prediction", probs = probs)
+      t0 <- min(pred$time)
+
+      mu_hat <- rbind(mu_hat, pred)
+    } else{
+      prediction <- FALSE
+    }
+  }
 
   # find names to plot
   mu_hat[['lo']] <- mu_hat[[paste0(probs[1] * 100, '%')]]
@@ -112,6 +128,11 @@ ic_plot.icfit <- function(X, observed,
       ggplot2::geom_ribbon(data = mu_hat[mu_hat$vaccine == v, ],
                            ggplot2::aes(x = .data$time, ymin = lo, ymax = hi),
                            alpha = 0.2, color = 'grey50')
+
+    if(prediction){
+      plotobj <- plotobj +
+        ggplot2::geom_vline(xintercept = t0, lty = 'dashed', color = 'blue')
+    }
 
     if(!missing(observed)){
       plotobj <- plotobj +
@@ -140,6 +161,7 @@ ic_plot.iclist <- function(X, observed,
                            probs = c(0.025, 0.975),
                            vaccine,
                            filter_yovi = TRUE, yovi,
+                           prediction = TRUE,
                            ncol = 4){
 
   for(i in X){
