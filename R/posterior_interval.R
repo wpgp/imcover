@@ -5,6 +5,8 @@
 #'   called 'credible intervals' for the estimated immunisation coverage term
 #'   ('mu').
 #' @param X A fitted model object of type \code{icfit} or \code{iclist}.
+#' @param object Character specifying the name of the object to summarise.
+#'   Default is 'posterior'.
 #' @param stat Character vector of summary statistics to apply.
 #' @param probs Numeric vector of probabilities with values in [0,1] to be used
 #'   for \code{stat} "quantile".
@@ -15,6 +17,7 @@
 #' @name ic_coverage
 #' @export
 ic_coverage <- function(X,
+                        object = 'posterior',
                         stat = c('mean', 'median', 'sd', 'quantile'),
                         probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
   UseMethod("ic_coverage")
@@ -23,13 +26,14 @@ ic_coverage <- function(X,
 #' @name ic_coverage
 #' @export
 ic_coverage.icfit <- function(X,
+                              object = 'posterior',
                               stat = c('mean', 'median', 'sd', 'quantile'),
                               probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
 
   match.arg(stat)
   stopifnot(all(probs >= 0 & probs <= 1))
 
-  X <- X[['posterior']]
+  X <- X[[object]]
 
   psummary <- lapply(stat, FUN = function(st){
     if(st == 'quantile'){
@@ -56,6 +60,7 @@ ic_coverage.icfit <- function(X,
 #' @name ic_coverage
 #' @export
 ic_coverage.iclist <- function(X,
+                               object = 'posterior',
                                stat = c('mean', 'median', 'sd', 'quantile'),
                                probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
   out <- lapply(X, function(Xpost){
