@@ -37,7 +37,7 @@ vaccine.
 }
 \details{
 For \code{icfit} and \code{iclist} objects, filtering will only
-affect the posterior estimates. When a selection parameter is omitted, then
-all possible values will be selected. Selection parameters which are not
-present in \code{X} will be ignored.
+affect the posterior estimates and prediction (if present). When a
+selection parameter is omitted, then all possible values will be selected.
+Selection parameters which are not present in \code{X} will be ignored.
 }

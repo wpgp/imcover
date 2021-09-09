@@ -12,6 +12,7 @@ ic_plot(
   probs = c(0.025, 0.975),
   vaccine,
   filter_yovi = TRUE,
+  prediction = TRUE,
   ncol = 4
 )
 
@@ -21,6 +22,7 @@ ic_plot(
   probs = c(0.025, 0.975),
   vaccine,
   filter_yovi = TRUE,
+  prediction = TRUE,
   ncol = 4
 )
 
@@ -31,6 +33,7 @@ ic_plot(
   vaccine,
   filter_yovi = TRUE,
   yovi,
+  prediction = TRUE,
   ncol = 4
 )
 }
@@ -46,6 +49,9 @@ to be used to calculate the upper and lower credible intervals.}
 
 \item{filter_yovi}{Logical. Should the estimates be filtered by year of
 vaccine introduction?}
+
+\item{prediction}{Logical. If predictions are found in the \code{icfit}
+object, should they be overlaid on the plot? Default is \code{TRUE}.}
 }
 \value{
 A plot of the coverage estimates extracted from the fit, including

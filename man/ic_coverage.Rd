@@ -8,24 +8,30 @@
 \usage{
 ic_coverage(
   X,
+  object = "posterior",
   stat = c("mean", "median", "sd", "quantile"),
   probs = c(0.025, 0.25, 0.5, 0.75, 0.975)
 )
 
 \method{ic_coverage}{icfit}(
   X,
+  object = "posterior",
   stat = c("mean", "median", "sd", "quantile"),
   probs = c(0.025, 0.25, 0.5, 0.75, 0.975)
 )
 
 \method{ic_coverage}{iclist}(
   X,
+  object = "posterior",
   stat = c("mean", "median", "sd", "quantile"),
   probs = c(0.025, 0.25, 0.5, 0.75, 0.975)
 )
 }
 \arguments{
 \item{X}{A fitted model object of type \code{icfit} or \code{iclist}.}
+
+\item{object}{Character specifying the name of the object to summarise.
+Default is 'posterior'.}
 
 \item{stat}{Character vector of summary statistics to apply.}
 

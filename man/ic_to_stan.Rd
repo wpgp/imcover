@@ -4,12 +4,10 @@
 \alias{ic_to_stan}
 \title{Prepare 'ic' data for Stan model}
 \usage{
-ic_to_stan(X, make_index = TRUE)
+ic_to_stan(X)
 }
 \arguments{
 \item{X}{Object of \code{ic.df} to be converted}
-
-\item{make_index}{Logical. Should indices for e.g. 'country' be created?}
 }
 \value{
 A list with named objects suitable for use as Stan data.
