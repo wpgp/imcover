@@ -8,50 +8,50 @@
 \usage{
 ic_plot(
   X,
-  observed,
   probs = c(0.025, 0.975),
   vaccine,
-  filter_yovi = TRUE,
+  observed = TRUE,
   prediction = TRUE,
+  filter_yovi = FALSE,
   ncol = 4
 )
 
 \method{ic_plot}{icfit}(
   X,
-  observed,
   probs = c(0.025, 0.975),
   vaccine,
-  filter_yovi = TRUE,
+  observed = TRUE,
   prediction = TRUE,
+  filter_yovi = FALSE,
   ncol = 4
 )
 
 \method{ic_plot}{iclist}(
   X,
-  observed,
   probs = c(0.025, 0.975),
   vaccine,
-  filter_yovi = TRUE,
-  yovi,
+  observed = TRUE,
   prediction = TRUE,
+  filter_yovi = FALSE,
   ncol = 4
 )
 }
 \arguments{
 \item{X}{Object of type \code{icfit} or \code{iclist}}
 
-\item{observed}{Object of type \code{ic.df}}
-
 \item{probs}{Numeric vector of length 2 for probabilities with values in \link{0,1}
 to be used to calculate the upper and lower credible intervals.}
 
 \item{vaccine}{Optional. Character vector to subset which vaccines to plot}
 
-\item{filter_yovi}{Logical. Should the estimates be filtered by year of
-vaccine introduction?}
+\item{observed}{Logical. Should the observed data used to fit \code{X} be
+overlaid on the plot? Default is \code{TRUE}.}
 
 \item{prediction}{Logical. If predictions are found in the \code{icfit}
 object, should they be overlaid on the plot? Default is \code{TRUE}.}
+
+\item{filter_yovi}{Logical. Should the estimates be filtered by year of
+vaccine introduction? Default is \code{FALSE}.}
 }
 \value{
 A plot of the coverage estimates extracted from the fit, including

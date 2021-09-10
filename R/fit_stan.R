@@ -120,7 +120,7 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
 
   out <- list('fit' = out,
               'posterior' = posterior,
-              'data' = vax_data[[1]],
+              'data' = X,  # vax_data[[1]],
               'labels' = lbls,
               'numerator' = attr(X, 'numerator'),
               'denominator' = attr(X, 'denominator'))

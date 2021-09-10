@@ -7,6 +7,7 @@
 #' @param ... Additional arguments passed to \code{ic_plot}.
 #' @return Plot
 #'
+#' @seealso \code{\link[imcover]{ic_plot}}
 #' @export
 plot.icfit <- function(X, ...){
   ic_plot(X, ...)
@@ -21,6 +22,7 @@ plot.icfit <- function(X, ...){
 #' @param ... Additional arguments passed to \code{ic_plot}.
 #' @return Plot
 #'
+#' @seealso \code{\link[imcover]{ic_plot}}
 #' @export
 plot.iclist <- function(X, ...){
   ic_plot(X, ...)
@@ -32,14 +34,15 @@ plot.iclist <- function(X, ...){
 #' Provides methods to plot estimated time trends of vaccine coverage for
 #' countries.
 #' @param X Object of type \code{icfit} or \code{iclist}
-#' @param observed Object of type \code{ic.df}
 #' @param probs Numeric vector of length 2 for probabilities with values in [0,1]
 #'   to be used to calculate the upper and lower credible intervals.
 #' @param vaccine Optional. Character vector to subset which vaccines to plot
-#' @param filter_yovi Logical. Should the estimates be filtered by year of
-#'   vaccine introduction? Default is \code{FALSE}.
+#' @param observed Logical. Should the observed data used to fit \code{X} be
+#'   overlaid on the plot? Default is \code{TRUE}.
 #' @param prediction Logical. If predictions are found in the \code{icfit}
 #'   object, should they be overlaid on the plot? Default is \code{TRUE}.
+#' @param filter_yovi Logical. Should the estimates be filtered by year of
+#'   vaccine introduction? Default is \code{FALSE}.
 #' @return  A plot of the coverage estimates extracted from the fit, including
 #'   credible intervals.
 #'
@@ -52,11 +55,12 @@ plot.iclist <- function(X, ...){
 #'
 #' @name ic_plot
 #' @export
-ic_plot <- function(X, observed,
+ic_plot <- function(X,
                     probs = c(0.025, 0.975),
                     vaccine,
-                    filter_yovi = FALSE,
+                    observed = TRUE,
                     prediction = TRUE,
+                    filter_yovi = FALSE,
                     ncol = 4){
   UseMethod("ic_plot")
 }
@@ -64,17 +68,18 @@ ic_plot <- function(X, observed,
 
 #' @name ic_plot
 #' @export
-ic_plot.icfit <- function(X, observed,
+ic_plot.icfit <- function(X,
                           probs = c(0.025, 0.975),
                           vaccine,
-                          filter_yovi = FALSE,
+                          observed = TRUE,
                           prediction = TRUE,
+                          filter_yovi = FALSE,
                           ncol = 4){
 
   stopifnot(length(probs) == 2)
 
   # select observed data
-  if(!missing(observed)){
+  if(observed){
     observed <- swap_names(observed)
     observed <- data.frame(observed)
   }
@@ -134,7 +139,7 @@ ic_plot.icfit <- function(X, observed,
         ggplot2::geom_vline(xintercept = t0, lty = 'dashed', color = 'blue')
     }
 
-    if(!missing(observed)){
+    if(observed){
       plotobj <- plotobj +
         ggplot2::geom_point(data = observed[observed$vaccine == v & observed$country %in% mu_hat$country, ],
                             ggplot2::aes(x = .data$time, y = coverage,
@@ -157,14 +162,15 @@ ic_plot.icfit <- function(X, observed,
 
 #' @name ic_plot
 #' @export
-ic_plot.iclist <- function(X, observed,
+ic_plot.iclist <- function(X,
                            probs = c(0.025, 0.975),
                            vaccine,
-                           filter_yovi = FALSE,
+                           observed = TRUE,
                            prediction = TRUE,
+                           filter_yovi = FALSE,
                            ncol = 4){
 
   for(i in X){
-    ic_plot(i, observed, probs, vaccine, filter_yovi, ncol)
+    ic_plot(i, probs, vaccine, observed, prediction, filter_yovi, ncol)
   }
 }

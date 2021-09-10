@@ -18,3 +18,6 @@ Plot
 Provides methods to plot estimated time trends of vaccine coverage for
 countries.
 }
+\seealso{
+\code{\link[imcover]{ic_plot}}
+}
