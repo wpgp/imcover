@@ -95,7 +95,7 @@ ic_adjust <- function(X, ratio_adj = FALSE,
 }
 
 
-#' Get the ratio between multi-dose vaccines
+#' Calculate the ratio between multi-dose vaccines
 #'
 #' @param X Object of class \code{ic.df} to adjust
 #' @param numerator Character vector of vaccine identifiers (with dose numbers)
@@ -132,7 +132,7 @@ ic_ratio <- function(X, numerator = 'DTP3', denominator = 'DTP1'){
     df$d_ratio <- df[[paste0(get_attr(X, 'coverage'), '.x')]] / df[[paste0(get_attr(X, 'coverage'), '.y')]] * 100
 
     df$d_ratio <- ifelse(is.na(df$d_ratio) | df$d_ratio < 1, 0.1, df$d_ratio)
-    df$d_ratio <- ifelse(df$d_ratio >= 1, 99.9, df$d_ratio)
+    df$d_ratio <- ifelse(df$d_ratio >= 100, 99.9, df$d_ratio)
     df$coverage <- df$d_ratio
 
     # reassemble dataset
