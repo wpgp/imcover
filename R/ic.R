@@ -238,6 +238,10 @@ is.ic_data <- function(object){
     attributes(x)[varnames] <- attrs[varnames]
   }
 
+  # keep any additional attributes with the ic.df
+  new_attrs <- attrs[!names(attrs) %in% c('names', 'row.names', 'class', ic_core())]
+  attributes(x)[names(new_attrs)] <- new_attrs
+
   return(x)
 }
 
