@@ -134,3 +134,18 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
   }
 }
 
+
+#' @aliases predict
+#' @importFrom stats predict
+#' @export predict.iclist
+#' @export
+predict.iclist <- function(X, country, vaccine, t = 2, return_ic = TRUE){
+  out <- lapply(X, FUN = function(fit){
+    predict(fit, country, vaccine, t, return_ic)
+  })
+
+  return(out)
+}
+
+
+
