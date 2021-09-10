@@ -37,7 +37,7 @@ plot.iclist <- function(X, ...){
 #'   to be used to calculate the upper and lower credible intervals.
 #' @param vaccine Optional. Character vector to subset which vaccines to plot
 #' @param filter_yovi Logical. Should the estimates be filtered by year of
-#'   vaccine introduction?
+#'   vaccine introduction? Default is \code{FALSE}.
 #' @param prediction Logical. If predictions are found in the \code{icfit}
 #'   object, should they be overlaid on the plot? Default is \code{TRUE}.
 #' @return  A plot of the coverage estimates extracted from the fit, including
@@ -55,7 +55,7 @@ plot.iclist <- function(X, ...){
 ic_plot <- function(X, observed,
                     probs = c(0.025, 0.975),
                     vaccine,
-                    filter_yovi = TRUE,
+                    filter_yovi = FALSE,
                     prediction = TRUE,
                     ncol = 4){
   UseMethod("ic_plot")
@@ -67,18 +67,11 @@ ic_plot <- function(X, observed,
 ic_plot.icfit <- function(X, observed,
                           probs = c(0.025, 0.975),
                           vaccine,
-                          filter_yovi = TRUE,
+                          filter_yovi = FALSE,
                           prediction = TRUE,
                           ncol = 4){
 
   stopifnot(length(probs) == 2)
-
-  # find years to plot
-  tt <- ggplot2::cut_interval(list_times(X), length = 5)  # 5-year groups
-  # clean labels
-  lbls <- levels(tt)
-  lbls <- paste(lbls, collapse = ',')
-  lbls <- unique(as.numeric(strsplit(gsub("\\[|\\]|\\(", "", lbls), ',')[[1]]))
 
   # select observed data
   if(!missing(observed)){
@@ -108,6 +101,13 @@ ic_plot.icfit <- function(X, observed,
       prediction <- FALSE
     }
   }
+
+  # find years to plot
+  tt <- ggplot2::cut_interval(mu_hat$time, length = 5)  # 5-year groups
+  # clean labels
+  lbls <- levels(tt)
+  lbls <- paste(lbls, collapse = ',')
+  lbls <- unique(as.numeric(strsplit(gsub("\\[|\\]|\\(", "", lbls), ',')[[1]]))
 
   # find names to plot
   mu_hat[['lo']] <- mu_hat[[paste0(probs[1] * 100, '%')]]
@@ -160,7 +160,7 @@ ic_plot.icfit <- function(X, observed,
 ic_plot.iclist <- function(X, observed,
                            probs = c(0.025, 0.975),
                            vaccine,
-                           filter_yovi = TRUE, yovi,
+                           filter_yovi = FALSE,
                            prediction = TRUE,
                            ncol = 4){
 
