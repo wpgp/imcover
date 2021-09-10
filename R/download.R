@@ -17,10 +17,14 @@
 #'   to write binary files.
 #' @param return_ic Should an object of type \code{ic.df} be returned? Default
 #'   is \code{TRUE}.
-#' @param ic_reduce For surveys only, should records with insufficient coverage
+#' @param reduce For surveys only, should records with insufficient coverage
 #'   be dropped? Default is \code{TRUE}.
-#' @param ic_minSample For surveys only, what is the minimum sample size to keep
+#' @param minSample For surveys only, what is the minimum sample size to keep
 #'   survey records? Default is 300.
+#' @param adjust For survey only, should a recall-bias adjustment be applied?
+#'   Default is \code{TRUE}.
+#' @param adjVacc Character vector of vaccines to adjust when \code{adjust} is
+#'   \code{TRUE}. Default is "DTP" and "PCV".
 #' @param add_region Optional. Character string for the type of region code to
 #'   add based on the ISO3 code of the country. Options are: 'who' or 'm49'.
 #' @param ... additional arguments to be passed on to \code{download.file}.
@@ -161,7 +165,8 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
 download_survey <- function(destfile, url, use_cache = TRUE,
                             quiet = FALSE, attempts = 3, mode = 'wb',
                             return_ic = TRUE,
-                            ic_reduce = TRUE, ic_minSample = 300,
+                            reduce = TRUE, minSample = 300,
+                            adjust = TRUE, adjVacc = c("DTP", "PCV"),
                             add_region = 'who', ...){
 
   if(missing(url)){
@@ -210,6 +215,8 @@ download_survey <- function(destfile, url, use_cache = TRUE,
                      time = 'cohortYear', vaccine = 'vaccine',
                      coverage = 'coverage', source = 'source',
                      reduce = ic_reduce, minSample = ic_minSample)
+
+    dat <- survey_adjust(dat)
   } else{
     return(dat)
   }

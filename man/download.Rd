@@ -40,8 +40,10 @@ download_survey(
   attempts = 3,
   mode = "wb",
   return_ic = TRUE,
-  ic_reduce = TRUE,
-  ic_minSample = 300,
+  reduce = TRUE,
+  minSample = 300,
+  adjust = TRUE,
+  adjVacc = c("DTP", "PCV"),
   add_region = "who",
   ...
 )
@@ -83,11 +85,17 @@ add based on the ISO3 code of the country. Options are: 'who' or 'm49'.}
 
 \item{...}{additional arguments to be passed on to \code{download.file}.}
 
-\item{ic_reduce}{For surveys only, should records with insufficient coverage
+\item{reduce}{For surveys only, should records with insufficient coverage
 be dropped? Default is \code{TRUE}.}
 
-\item{ic_minSample}{For surveys only, what is the minimum sample size to keep
+\item{minSample}{For surveys only, what is the minimum sample size to keep
 survey records? Default is 300.}
+
+\item{adjust}{For survey only, should a recall-bias adjustment be applied?
+Default is \code{TRUE}.}
+
+\item{adjVacc}{Character vector of vaccines to adjust when \code{adjust} is
+\code{TRUE}. Default is "DTP" and "PCV".}
 }
 \value{
 The functions return a \code{data.frame} while

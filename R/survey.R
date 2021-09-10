@@ -117,6 +117,19 @@ make_ic_svy <- function(X, drop_cols, survey, sample, evidence, validity,
 }
 
 
+#' Survey recall-bias adjustment
+#'
+#' Apply a bias adjustment for selected vaccines in an immunisation coverage
+#' survey dataset.
+#' @param X Object of type \code{ic.df}
+#' @param adjVacc Character vector of vaccine abbreviations (omitting dose
+#'   numbers) to adjust.
+#' @return An \code{ic.df} object with adjusted coverage estimates for selected
+#'   vaccines.
+#'
+#' @seealso \code{\link[imcover]{ic_survey}}
+#' @name survey_adjust
+#' @export
 survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
   if(!is.ic_data(X)){ stop("Please supply a valid 'ic' dataset.") }
   attrs <- get_attr(X, attrs = ic_core(survey = TRUE), unlist = FALSE)
@@ -132,6 +145,9 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
   if(any(!chk)){
     stop("Missing vaccines: ", paste(vdoses[!chk], collapse = " "))
   }
+
+  # reclassify
+  X <- X[!is.na(X[[corenames['validity']]]), ]
 
   # check for missing validity info? some empty strings. drop?
   if(any(!X[[corenames['validity']]] %in% c("crude", "valid"))){
@@ -258,6 +274,21 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
 }
 
 
+#' Select survey records
+#'
+#' Reduce immunisation survey coverage records based on set criteria.
+#' @param X Object of type \code{ic.df}
+#' @param minSample Minimum number of samples in the survey.
+#' @param priority Character vector of the priority of records when there are
+#'   duplicates records for a given vaccine, survey, and year. Priority is
+#'   established by the 'evidence' field of surveys. The highest record is given
+#'   first in this argument.
+#' @return An \code{ic.df} object with fewer records, based on the selection
+#'   criteria.
+#'
+#' @seealso \code{\link[imcover]{ic_survey}}
+#' @name survey_reduce
+#' @export
 survey_reduce <- function(X,
                           minSample = 300,
                           priority = c("card or history", "card")){

@@ -9,6 +9,9 @@ Authors@R:
            comment = c(ORCID = "0000-0003-2192-5988")),
       person(given = "Edson",
             family = "Utazi",
+            role = c("aut")),
+      person(given = "Sahu",
+            family = "Sujit",
             role = c("aut"))
       )
 Description: Provides access to WUENIC immunisation data and a Bayesian statistical modelling framework to produces country- and region-specific temporal trends in immunisation coverage.
