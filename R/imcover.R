@@ -1,6 +1,8 @@
 #' imcover: An R package for spatio-temporal immunisation coverage modelling
 #'
-#' [Add some description here.]
+#' Provides access to WUENIC immunisation data and a Bayesian statistical
+#' modelling framework to produces country- and region-specific temporal trends
+#' in immunisation coverage.
 #'
 #' @section Credits:
 #' This work was undertaken by members of the WorldPop Research Group at the
