@@ -80,8 +80,9 @@ ic_plot.icfit <- function(X,
 
   # select observed data
   if(observed){
-    observed <- swap_names(observed)
-    observed <- data.frame(observed)
+    obsdat <- swap_names(X$data)
+    obsdat <- data.frame(obsdat)
+    if(is.null(obsdat)) observed <- FALSE
   }
 
   # get the summary of the estimates ('mu')
@@ -141,7 +142,7 @@ ic_plot.icfit <- function(X,
 
     if(observed){
       plotobj <- plotobj +
-        ggplot2::geom_point(data = observed[observed$vaccine == v & observed$country %in% mu_hat$country, ],
+        ggplot2::geom_point(data = obsdat[obsdat$vaccine == v & obsdat$country %in% mu_hat$country, ],
                             ggplot2::aes(x = .data$time, y = coverage,
                                          color = factor(source)))
     }

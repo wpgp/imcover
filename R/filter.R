@@ -88,7 +88,7 @@ ic_filter.icfit <- function(X, country, time, vaccine){
 
   out <- list('fit' = X$fit,
               'posterior' = post,
-              'data' = X$vax_data,
+              'data' = X$data,
               'labels' = X$labels,
               'numerator' = X$numerator,
               'denominator' = X$denominator,
