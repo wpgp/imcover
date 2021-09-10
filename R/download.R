@@ -214,9 +214,9 @@ download_survey <- function(destfile, url, use_cache = TRUE,
     dat <- ic_survey(dat, region = 'region', country = 'ISO3',
                      time = 'cohortYear', vaccine = 'vaccine',
                      coverage = 'coverage', source = 'source',
-                     reduce = ic_reduce, minSample = ic_minSample)
+                     reduce = reduce, minSample = minSample)
 
-    dat <- survey_adjust(dat)
+    dat <- survey_adjust(dat, adjVacc = adjVacc)
   } else{
     return(dat)
   }
