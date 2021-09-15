@@ -1,6 +1,8 @@
 ---
-title: "Introduction to `imcover`"
-output: rmarkdown::html_vignette
+title: "Model-based approaches to immunization coverage estimations in `R`: An introduction to the `imcover` package"
+author: Chris Jochem (w.c.jochem@soton.ac.uk)
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Introduction to `imcover`}
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,10 +12,290 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  tidy = FALSE
 )
 ```
 
+National estimates of immunization coverage are crucial for monitoring and
+evaluating coverage levels and trends, as well as immunization goals and
+targets, at the national and international levels. There are multiple potential
+sources of information related to immunization coverage, and the challenge is to
+develop a statistically-principled method to make use of different data sources
+while accounting for their uncertainties.
+
+The goal of the `imcover` package is to provide access to data download,
+processing and modelling tools and to support a Bayesian statistical modelling
+approach to generate national estimates of immunization coverage from multiple
+time series of data on coverage. `imcover` is built as part of the open-source
+statistical computing and modelling language, `R`
+([https://cran.r-project.org/](https://cran.r-project.org/)). This package is
+designed to support broadly replicable and reproducible analyses of immunization
+coverage.
+
+This vignette will demonstrate some of the core functionality in the package,
+including:
+
+* Downloading input data sources on coverage
+* Cleaning/processing/harmonizing data sources
+* Fitting a Bayesian statistical model and model outputs
+* Generating national coverage estimates and visualizing results
+
+### Installation and set-up
+
+`imcover` is not (yet) available for download from CRAN. It is currently in a
+private GitHub repository during development. Access can be granted to users for
+"beta testing." Once downloaded, a user accesses the code library through `R`.
+
 ```{r setup}
+# load the package within the R environment
 library(imcover)
 ```
+
+All functions are documented and the help and examples can be accessed within
+`R` using the standard command `help` or `?`.
+
+`imcover` was developed by [WorldPop at the University of
+Southampton (https://www.worldpop.org/)](https://www.worldpop.org/).
+
+## Accessing and downloading data
+
+If a user does not have a dataset on their local computer, the first step in
+analysis is to acquire standardised data. Within `imcover` there is
+functionality to download several datasets from the WHO Immunization data portal
+([https://immunizationdata.who.int/listing.html](https://immunizationdata.who.int/listing.html)).
+These datasets include official coverage reports, administrative records, as
+well as household survey datasets.
+
+```{r dataDownload}
+# download administrative and official records
+cov <- download_coverage()
+
+# download survey records
+svy <- download_survey()
+```
+
+As part of the download process, by default, several pre-processing steps are
+done to, e.g. reconcile differences in column names. In the case of survey
+datasets, a recall-bias adjustment is applied. The default processing behaviour
+can be changed by modifying the argument supplied to the download functions.
+Additionally, all the processing steps can be carried out using functions
+available in `imcover` if advanced users want more control over pre-processing.
+
+The data files available from the WHO website require some additional cleaning
+before analysis. Notice that the data objects created by `imcover` can work with
+all standard `R` commands for selecting and modifying records.
+
+```{r dataCleaning}
+# Further data cleaning of immunization records
+# drop some record categories (PAB, HPV, WUENIC)
+cov <- cov[cov$coverage_category %in% c("ADMIN", "OFFICIAL"), ]
+cov$coverage_category <- tolower(cov$coverage_category)  # clean-up
+
+# create a combined dataset
+dat <- rbind(cov, svy)
+
+# remove records with missing coverage values
+dat <- dat[!is.na(dat$coverage), ]
+
+# mismatch in vaccine names between coverage and survey datasets
+dat[dat$antigen == 'DTPCV1', 'antigen'] <- 'DTP1'
+dat[dat$antigen == 'DTPCV2', 'antigen'] <- 'DTP2'
+dat[dat$antigen == 'DTPCV3', 'antigen'] <- 'DTP3'
+```
+
+## `ic` data objects
+
+A unique feature of `imcover` is that it creates and works with a custom data
+extension, which we refer to as an immunization coverage data frame or an
+`ic.df`. This type of object has all the functionality of a standard `R` data
+frame while having additional functionality to store attributes to make it
+easier to work with the immunization coverage data and to keep track of what
+processing has been done to the data.
+
+```{r inspectObj}
+# inspect a random sample of records
+print(dat[sample(1:nrow(dat), size = 6), ])
+```
+
+```{r icObj}
+# note the type object
+class(dat)
+```
+
+For example, the `ic.df` objects have helper functions to tabulate records,
+
+```{r listVax}
+# show all records
+list_vaccines(dat)  # note the download files contain many vaccine
+```
+
+Or to easily filter the records. Here we will subset the data for five core
+vaccines and a subset of time points.
+
+```{r filterObj}
+# subset the records by vaccine and year for all countries
+dat <- ic_filter(dat, 
+                 vaccine = c("DTP1", "DTP3", "MCV1", "MCV2", "PCV3"),
+                 time = 2000:2018)
+
+# cross-tabulations of source and vaccine
+table(dat$coverage_category, dat$antigen)
+```
+
+Other specialised methods are available to filter out records for a country
+after the year of national introduction.
+
+```{r yovi}
+# subset records based on year of vaccine introduction
+dat <- filter_yovi(dat)
+  table(dat$year, dat$antigen)  # notice year of introduction for PCV3
+```
+
+Some further pre-processing of immunization data has been found to be necessary
+in preparation for the statistical modelling. We introduce functions to make it
+easy to carry out these steps.
+
+Firstly, some records observe inconsistencies in the levels of coverage between
+multi-dose vaccines. To maintain consistency, where coverage of later doses
+cannot exceed earlier doses, we model the ratio between first and third dose. In
+this example, we only adjust DTP1 and DTP3, but other multi-dose vaccines could
+be processed in a similar manner.
+
+```{r adj1}
+# adjustment - use ratio for DTP3
+dat <- ic_ratio(dat, numerator = 'DTP3', denominator = 'DTP1')
+```
+
+The `ic.df` object will now store a note that this processing step has been
+carried out so that the ratio is back-transformed and that coverage estimates
+and predictions are adjusted appropriately.
+
+Secondly, we need to force coverage estimates to lie between 0% and 100%.
+
+```{r adj2}
+# maintain coverage between 0-100%
+dat <- ic_adjust(dat, coverage_adj = TRUE)
+```
+
+## Model fitting
+
+The core of `imcover` is the functionality to fit a Bayesian statistical model
+of multiple time series. The sources of coverage data (in this example
+administrative, official and surveys) are taken as multiple, partial estimates
+of the true, unobserved immunization coverage in a country. A Bayesian
+estimation approach allows us to incorporate these multiple datasets, place
+prior beliefs on which sources are more reliable, share information between
+countries, and to quantify uncertainty in our estimate of the latent
+immunization coverage.
+
+`imcover` provides an interface to [`Stan`
+(https://mc-stan.org/)](https://mc-stan.org/) for statistical computation. This
+means that, in addition to `imcover`, many of the tools for assessing model
+performance and visualizing results from `Stan` will work for `imcover` results.
+
+In this demonstration will start by fitting a model to a single region of data
+using `ic_fit` by passing in the `ic.df` object and several arguments that
+control the posterior sampling.
+
+```{r fit0, message=FALSE, cache=FALSE, include=FALSE}
+options(mc.cores = parallel::detectCores())  # enable parallel processing
+
+# Fit model to a single region of data
+fit1 <- ic_fit(dat[dat$region == 'AFRO', ], 
+               chains = 2, 
+               iter = 200, 
+               warmup = 100)
+```
+
+```{r fit, message = FALSE, eval = FALSE}
+options(mc.cores = parallel::detectCores())  # enable parallel processing
+
+# Fit model to a single region of data
+fit1 <- ic_fit(dat[dat$region == 'AFRO', ], 
+               chains = 4, 
+               iter = 2000, 
+               warmup = 1000)
+```
+
+### Model outputs
+
+After fitting the model, we can work with the parameter estimates and estimates
+of coverage. For example, we can easily make graphs of coverage estimates.
+Notice how `imcover` has a generic function defined to specially handle objects
+returned by `ic_fit`.
+
+```{r plotCov, fig.width = 5, fig.height = 5}
+# Plot of coverage
+plot(ic_filter(fit1, vaccine = 'DTP1',
+               country = c('BWA', 'SLE', 'GHA', 'NGA')),
+     ncol = 2)
+```
+```{r plotCov2, fig.width = 5, fig.height = 5, fig.cap = "Example results of modelled immunization coverage estimates for selected countries and vaccines."}
+plot(ic_filter(fit1, vaccine = 'DTP3',
+               country = c('BWA', 'SLE', 'GHA', 'NGA')),
+     ncol = 2)
+```
+
+The main output of the model is a table of coverage estimates for each country,
+vaccine, and time point along with uncertainty around each estimate. We can
+extract these data as a table, save them to a data frame, or write them out to a
+file for use in a report.
+
+```{r icCover}
+# Extracting coverage estimates
+ic <- ic_coverage(fit1, 
+                  stat = "quantile", # customise the summary function
+                  probs = c(0.025, 0.5, 0.975))
+
+head(ic, 10)
+```
+
+### Predictions
+
+Once we have the fitted model, we can also use it to predict coverage to time
+points in the near future.
+
+```{r plotPred, fig.width = 5, fig.height = 5}
+# Predict for future time points (3 years post 2018)
+fit1 <- predict(fit1, t = 3)  # update icfit to include 'prediction' info
+
+# Update the graph 
+# Automatically include fitted estimates, observed data, and predictions
+plot(ic_filter(fit1, vaccine = 'DTP1',
+               country = c('BWA', 'SLE', 'GHA', 'NGA')),
+     ncol = 2)
+```
+
+```{r plotPred2, fig.width = 5, fig.height = 5, fig.cap = "Example reults of estimated immunization coverage with future predictions to the right of the dashed lines. Overlaid with observed data points."}
+plot(ic_filter(fit1, vaccine = 'DTP3',
+               country = c('BWA', 'SLE', 'GHA', 'NGA')),
+     ncol = 2)
+```
+
+## Summary
+
+This vignette has introduced the core functionality of the `imcover` package and
+its use in modelling national time series of immunization coverage. Providing a
+coordinated toolset to download, process, and model immunization data should
+allow for consistent analyses whose methods are transparent and replicable.
+
+There are a few additional options in the package. For instance, multiple
+regions of data can be supplied to `ic_fit` and then region-specific models can
+be executed. In the posterior analyses, population-weighted regional summaries
+of coverage can also be calculated. Similar to `ic_coverage`, users can
+customize the summary functions. Finally, the `Stan` models allow for
+significant flexibility in defining statistical models. The package specifies
+reasonable default values for the models to replicate our analyses, but users
+can explore the sensitivity of these settings by easily adjusting the parameters
+within `R` and re-running the models without having to interact with the `Stan`
+code.
+
+Feedback on the package is welcome. Please email Chris Jochem
+(w.c.jochem@soton.ac.uk)
+
+---
+```{r ending, echo = FALSE}
+sessionInfo()
+```
+
