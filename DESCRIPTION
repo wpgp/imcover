@@ -35,7 +35,8 @@ Imports:
     rstan (>= 2.18.1),
     ggplot2,
     rlang,
-    loo
+    loo,
+    plotly
 LinkingTo: 
     BH (>= 1.66.0),
     Rcpp (>= 0.12.0),

@@ -43,6 +43,9 @@ plot.iclist <- function(X, ...){
 #'   object, should they be overlaid on the plot? Default is \code{TRUE}.
 #' @param filter_yovi Logical. Should the estimates be filtered by year of
 #'   vaccine introduction? Default is \code{FALSE}.
+#' @param ncol When plotting multiple countries, the number of plots per page.
+#' @param interactive Logical. Should the output be interactive? Default is
+#'   \code{FALSE}.
 #' @return  A plot of the coverage estimates extracted from the fit, including
 #'   credible intervals.
 #'
@@ -61,7 +64,8 @@ ic_plot <- function(X,
                     observed = TRUE,
                     prediction = TRUE,
                     filter_yovi = FALSE,
-                    ncol = 4){
+                    ncol = 4,
+                    interactive = FALSE){
   UseMethod("ic_plot")
 }
 
@@ -74,7 +78,8 @@ ic_plot.icfit <- function(X,
                           observed = TRUE,
                           prediction = TRUE,
                           filter_yovi = FALSE,
-                          ncol = 4){
+                          ncol = 4,
+                          interactive = FALSE){
 
   stopifnot(length(probs) == 2)
 
@@ -82,6 +87,7 @@ ic_plot.icfit <- function(X,
   if(observed){
     obsdat <- swap_names(X$data)
     obsdat <- data.frame(obsdat)
+    obsdat$source <- factor(obsdat$source)
     if(is.null(obsdat)) observed <- FALSE
   }
 
@@ -129,10 +135,12 @@ ic_plot.icfit <- function(X,
   for(v in vaccine){
     plotobj <- ggplot2::ggplot() +
       ggplot2::geom_line(data = mu_hat[mu_hat$vaccine == v, ],
-                         ggplot2::aes(x = .data$time, y = mean),
+                         ggplot2::aes(x = .data$time,
+                                      y = .data$mean),
                          color = "black") +
       ggplot2::geom_ribbon(data = mu_hat[mu_hat$vaccine == v, ],
-                           ggplot2::aes(x = .data$time, ymin = lo, ymax = hi),
+                           ggplot2::aes(x = .data$time,
+                                        ymin = .data$lo, ymax = .data$hi),
                            alpha = 0.2, color = 'grey50')
 
     if(prediction){
@@ -143,8 +151,9 @@ ic_plot.icfit <- function(X,
     if(observed){
       plotobj <- plotobj +
         ggplot2::geom_point(data = obsdat[obsdat$vaccine == v & obsdat$country %in% mu_hat$country, ],
-                            ggplot2::aes(x = .data$time, y = coverage,
-                                         color = factor(source)))
+                            ggplot2::aes(x = .data$time,
+                                         y = .data$coverage,
+                                         color = source))
     }
 
     plotobj <- plotobj +
@@ -156,7 +165,12 @@ ic_plot.icfit <- function(X,
       ggplot2::theme(legend.position = 'bottom',
                      legend.title = ggplot2::element_blank())
 
-    print(plotobj)
+    # output
+    if(interactive){
+      print(plotly::ggplotly(plotobj))
+    } else{
+      print(plotobj)
+    }
   }
 }
 
@@ -169,9 +183,11 @@ ic_plot.iclist <- function(X,
                            observed = TRUE,
                            prediction = TRUE,
                            filter_yovi = FALSE,
-                           ncol = 4){
+                           ncol = 4,
+                           interactive = FALSE){
 
   for(i in X){
-    ic_plot(i, probs, vaccine, observed, prediction, filter_yovi, ncol)
+    ic_plot(i, probs, vaccine, observed, prediction,
+            filter_yovi, ncol, interactive)
   }
 }
