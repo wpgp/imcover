@@ -1,5 +1,6 @@
-// Bayesian model of vaccination coverage
-// country + vacc + country x time + vacc x time
+// imcover - Bayesian model of immunisation coverage
+// multi-likelihood, shared latent mean model
+// country + vacc + country x time + vacc x time + country x vacc x time
 
 data {
   int<lower=0> N;  // number of obs
@@ -29,13 +30,16 @@ parameters {
 
   real beta_i[N_i];  // i-th country random effect
   real alpha_j[N_j];  // j-th vaccine random effect
-  real phi_t [N_t]; //t-th time effect
+  real phi_t [N_t];  //t-th time effect
+
+  // interactions
   real gamma_it[N_i, N_t];  // t-th time point, replicated per country
   real gamma_jt[N_j, N_t];  // t-th time point, replicated per vaccine
-  real gamma_ij[N_i, N_j]; //country-vaccine random effect
+  real gamma_ij[N_i, N_j];  // country-vaccine random effect
   matrix[N_j, N_t] delta_ijt[N_i];
 
-  real<lower=-1, upper=1> rho_i; // AR(1) corr
+  // AR(1) correlations
+  real<lower=-1, upper=1> rho_i;
   real<lower=-1, upper=1> rho_j;
   real<lower=-1, upper=1> rho_t;
   real<lower=-1, upper=1> rho_ij;
@@ -43,7 +47,6 @@ parameters {
   // standard deviation
   real<lower=0> sigma_a; // source-specific intercepts
   real<lower=0> sigma_o;
-  //real<lower=0> sigma_s;
   real<lower=0, upper=0.4> sigma_s;  //Note this
 
   real<lower=0> sigma_i;
@@ -60,9 +63,9 @@ transformed parameters {
  matrix[N_t, N_j] mu[N_i];
 
   // shared mean
-  for(ii in 1:N_i){
-    for(jj in 1:N_j){
-      for(tt in 1:N_t){
+  for(ii in 1:N_i){  // each country
+    for(jj in 1:N_j){  // each vaccine
+      for(tt in 1:N_t){  // each time
         mu[ii, tt, jj] = beta_i[ii] + alpha_j[jj] + phi_t[tt] + gamma_it[ii, tt] + gamma_jt[jj, tt] + gamma_ij[ii, jj] + delta_ijt[ii, jj, tt];
       }
     }
@@ -77,18 +80,20 @@ model {
   lambda_o ~ normal(0, 1);
   lambda_s ~ normal(0, 1);
 
-  sigma_a ~ cauchy(0, 2);  //Note that truncated cauchy or normal priors worked well for sigma_s          0.4
-  sigma_o ~ cauchy(0, 2);  //For sigma_o and sigma_a, half-normal or half-cauchy priors also worked well  0.4
-  sigma_s ~ cauchy(0, 0.2); //0.002
+  sigma_a ~ cauchy(0, 2);
+  sigma_o ~ cauchy(0, 2);
+  sigma_s ~ cauchy(0, 0.2);
 
-  //Autoregressive model (AR(1))
+  // Autoregressive models (AR(1))
+  // time
   phi_t[1] ~ normal(0, sqrt(pow(sigma_t, 2) / (1-pow(rho_t, 2))));
+
   for(tt in 2:N_t){
-	phi_t[tt] ~ normal(rho_t * phi_t[tt-1], sigma_t);
+	  phi_t[tt] ~ normal(rho_t * phi_t[tt-1], sigma_t);
   }
 
   // country - time
-  for(ii in 1:N_i){ //N_i countries
+  for(ii in 1:N_i){
     gamma_it[ii, 1] ~ normal(0, sqrt(pow(sigma_it, 2) / (1-pow(rho_i, 2))));
 
     for(tt in 2:N_t){
@@ -105,7 +110,7 @@ model {
     }
   }
 
-  //country-vaccine
+  // country-vaccine
   for(ii in 1:N_i){
   	for(jj in 1:N_j){
   		gamma_ij[ii, jj] ~ normal(0, sigma_ij);
@@ -122,7 +127,6 @@ model {
       }
     }
   }
-
 
   // likelihoods
   for(n_a in 1:N_a)
