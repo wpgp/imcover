@@ -13,7 +13,8 @@ ic_plot(
   observed = TRUE,
   prediction = TRUE,
   filter_yovi = FALSE,
-  ncol = 4
+  ncol = 4,
+  interactive = FALSE
 )
 
 \method{ic_plot}{icfit}(
@@ -23,7 +24,8 @@ ic_plot(
   observed = TRUE,
   prediction = TRUE,
   filter_yovi = FALSE,
-  ncol = 4
+  ncol = 4,
+  interactive = FALSE
 )
 
 \method{ic_plot}{iclist}(
@@ -33,7 +35,8 @@ ic_plot(
   observed = TRUE,
   prediction = TRUE,
   filter_yovi = FALSE,
-  ncol = 4
+  ncol = 4,
+  interactive = FALSE
 )
 }
 \arguments{
@@ -52,6 +55,11 @@ object, should they be overlaid on the plot? Default is \code{TRUE}.}
 
 \item{filter_yovi}{Logical. Should the estimates be filtered by year of
 vaccine introduction? Default is \code{FALSE}.}
+
+\item{ncol}{When plotting multiple countries, the number of plots per page.}
+
+\item{interactive}{Logical. Should the output be interactive? Default is
+\code{FALSE}.}
 }
 \value{
 A plot of the coverage estimates extracted from the fit, including

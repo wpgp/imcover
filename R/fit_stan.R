@@ -5,8 +5,15 @@
 #' @param region Logical. Should region-specific models be generated? Default
 #'   is \code{TRUE}.
 #' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
-#' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
-#' @return An object of class `stanfit` returned by `rstan::sampling`
+#' @param ... Arguments passed to \code{rstan::sampling} (e.g. iter, chains).
+#' @return An object of class \code{icfit} for single region models, or
+#'   \code{iclist} for multiple regions. The \code{icfit} object contains a
+#'   \code{stanfit} object returned by \code{rstan::sampling} with the fitted
+#'   object along with the posterior samples, data used in the model, and other
+#'   attributes related to the fitting. An \code{iclist} object is an extension
+#'   of a list containing multiple \code{icfit} objects.
+#'
+#' @details
 #'
 #' @name ic_fit
 #' @export

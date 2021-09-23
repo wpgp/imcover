@@ -20,8 +20,16 @@ is \code{TRUE}.}
 \item{...}{Arguments passed to \code{rstan::sampling} (e.g. iter, chains).}
 }
 \value{
-An object of class \code{stanfit} returned by \code{rstan::sampling}
+An object of class \code{icfit} for single region models, or
+\code{iclist} for multiple regions. The \code{icfit} object contains a
+\code{stanfit} object returned by \code{rstan::sampling} with the fitted
+object along with the posterior samples, data used in the model, and other
+attributes related to the fitting. An \code{iclist} object is an extension
+of a list containing multiple \code{icfit} objects.
 }
 \description{
 Multi-source immunisation coverage model with Stan
+}
+\details{
+
 }
