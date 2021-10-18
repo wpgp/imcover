@@ -2,6 +2,13 @@
 #' Multi-source immunisation coverage model with Stan
 #'
 #' @param X Object of \code{ic.df} for analysis
+#' @param prior_lambda Scale parameter for half-normal prior on source-specific
+#'   intercepts. See details.
+#' @param prior_sigma Scale parameter for half-Cauchy prior on source-specific
+#'   standard deviations. See details.
+#' @param upper_lambda Not currently used.
+#' @param upper_sigma Numeric value (or vector) setting the upper bounds on the
+#'   source-specific scale parameter. See details.
 #' @param region Logical. Should region-specific models be generated? Default
 #'   is \code{TRUE}.
 #' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
@@ -13,18 +20,44 @@
 #'   attributes related to the fitting. An \code{iclist} object is an extension
 #'   of a list containing multiple \code{icfit} objects.
 #'
-#' @details
+#' @details The default priors for the source-specific intercepts (lambda) and
+#'   standard deviations (sigma) are given by half-normal and half-Cauchy
+#'   distributions, respectively. Future version may allow users to specify
+#'   different distributions. Currently, users may only specify the scale
+#'   parameter of these distribution. By default, for lambda all sources are
+#'   given a value of 0.5, i.e. a prior distribution of \code{normal(0, 0.5)}.
+#'   For sigma, the default varies by source. While administrative and official
+#'   data are set to a value of 2, survey data is restricted to 0.2, reflecting
+#'   a prior belief in more accurate measurements. These parameters are used in
+#'   a half-Cauchy distribution (e.g. \code{cauchy(0, 0.2)}).
+#'
+#'   In addition, the upper bounds of the parameter may be set to define the
+#'   range of the parameter. Administrative and official data have no upper
+#'   bound, while survey data have an upper bound of 0.4.
+#'
+#'   Users setting \code{prior_lambda}, \code{prior_sigma}, or
+#'   \code{upper_sigma} should note that the length of values specified must be
+#'   1 or match the number of unique sources in \code{X}. When only one value is
+#'   present, it will be applied to all sources. When a vector is provided, the
+#'   order of values must match the order of sources as given by
+#'   \code{list_sources(X)}.
 #'
 #' @name ic_fit
 #' @export
-ic_fit <- function(X, region = TRUE, verbose = TRUE, ...){
+ic_fit <- function(X,
+                   prior_lambda, prior_sigma,
+                   upper_lambda, upper_sigma,
+                   region = TRUE, verbose = TRUE, ...){
   UseMethod("ic_fit")
 }
 
 
 #' @name ic_fit
 #' @export
-ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
+ic_fit.ic.df <- function(X,
+                         prior_lambda, prior_sigma,
+                         upper_lambda, upper_sigma,
+                         region = TRUE, verbose = TRUE, ...){
 
   # check data
   X <- X[!is.na(X[[get_attr(X, 'coverage')]]), ]
@@ -40,7 +73,8 @@ ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
   # calculation
   if(!region || length(regions) == 1){
     # calculate
-    out <- multi_lik_stan(X, verbose, ...)
+    out <- multi_lik_stan(X, prior_lambda, prior_sigma,
+                          upper_lambda, upper_sigma, verbose, ...)
   } else{
     # main processing loop
     out <- lapply(regions, function(r){
@@ -48,7 +82,8 @@ ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
       # subset
       dat <- X[X[[get_attr(X, 'region')]] == r, ]
       # calculate
-      fit <- multi_lik_stan(dat, verbose, ...)
+      fit <- multi_lik_stan(dat, prior_lambda, prior_sigma,
+                            upper_lambda, upper_sigma, verbose, ...)
 
       return(fit)
     })
@@ -69,16 +104,40 @@ ic_fit.ic.df <- function(X, region = TRUE, verbose = TRUE, ...){
 #'
 #' @name multi_lik_stan
 #' @keywords internal
-multi_lik_stan <- function(X, verbose = TRUE, ...) {
+multi_lik_stan <- function(X,
+                           prior_lambda, prior_sigma,
+                           upper_lambda, upper_sigma,
+                           verbose = TRUE, ...) {
   if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
 
   # data prep
   vax_data <- ic_to_stan(X)
   lbls <- vax_data[[2]]
+  vax_data <- vax_data[[1]]
+
+  # flat mu index
+  mu_id <- expand.grid(ii = 1:vax_data$N_i, jj = 1:vax_data$N_j, tt = 1:vax_data$N_t)
+  mu_id <- mu_id[order(mu_id$ii, mu_id$jj, mu_id$tt), ]
+  # lookup - what record in 'mu' for observed coverage 'y'
+  mu_lookup <- match(paste(vax_data$i, vax_data$j, vax_data$t), paste(mu_id$ii, mu_id$jj, mu_id$tt))
+
+  # check/set priors
+  vax_data$prior_lambda <- c(0.5, 0.5, 0.5)
+  vax_data$prior_sigma <- c(2, 2, 0.2)
+  # vax_data$U_lambda
+  vax_data$U_sigma <- c(Inf, Inf, 0.4)  ## CHANGE HERE ##
+  # vax_data$L_lambda <- c(0,0,0)
+  vax_data$L_sigma <- c(0,0,0)
+
+  # update model data
+  vax_data$ii <- mu_id$ii
+  vax_data$jj <- mu_id$jj
+  vax_data$tt <- mu_id$tt
+  vax_data$mu_lookup <- mu_lookup
 
   # call stan model
-  out <- rstan::sampling(stanmodels$multi_lik,
-                         data = vax_data[[1]],
+  out <- rstan::sampling(stanmodels$multi_lik_v2,
+                         data = vax_data,
                          show_messages = verbose,
                          ...)
 
@@ -86,21 +145,21 @@ multi_lik_stan <- function(X, verbose = TRUE, ...) {
   posterior <- t(as.data.frame(out, 'mu'))
   posterior <- invlogit(posterior)
 
-  # create an index to the 'mu' parameter
-  mu_idx <- strsplit(gsub('\\[|\\]', '',
-                          regmatches(row.names(posterior),
-                                     gregexpr("\\[.*?\\]",
-                                              row.names(posterior)))),
-                     ',', fixed = T)
-  mu_idx <- do.call(rbind.data.frame, mu_idx)
-  names(mu_idx) <- c("country", "time", "vaccine")
-  mu_idx <- as.data.frame(lapply(mu_idx, function(x) as.numeric(x)))
+  # # create an index to the 'mu' parameter
+  # mu_idx <- strsplit(gsub('\\[|\\]', '',
+  #                         regmatches(row.names(posterior),
+  #                                    gregexpr("\\[.*?\\]",
+  #                                             row.names(posterior)))),
+  #                    ',', fixed = T)
+  # mu_idx <- do.call(rbind.data.frame, mu_idx)
+  # names(mu_idx) <- c("country", "time", "vaccine")
+  # mu_idx <- as.data.frame(lapply(mu_idx, function(x) as.numeric(x)))
 
   # name the indices
   mu_names <- cbind.data.frame(
-    'country' = lbls$lbl_c[mu_idx$country],
-    'time' = lbls$lbl_t[mu_idx$time],
-    'vaccine' = lbls$lbl_v[mu_idx$vaccine]
+    'country' = lbls$lbl_c[mu_id$ii],
+    'time' = lbls$lbl_t[mu_id$tt],
+    'vaccine' = lbls$lbl_v[mu_id$jj]
   )
 
   # ratio adjustment
@@ -183,14 +242,13 @@ ic_to_stan <- function(X){
                   j = X$v,
                   t = X$t,
                   N = nrow(X),
-                  N_a = sum(tolower(X$source) == "admin"),
-                  N_o = sum(tolower(X$source) == "official"),
-                  N_s = sum(tolower(X$source) == "survey"),
+                  nsources = max(X$s),
+                  source = X$s,
+                  sizes = as.numeric(table(X$source)),
                   N_i = max(X$i),
                   N_j = length(unique(X$vaccine)),
-                  N_t = max(X$t),
-                  start_o = min(which(tolower(X$source) == "official")),
-                  start_s = min(which(tolower(X$source) == "survey")))
+                  N_t = max(X$t)
+                 )
 
   return(list(vax_dat, lbls))
 }
