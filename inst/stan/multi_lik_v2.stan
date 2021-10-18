@@ -19,9 +19,9 @@ data {
   int<lower=1, upper=nsources> source[N];
   int<lower=1> sizes[nsources];
 
-  vector[nsources] U_lambda;  // upper-bounds
+  // vector[nsources] U_lambda;  // upper-bounds
   vector[nsources] U_sigma;
-  vector[nsources] L_lambda;  // lower-bounds
+  // vector[nsources] L_lambda;  // lower-bounds
   vector[nsources] L_sigma;
 
   real prior_lambda[nsources]; // priors
@@ -137,9 +137,17 @@ model {
   }
 
   // likelihoods
-  for(idx in 1:N){
-    y[N] ~ normal(lambda[source[idx]] + mu[mu_lookup[idx]], sigma[source[idx]]);
+  {
+    int start = 1;
+
+    for(idx in 1:nsources){
+      int end = start + sizes[idx] - 1;
+      y[start:end] ~ normal(lambda[source[idx]] + mu[mu_lookup[start:end]], sigma[source[idx]]);
+
+      start = end + 1;
+    }
   }
+
 }
 
 

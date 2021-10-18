@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_multi_lik_v2");
-    reader.add_event(154, 152, "end", "model_multi_lik_v2");
+    reader.add_event(162, 160, "end", "model_multi_lik_v2");
     return reader;
 }
 #include <stan_meta_header.hpp>
@@ -51,9 +51,7 @@ private:
         int nsources;
         std::vector<int> source;
         std::vector<int> sizes;
-        vector_d U_lambda;
         vector_d U_sigma;
-        vector_d L_lambda;
         vector_d L_sigma;
         std::vector<double> prior_lambda;
         std::vector<double> prior_sigma;
@@ -210,16 +208,6 @@ public:
             for (size_t i_0__ = 0; i_0__ < sizes_i_0_max__; ++i_0__) {
                 check_greater_or_equal(function__, "sizes[i_0__]", sizes[i_0__], 1);
             }
-            current_statement_begin__ = 22;
-            validate_non_negative_index("U_lambda", "nsources", nsources);
-            context__.validate_dims("data initialization", "U_lambda", "vector_d", context__.to_vec(nsources));
-            U_lambda = Eigen::Matrix<double, Eigen::Dynamic, 1>(nsources);
-            vals_r__ = context__.vals_r("U_lambda");
-            pos__ = 0;
-            size_t U_lambda_j_1_max__ = nsources;
-            for (size_t j_1__ = 0; j_1__ < U_lambda_j_1_max__; ++j_1__) {
-                U_lambda(j_1__) = vals_r__[pos__++];
-            }
             current_statement_begin__ = 23;
             validate_non_negative_index("U_sigma", "nsources", nsources);
             context__.validate_dims("data initialization", "U_sigma", "vector_d", context__.to_vec(nsources));
@@ -229,16 +217,6 @@ public:
             size_t U_sigma_j_1_max__ = nsources;
             for (size_t j_1__ = 0; j_1__ < U_sigma_j_1_max__; ++j_1__) {
                 U_sigma(j_1__) = vals_r__[pos__++];
-            }
-            current_statement_begin__ = 24;
-            validate_non_negative_index("L_lambda", "nsources", nsources);
-            context__.validate_dims("data initialization", "L_lambda", "vector_d", context__.to_vec(nsources));
-            L_lambda = Eigen::Matrix<double, Eigen::Dynamic, 1>(nsources);
-            vals_r__ = context__.vals_r("L_lambda");
-            pos__ = 0;
-            size_t L_lambda_j_1_max__ = nsources;
-            for (size_t j_1__ = 0; j_1__ < L_lambda_j_1_max__; ++j_1__) {
-                L_lambda(j_1__) = vals_r__[pos__++];
             }
             current_statement_begin__ = 25;
             validate_non_negative_index("L_sigma", "nsources", nsources);
@@ -1059,10 +1037,26 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 140;
-            for (int idx = 1; idx <= N; ++idx) {
-                current_statement_begin__ = 141;
-                lp_accum__.add(normal_log<propto__>(get_base1(y, N, "y", 1), (get_base1(lambda, get_base1(source, idx, "source", 1), "lambda", 1) + get_base1(mu, get_base1(mu_lookup, idx, "mu_lookup", 1), "mu", 1)), get_base1(sigma, get_base1(source, idx, "source", 1), "sigma", 1)));
+            {
+            current_statement_begin__ = 141;
+            int start(0);
+            (void) start;  // dummy to suppress unused var warning
+            stan::math::fill(start, std::numeric_limits<int>::min());
+            stan::math::assign(start,1);
+            current_statement_begin__ = 143;
+            for (int idx = 1; idx <= nsources; ++idx) {
+                {
+                current_statement_begin__ = 144;
+                int end(0);
+                (void) end;  // dummy to suppress unused var warning
+                stan::math::fill(end, std::numeric_limits<int>::min());
+                stan::math::assign(end,((start + get_base1(sizes, idx, "sizes", 1)) - 1));
+                current_statement_begin__ = 145;
+                lp_accum__.add(normal_log<propto__>(stan::model::rvalue(y, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "y"), add(get_base1(lambda, get_base1(source, idx, "source", 1), "lambda", 1), stan::model::rvalue(mu, stan::model::cons_list(stan::model::index_multi(stan::model::rvalue(mu_lookup, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "mu_lookup")), stan::model::nil_index_list()), "mu")), get_base1(sigma, get_base1(source, idx, "source", 1), "sigma", 1)));
+                current_statement_begin__ = 147;
+                stan::math::assign(start, (end + 1));
+                }
+            }
             }
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -1368,22 +1362,22 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 147;
+            current_statement_begin__ = 155;
             validate_non_negative_index("log_lik", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, 1> log_lik(N);
             stan::math::initialize(log_lik, DUMMY_VAR__);
             stan::math::fill(log_lik, DUMMY_VAR__);
             // generated quantities statements
-            current_statement_begin__ = 149;
+            current_statement_begin__ = 157;
             for (int idx = 1; idx <= N; ++idx) {
-                current_statement_begin__ = 150;
+                current_statement_begin__ = 158;
                 stan::model::assign(log_lik, 
                             stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
                             normal_log(get_base1(y, idx, "y", 1), (get_base1(lambda, get_base1(source, idx, "source", 1), "lambda", 1) + get_base1(mu, get_base1(mu_lookup, idx, "mu_lookup", 1), "mu", 1)), get_base1(sigma, get_base1(source, idx, "source", 1), "sigma", 1)), 
                             "assigning variable log_lik");
             }
             // validate, write generated quantities
-            current_statement_begin__ = 147;
+            current_statement_begin__ = 155;
             size_t log_lik_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < log_lik_j_1_max__; ++j_1__) {
                 vars__.push_back(log_lik(j_1__));
