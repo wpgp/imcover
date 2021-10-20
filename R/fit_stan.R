@@ -6,8 +6,9 @@
 #'   intercepts. See details.
 #' @param prior_sigma Scale parameter for half-Cauchy prior on source-specific
 #'   standard deviations. See details.
-#' @param upper_lambda Not currently used.
 #' @param upper_sigma Numeric value (or vector) setting the upper bounds on the
+#'   source-specific scale parameter. See details.
+#' @param lower_sigma Numeric value (or vector) setting the lower bounds on the
 #'   source-specific scale parameter. See details.
 #' @param region Logical. Should region-specific models be generated? Default
 #'   is \code{TRUE}.
@@ -31,9 +32,11 @@
 #'   a prior belief in more accurate measurements. These parameters are used in
 #'   a half-Cauchy distribution (e.g. \code{cauchy(0, 0.2)}).
 #'
-#'   In addition, the upper bounds of the parameter may be set to define the
-#'   range of the parameter. Administrative and official data have no upper
-#'   bound, while survey data have an upper bound of 0.4.
+#'   In addition, the upper and lower bounds of the sigma parameter may be set
+#'   to define the range of the possible values. In general, the lower bounds
+#'   should always be zero and cannot be negative. Similar to the differences in
+#'   the prior distributions, an upper bound of 0.4 is placed on 'survey'
+#'   estimates.
 #'
 #'   Users setting \code{prior_lambda}, \code{prior_sigma}, or
 #'   \code{upper_sigma} should note that the length of values specified must be
@@ -46,7 +49,7 @@
 #' @export
 ic_fit <- function(X,
                    prior_lambda, prior_sigma,
-                   upper_lambda, upper_sigma,
+                   upper_sigma, lower_sigma,
                    region = TRUE, verbose = TRUE, ...){
   UseMethod("ic_fit")
 }
@@ -56,7 +59,7 @@ ic_fit <- function(X,
 #' @export
 ic_fit.ic.df <- function(X,
                          prior_lambda, prior_sigma,
-                         upper_lambda, upper_sigma,
+                         upper_sigma, lower_sigma,
                          region = TRUE, verbose = TRUE, ...){
 
   # check data
@@ -74,7 +77,7 @@ ic_fit.ic.df <- function(X,
   if(!region || length(regions) == 1){
     # calculate
     out <- multi_lik_stan(X, prior_lambda, prior_sigma,
-                          upper_lambda, upper_sigma, verbose, ...)
+                          upper_sigma, lower_sigma, verbose, ...)
   } else{
     # main processing loop
     out <- lapply(regions, function(r){
@@ -83,7 +86,7 @@ ic_fit.ic.df <- function(X,
       dat <- X[X[[get_attr(X, 'region')]] == r, ]
       # calculate
       fit <- multi_lik_stan(dat, prior_lambda, prior_sigma,
-                            upper_lambda, upper_sigma, verbose, ...)
+                            upper_sigma, lower_sigma, verbose, ...)
 
       return(fit)
     })
@@ -98,6 +101,14 @@ ic_fit.ic.df <- function(X,
 #' Multi-source immunisation coverage model with Stan
 #'
 #' @param X Object of \code{ic.df} for analysis
+#' @param prior_lambda Scale parameter for half-normal prior on source-specific
+#'   intercepts. See details.
+#' @param prior_sigma Scale parameter for half-Cauchy prior on source-specific
+#'   standard deviations. See details.
+#' @param upper_sigma Numeric value (or vector) setting the upper bounds on the
+#'   source-specific scale parameter. See details.
+#' @param lower_sigma Numeric value (or vector) setting the lower bounds on the
+#'   source-specific scale parameter. See details.
 #' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
@@ -106,7 +117,7 @@ ic_fit.ic.df <- function(X,
 #' @keywords internal
 multi_lik_stan <- function(X,
                            prior_lambda, prior_sigma,
-                           upper_lambda, upper_sigma,
+                           upper_sigma, lower_sigma,
                            verbose = TRUE, ...) {
   if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
 
@@ -122,14 +133,67 @@ multi_lik_stan <- function(X,
   mu_lookup <- match(paste(vax_data$i, vax_data$j, vax_data$t), paste(mu_id$ii, mu_id$jj, mu_id$tt))
 
   # check/set priors
-  vax_data$prior_lambda <- c(0.5, 0.5, 0.5)
-  vax_data$prior_sigma <- c(2, 2, 0.2)
-  # vax_data$U_lambda
-  vax_data$U_sigma <- c(10, 10, 0.4)  ## CHANGE HERE ##
-  # vax_data$L_lambda <- c(0,0,0)
-  vax_data$L_sigma <- c(0,0,0)
+  if(!missing(prior_lambda)){
+    if(length(prior_lambda) == 1){
+      vax_data$prior_lambda <- rep(prior_lambda, vax_data$nsources)
+    } else{
+      if(length(prior_lambda) != vax_data$nsources){
+        stop("Priors for lambda must match the number of data sources", call. = FALSE)
+      }
+      vax_data$prior_lambda <- prior_lambda
+    }
+  } else{  # defaults
+    vax_data$prior_lambda <- rep(0.5, vax_data$nsources)
+  }
 
-  # update model data
+  if(!missing(prior_sigma)){
+    if(length(prior_sigma) == 1){
+      vax_data$prior_sigma <- rep(prior_sigma, vax_data$nsources)
+    } else{
+      if(length(prior_sigma) != vax_data$nsources){
+        stop("Priors for sigma must match the number of data sources", call. = FALSE)
+      }
+      vax_data$prior_sigma <- prior_sigma
+    }
+  } else{  # defaults
+    prior_sigma <- rep(2, vax_data$nsources)
+    prior_sigma[grepl('survey', list_sources(X), fixed = T)] <- 0.2
+    vax_data$prior_sigma <- prior_sigma
+  }
+
+  if(!missing(upper_sigma)){
+    if(length(upper_sigma) == 1){
+      vax_data$upper_sigma <- rep(upper_sigma, vax_data$nsources)
+    } else{
+      if(length(upper_sigma) != vax_data$nsources){
+        stop("Priors for sigma must match the number of data sources", call. = FALSE)
+      }
+      vax_data$upper_sigma <- upper_sigma
+    }
+  } else{  # defaults
+    upper_sigma <- rep(100, vax_data$nsources)
+    upper_sigma[grepl('survey', list_sources(X), fixed = T)] <- 0.4
+    vax_data$upper_sigma <- upper_sigma
+  }
+
+  if(!missing(lower_sigma)){
+    if(length(lower_sigma) == 1){
+      vax_data$lower_sigma <- rep(lower_sigma, vax_data$nsources)
+    } else{
+      if(length(lower_sigma) != vax_data$nsources){
+        stop("Priors for sigma must match the number of data sources", call. = FALSE)
+      }
+      vax_data$L_sigma <- lower_sigma
+    }
+  } else{
+    vax_data$L_sigma <- rep(0, vax_data$nsources)
+  }
+
+  if(any(vax_data$L_sigma >= vax_data$U_sigma)){
+    stop("Invalid bounds on sigma", call. = FALSE)
+  }
+
+  # update model data with mu indexing
   vax_data$ii <- mu_id$ii
   vax_data$jj <- mu_id$jj
   vax_data$tt <- mu_id$tt
@@ -146,16 +210,6 @@ multi_lik_stan <- function(X,
   # calculate prediction ('mu')
   posterior <- t(as.data.frame(out, 'mu'))
   posterior <- invlogit(posterior)
-
-  # # create an index to the 'mu' parameter
-  # mu_idx <- strsplit(gsub('\\[|\\]', '',
-  #                         regmatches(row.names(posterior),
-  #                                    gregexpr("\\[.*?\\]",
-  #                                             row.names(posterior)))),
-  #                    ',', fixed = T)
-  # mu_idx <- do.call(rbind.data.frame, mu_idx)
-  # names(mu_idx) <- c("country", "time", "vaccine")
-  # mu_idx <- as.data.frame(lapply(mu_idx, function(x) as.numeric(x)))
 
   # name the indices
   mu_names <- cbind.data.frame(
