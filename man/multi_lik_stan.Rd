@@ -4,10 +4,30 @@
 \alias{multi_lik_stan}
 \title{Multi-source immunisation coverage model with Stan}
 \usage{
-multi_lik_stan(X, verbose = TRUE, ...)
+multi_lik_stan(
+  X,
+  prior_lambda,
+  prior_sigma,
+  upper_sigma,
+  lower_sigma,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{X}{Object of \code{ic.df} for analysis}
+
+\item{prior_lambda}{Scale parameter for half-normal prior on source-specific
+intercepts. See details.}
+
+\item{prior_sigma}{Scale parameter for half-Cauchy prior on source-specific
+standard deviations. See details.}
+
+\item{upper_sigma}{Numeric value (or vector) setting the upper bounds on the
+source-specific scale parameter. See details.}
+
+\item{lower_sigma}{Numeric value (or vector) setting the lower bounds on the
+source-specific scale parameter. See details.}
 
 \item{verbose}{Logical. Should messages be displayed? Default is \code{TRUE}.}
 
