@@ -125,7 +125,7 @@ multi_lik_stan <- function(X,
   vax_data$prior_lambda <- c(0.5, 0.5, 0.5)
   vax_data$prior_sigma <- c(2, 2, 0.2)
   # vax_data$U_lambda
-  vax_data$U_sigma <- c(Inf, Inf, 0.4)  ## CHANGE HERE ##
+  vax_data$U_sigma <- c(10, 10, 0.4)  ## CHANGE HERE ##
   # vax_data$L_lambda <- c(0,0,0)
   vax_data$L_sigma <- c(0,0,0)
 
