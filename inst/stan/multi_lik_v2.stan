@@ -77,8 +77,14 @@ transformed parameters {
   vector[nsources] sigma = L_sigma + (U_sigma - L_sigma) .* sigma_raw;
 
   // shared mean
-  for(idx in 1:num_elements(mu)){
-    mu[idx] = beta_i[ii[idx]] + alpha_j[jj[idx]] + gamma_t[tt[idx]] + phi_it[ii[idx], tt[idx]] + delta_jt[jj[idx], tt[idx]] + omega_ijt[ii[idx], jj[idx], tt[idx]];
+  if(N_i > 1){
+    for(idx in 1:num_elements(mu)){
+      mu[idx] = beta_i[ii[idx]] + alpha_j[jj[idx]] + gamma_t[tt[idx]] + phi_it[ii[idx], tt[idx]] + delta_jt[jj[idx], tt[idx]] + psi_ij[ii[idx], jj[idx]] + omega_ijt[ii[idx], jj[idx], tt[idx]];
+    }
+  } else{
+    for(idx in 1:num_elements(mu)){
+      mu[idx] = beta_i[ii[idx]] + alpha_j[jj[idx]] + gamma_t[tt[idx]] + delta_jt[jj[idx], tt[idx]];
+    }
   }
 }
 
@@ -89,7 +95,7 @@ model {
 
   for(s in 1:nsources){
     segment(lambda, s, 1) ~ normal(0, prior_lambda[s]);
-    segment(sigma, s, 1) ~ cauchy(0, prior_sigma[s]);
+    segment(sigma_raw, s, 1) ~ cauchy(0, prior_sigma[s]);
   }
 
   // Autoregressive models (AR(1))
@@ -98,15 +104,6 @@ model {
 
   for(time in 2:N_t){
 	  gamma_t[time] ~ normal(rho_t * gamma_t[time-1], sigma_t);
-  }
-
-  // country - time
-  for(ctry in 1:N_i){
-    phi_it[ctry, 1] ~ normal(0, sqrt(pow(sigma_it, 2) / (1-pow(rho_i, 2))));
-
-    for(time in 2:N_t){
-      phi_it[ctry, time] ~ normal(rho_i * phi_it[ctry, time-1], sigma_it);
-    }
   }
 
   // vaccine - time
@@ -118,28 +115,41 @@ model {
     }
   }
 
-  // country-vaccine
-  for(ctry in 1:N_i){
-  	for(vax in 1:N_j){
-  		psi_ij[ctry, vax] ~ normal(0, sigma_ij);
-  	}
-  }
-
-  // country - vaccine - time
-  for(ctry in 1:N_i){
-    for(vax in 1:N_j){
-      omega_ijt[ctry, vax, 1] ~ normal(0, sqrt(pow(sigma_ijt, 2) / (1-pow(rho_ij, 2))));
+  // for multi-country (regional) models
+  if(N_i > 1){
+    // country - time
+    for(ctry in 1:N_i){
+      phi_it[ctry, 1] ~ normal(0, sqrt(pow(sigma_it, 2) / (1-pow(rho_i, 2))));
 
       for(time in 2:N_t){
-        omega_ijt[ctry, vax, time] ~ normal(rho_ij * omega_ijt[ctry, vax, time-1], sigma_ijt);
+        phi_it[ctry, time] ~ normal(rho_i * phi_it[ctry, time-1], sigma_it);
+      }
+    }
+
+    // country - vaccine
+    for(ctry in 1:N_i){
+    	for(vax in 1:N_j){
+    		psi_ij[ctry, vax] ~ normal(0, sigma_ij);
+    	}
+    }
+
+    // country - vaccine - time
+    for(ctry in 1:N_i){
+      for(vax in 1:N_j){
+        omega_ijt[ctry, vax, 1] ~ normal(0, sqrt(pow(sigma_ijt, 2) / (1-pow(rho_ij, 2))));
+
+        for(time in 2:N_t){
+          omega_ijt[ctry, vax, time] ~ normal(rho_ij * omega_ijt[ctry, vax, time-1], sigma_ijt);
+        }
       }
     }
   }
 
+
   // likelihoods
   {
     int start = 1;
-
+    // loop over the different data sources
     for(idx in 1:nsources){
       int end = start + sizes[idx] - 1;
       y[start:end] ~ normal(lambda[source[idx]] + mu[mu_lookup[start:end]], sigma[source[idx]]);
