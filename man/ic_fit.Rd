@@ -5,12 +5,42 @@
 \alias{ic_fit.ic.df}
 \title{Multi-source immunisation coverage model with Stan}
 \usage{
-ic_fit(X, region = TRUE, verbose = TRUE, ...)
+ic_fit(
+  X,
+  prior_lambda,
+  prior_sigma,
+  upper_sigma,
+  lower_sigma,
+  region = TRUE,
+  verbose = TRUE,
+  ...
+)
 
-\method{ic_fit}{ic.df}(X, region = TRUE, verbose = TRUE, ...)
+\method{ic_fit}{ic.df}(
+  X,
+  prior_lambda,
+  prior_sigma,
+  upper_sigma,
+  lower_sigma,
+  region = TRUE,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{X}{Object of \code{ic.df} for analysis}
+
+\item{prior_lambda}{Scale parameter for half-normal prior on source-specific
+intercepts. See details.}
+
+\item{prior_sigma}{Scale parameter for half-Cauchy prior on source-specific
+standard deviations. See details.}
+
+\item{upper_sigma}{Numeric value (or vector) setting the upper bounds on the
+source-specific scale parameter. See details.}
+
+\item{lower_sigma}{Numeric value (or vector) setting the lower bounds on the
+source-specific scale parameter. See details.}
 
 \item{region}{Logical. Should region-specific models be generated? Default
 is \code{TRUE}.}
@@ -31,5 +61,27 @@ of a list containing multiple \code{icfit} objects.
 Multi-source immunisation coverage model with Stan
 }
 \details{
+The default priors for the source-specific intercepts (lambda) and
+standard deviations (sigma) are given by half-normal and half-Cauchy
+distributions, respectively. Future version may allow users to specify
+different distributions. Currently, users may only specify the scale
+parameter of these distribution. By default, for lambda all sources are
+given a value of 0.5, i.e. a prior distribution of \code{normal(0, 0.5)}.
+For sigma, the default varies by source. While administrative and official
+data are set to a value of 2, survey data is restricted to 0.2, reflecting
+a prior belief in more accurate measurements. These parameters are used in
+a half-Cauchy distribution (e.g. \code{cauchy(0, 0.2)}).
 
+In addition, the upper and lower bounds of the sigma parameter may be set
+to define the range of the possible values. In general, the lower bounds
+should always be zero and cannot be negative. Similar to the differences in
+the prior distributions, an upper bound of 0.4 is placed on 'survey'
+estimates.
+
+Users setting \code{prior_lambda}, \code{prior_sigma}, or
+\code{upper_sigma} should note that the length of values specified must be
+1 or match the number of unique sources in \code{X}. When only one value is
+present, it will be applied to all sources. When a vector is provided, the
+order of values must match the order of sources as given by
+\code{list_sources(X)}.
 }

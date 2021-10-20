@@ -1,6 +1,6 @@
 Package: imcover
 Title: Modelling of Immunisation Coverage in R
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     c(person(given = "Warren",
            family = "Jochem",

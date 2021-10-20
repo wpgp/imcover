@@ -10,6 +10,8 @@
 \alias{list_times}
 \alias{list_times.ic.df}
 \alias{list_times.icfit}
+\alias{list_sources}
+\alias{list_sources.ic.df}
 \title{List unique attributes}
 \usage{
 list_vaccines(X)
@@ -29,6 +31,10 @@ list_times(X)
 \method{list_times}{ic.df}(X)
 
 \method{list_times}{icfit}(X)
+
+list_sources(X)
+
+\method{list_sources}{ic.df}(X)
 }
 \arguments{
 \item{X}{Object of class \code{ic.df}.}

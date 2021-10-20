@@ -58,6 +58,18 @@ list_times.icfit <- function(X){
   return(sort(unique(X[['posterior']][['time']])))
 }
 
+#' @rdname list_vaccines
+#' @export
+list_sources <- function(X){
+  UseMethod("list_sources")
+}
+
+#' @rdname list_vaccines
+#' @export
+list_sources.ic.df <- function(X){
+  return(sort(unique(X[[attr(X, "source")]])))
+}
+
 
 #' List core attributes for ic data
 #' Retrieve the names of the core attributes that can be expected in
