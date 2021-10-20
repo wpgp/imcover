@@ -1,3 +1,9 @@
+# imcover 0.2.0
+
+* Revised `Stan` model to allow variable number of sources.
+* Added parameters to `ic_fit` for user-defined priors and parameter bounds.
+* Added single-country versions of the model.
+
 # imcover 0.1.0
 
 * Version created for internal 'beta' testing
