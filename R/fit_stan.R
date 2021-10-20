@@ -163,22 +163,22 @@ multi_lik_stan <- function(X,
 
   if(!missing(upper_sigma)){
     if(length(upper_sigma) == 1){
-      vax_data$upper_sigma <- rep(upper_sigma, vax_data$nsources)
+      vax_data$U_sigma <- rep(upper_sigma, vax_data$nsources)
     } else{
       if(length(upper_sigma) != vax_data$nsources){
         stop("Priors for sigma must match the number of data sources", call. = FALSE)
       }
-      vax_data$upper_sigma <- upper_sigma
+      vax_data$U_sigma <- upper_sigma
     }
   } else{  # defaults
     upper_sigma <- rep(100, vax_data$nsources)
     upper_sigma[grepl('survey', list_sources(X), fixed = T)] <- 0.4
-    vax_data$upper_sigma <- upper_sigma
+    vax_data$U_sigma <- upper_sigma
   }
 
   if(!missing(lower_sigma)){
     if(length(lower_sigma) == 1){
-      vax_data$lower_sigma <- rep(lower_sigma, vax_data$nsources)
+      vax_data$L_sigma <- rep(lower_sigma, vax_data$nsources)
     } else{
       if(length(lower_sigma) != vax_data$nsources){
         stop("Priors for sigma must match the number of data sources", call. = FALSE)
