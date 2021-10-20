@@ -39,32 +39,32 @@ parameters {
   // regression effects
   // vector<lower=0, upper=1>[nsources] lambda_raw;
   real lambda[nsources]; // intercepts
-  real beta_i[N_i];  // i-th country random effect
+  real beta_i[N_i == 1 ? 0 : N_i];  // i-th country random effect
   real alpha_j[N_j];  // j-th vaccine random effect
   real gamma_t [N_t];  // t-th time effect
 
   // interactions
-  real phi_it[N_i, N_t];  // t-th time point, replicated per country
+  real phi_it[N_i == 1 ? 0 : N_i, N_t];  // t-th time point, replicated per country
   real delta_jt[N_j, N_t];  // t-th time point, replicated per vaccine
-  real psi_ij[N_i, N_j];  // country-vaccine random effect
-  matrix[N_j, N_t] omega_ijt[N_i];
+  real psi_ij[N_i == 1 ? 0 : N_i, N_j];  // country-vaccine random effect
+  matrix[N_i == 1 ? 0 : N_j, N_t] omega_ijt[N_i == 1 ? 0 : N_i];
 
   // AR(1) correlations
-  real<lower=-1, upper=1> rho_i;
+  real<lower=-1, upper=1> rho_i[N_i == 1 ? 0 : 1];
   real<lower=-1, upper=1> rho_j;
   real<lower=-1, upper=1> rho_t;
-  real<lower=-1, upper=1> rho_ij;
+  real<lower=-1, upper=1> rho_ij[N_i == 1 ? 0 : 1];
 
   // standard deviation
   vector<lower=0, upper=1>[nsources] sigma_raw;  // source-specific
 
-  real<lower=0> sigma_i;
+  real<lower=0> sigma_i[N_i == 1 ? 0 : 1];
   real<lower=0> sigma_j;
   real<lower=0> sigma_t;
-  real<lower=0> sigma_it;
+  real<lower=0> sigma_it[N_i == 1 ? 0 : 1];
   real<lower=0> sigma_jt;
-  real<lower=0> sigma_ij;
-  real<lower=0> sigma_ijt;
+  real<lower=0> sigma_ij[N_i == 1 ? 0 : 1];
+  real<lower=0> sigma_ijt[N_i == 1 ? 0 : 1];
 }
 
 
@@ -83,14 +83,13 @@ transformed parameters {
     }
   } else{
     for(idx in 1:num_elements(mu)){
-      mu[idx] = beta_i[ii[idx]] + alpha_j[jj[idx]] + gamma_t[tt[idx]] + delta_jt[jj[idx], tt[idx]];
+      mu[idx] = alpha_j[jj[idx]] + gamma_t[tt[idx]] + delta_jt[jj[idx], tt[idx]];
     }
   }
 }
 
 
 model {
-  beta_i ~ normal(0, sigma_i);
   alpha_j ~ normal(0, sigma_j);
 
   for(s in 1:nsources){
@@ -117,34 +116,35 @@ model {
 
   // for multi-country (regional) models
   if(N_i > 1){
+    beta_i ~ normal(0, sigma_i[1]);
+
     // country - time
     for(ctry in 1:N_i){
-      phi_it[ctry, 1] ~ normal(0, sqrt(pow(sigma_it, 2) / (1-pow(rho_i, 2))));
+      phi_it[ctry, 1] ~ normal(0, sqrt(pow(sigma_it[1], 2) / (1-pow(rho_i[1], 2))));
 
       for(time in 2:N_t){
-        phi_it[ctry, time] ~ normal(rho_i * phi_it[ctry, time-1], sigma_it);
+        phi_it[ctry, time] ~ normal(rho_i[1] * phi_it[ctry, time-1], sigma_it[1]);
       }
     }
 
     // country - vaccine
     for(ctry in 1:N_i){
     	for(vax in 1:N_j){
-    		psi_ij[ctry, vax] ~ normal(0, sigma_ij);
+    		psi_ij[ctry, vax] ~ normal(0, sigma_ij[1]);
     	}
     }
 
     // country - vaccine - time
     for(ctry in 1:N_i){
       for(vax in 1:N_j){
-        omega_ijt[ctry, vax, 1] ~ normal(0, sqrt(pow(sigma_ijt, 2) / (1-pow(rho_ij, 2))));
+        omega_ijt[ctry, vax, 1] ~ normal(0, sqrt(pow(sigma_ijt[1], 2) / (1-pow(rho_ij[1], 2))));
 
         for(time in 2:N_t){
-          omega_ijt[ctry, vax, time] ~ normal(rho_ij * omega_ijt[ctry, vax, time-1], sigma_ijt);
+          omega_ijt[ctry, vax, time] ~ normal(rho_ij[1] * omega_ijt[ctry, vax, time-1], sigma_ijt[1]);
         }
       }
     }
   }
-
 
   // likelihoods
   {

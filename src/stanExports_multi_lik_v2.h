@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_multi_lik_v2");
-    reader.add_event(162, 160, "end", "model_multi_lik_v2");
+    reader.add_event(172, 170, "end", "model_multi_lik_v2");
     return reader;
 }
 #include <stan_meta_header.hpp>
@@ -318,8 +318,8 @@ public:
             validate_non_negative_index("lambda", "nsources", nsources);
             num_params_r__ += (1 * nsources);
             current_statement_begin__ = 42;
-            validate_non_negative_index("beta_i", "N_i", N_i);
-            num_params_r__ += (1 * N_i);
+            validate_non_negative_index("beta_i", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
+            num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : N_i ));
             current_statement_begin__ = 43;
             validate_non_negative_index("alpha_j", "N_j", N_j);
             num_params_r__ += (1 * N_j);
@@ -327,47 +327,53 @@ public:
             validate_non_negative_index("gamma_t", "N_t", N_t);
             num_params_r__ += (1 * N_t);
             current_statement_begin__ = 47;
-            validate_non_negative_index("phi_it", "N_i", N_i);
+            validate_non_negative_index("phi_it", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
             validate_non_negative_index("phi_it", "N_t", N_t);
-            num_params_r__ += ((1 * N_i) * N_t);
+            num_params_r__ += ((1 * (logical_eq(N_i, 1) ? 0 : N_i )) * N_t);
             current_statement_begin__ = 48;
             validate_non_negative_index("delta_jt", "N_j", N_j);
             validate_non_negative_index("delta_jt", "N_t", N_t);
             num_params_r__ += ((1 * N_j) * N_t);
             current_statement_begin__ = 49;
-            validate_non_negative_index("psi_ij", "N_i", N_i);
+            validate_non_negative_index("psi_ij", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
             validate_non_negative_index("psi_ij", "N_j", N_j);
-            num_params_r__ += ((1 * N_i) * N_j);
+            num_params_r__ += ((1 * (logical_eq(N_i, 1) ? 0 : N_i )) * N_j);
             current_statement_begin__ = 50;
-            validate_non_negative_index("omega_ijt", "N_j", N_j);
+            validate_non_negative_index("omega_ijt", "(logical_eq(N_i, 1) ? 0 : N_j )", (logical_eq(N_i, 1) ? 0 : N_j ));
             validate_non_negative_index("omega_ijt", "N_t", N_t);
-            validate_non_negative_index("omega_ijt", "N_i", N_i);
-            num_params_r__ += ((N_j * N_t) * N_i);
+            validate_non_negative_index("omega_ijt", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
+            num_params_r__ += (((logical_eq(N_i, 1) ? 0 : N_j ) * N_t) * (logical_eq(N_i, 1) ? 0 : N_i ));
             current_statement_begin__ = 53;
-            num_params_r__ += 1;
+            validate_non_negative_index("rho_i", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+            num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : 1 ));
             current_statement_begin__ = 54;
             num_params_r__ += 1;
             current_statement_begin__ = 55;
             num_params_r__ += 1;
             current_statement_begin__ = 56;
-            num_params_r__ += 1;
+            validate_non_negative_index("rho_ij", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+            num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : 1 ));
             current_statement_begin__ = 59;
             validate_non_negative_index("sigma_raw", "nsources", nsources);
             num_params_r__ += nsources;
             current_statement_begin__ = 61;
-            num_params_r__ += 1;
+            validate_non_negative_index("sigma_i", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+            num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : 1 ));
             current_statement_begin__ = 62;
             num_params_r__ += 1;
             current_statement_begin__ = 63;
             num_params_r__ += 1;
             current_statement_begin__ = 64;
-            num_params_r__ += 1;
+            validate_non_negative_index("sigma_it", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+            num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : 1 ));
             current_statement_begin__ = 65;
             num_params_r__ += 1;
             current_statement_begin__ = 66;
-            num_params_r__ += 1;
+            validate_non_negative_index("sigma_ij", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+            num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : 1 ));
             current_statement_begin__ = 67;
-            num_params_r__ += 1;
+            validate_non_negative_index("sigma_ijt", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+            num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : 1 ));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
             // Next line prevents compiler griping about no return
@@ -410,14 +416,14 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable beta_i missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("beta_i");
         pos__ = 0U;
-        validate_non_negative_index("beta_i", "N_i", N_i);
-        context__.validate_dims("parameter initialization", "beta_i", "double", context__.to_vec(N_i));
-        std::vector<double> beta_i(N_i, double(0));
-        size_t beta_i_k_0_max__ = N_i;
+        validate_non_negative_index("beta_i", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
+        context__.validate_dims("parameter initialization", "beta_i", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : N_i )));
+        std::vector<double> beta_i((logical_eq(N_i, 1) ? 0 : N_i ), double(0));
+        size_t beta_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t k_0__ = 0; k_0__ < beta_i_k_0_max__; ++k_0__) {
             beta_i[k_0__] = vals_r__[pos__++];
         }
-        size_t beta_i_i_0_max__ = N_i;
+        size_t beta_i_i_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t i_0__ = 0; i_0__ < beta_i_i_0_max__; ++i_0__) {
             try {
                 writer__.scalar_unconstrain(beta_i[i_0__]);
@@ -470,18 +476,18 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable phi_it missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("phi_it");
         pos__ = 0U;
-        validate_non_negative_index("phi_it", "N_i", N_i);
+        validate_non_negative_index("phi_it", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
         validate_non_negative_index("phi_it", "N_t", N_t);
-        context__.validate_dims("parameter initialization", "phi_it", "double", context__.to_vec(N_i,N_t));
-        std::vector<std::vector<double> > phi_it(N_i, std::vector<double>(N_t, double(0)));
-        size_t phi_it_k_0_max__ = N_i;
+        context__.validate_dims("parameter initialization", "phi_it", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : N_i ),N_t));
+        std::vector<std::vector<double> > phi_it((logical_eq(N_i, 1) ? 0 : N_i ), std::vector<double>(N_t, double(0)));
+        size_t phi_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t phi_it_k_1_max__ = N_t;
         for (size_t k_1__ = 0; k_1__ < phi_it_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < phi_it_k_0_max__; ++k_0__) {
                 phi_it[k_0__][k_1__] = vals_r__[pos__++];
             }
         }
-        size_t phi_it_i_0_max__ = N_i;
+        size_t phi_it_i_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t phi_it_i_1_max__ = N_t;
         for (size_t i_0__ = 0; i_0__ < phi_it_i_0_max__; ++i_0__) {
             for (size_t i_1__ = 0; i_1__ < phi_it_i_1_max__; ++i_1__) {
@@ -524,18 +530,18 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable psi_ij missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("psi_ij");
         pos__ = 0U;
-        validate_non_negative_index("psi_ij", "N_i", N_i);
+        validate_non_negative_index("psi_ij", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
         validate_non_negative_index("psi_ij", "N_j", N_j);
-        context__.validate_dims("parameter initialization", "psi_ij", "double", context__.to_vec(N_i,N_j));
-        std::vector<std::vector<double> > psi_ij(N_i, std::vector<double>(N_j, double(0)));
-        size_t psi_ij_k_0_max__ = N_i;
+        context__.validate_dims("parameter initialization", "psi_ij", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : N_i ),N_j));
+        std::vector<std::vector<double> > psi_ij((logical_eq(N_i, 1) ? 0 : N_i ), std::vector<double>(N_j, double(0)));
+        size_t psi_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t psi_ij_k_1_max__ = N_j;
         for (size_t k_1__ = 0; k_1__ < psi_ij_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < psi_ij_k_0_max__; ++k_0__) {
                 psi_ij[k_0__][k_1__] = vals_r__[pos__++];
             }
         }
-        size_t psi_ij_i_0_max__ = N_i;
+        size_t psi_ij_i_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t psi_ij_i_1_max__ = N_j;
         for (size_t i_0__ = 0; i_0__ < psi_ij_i_0_max__; ++i_0__) {
             for (size_t i_1__ = 0; i_1__ < psi_ij_i_1_max__; ++i_1__) {
@@ -551,14 +557,14 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable omega_ijt missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("omega_ijt");
         pos__ = 0U;
-        validate_non_negative_index("omega_ijt", "N_j", N_j);
+        validate_non_negative_index("omega_ijt", "(logical_eq(N_i, 1) ? 0 : N_j )", (logical_eq(N_i, 1) ? 0 : N_j ));
         validate_non_negative_index("omega_ijt", "N_t", N_t);
-        validate_non_negative_index("omega_ijt", "N_i", N_i);
-        context__.validate_dims("parameter initialization", "omega_ijt", "matrix_d", context__.to_vec(N_i,N_j,N_t));
-        std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > omega_ijt(N_i, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>(N_j, N_t));
+        validate_non_negative_index("omega_ijt", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
+        context__.validate_dims("parameter initialization", "omega_ijt", "matrix_d", context__.to_vec((logical_eq(N_i, 1) ? 0 : N_i ),(logical_eq(N_i, 1) ? 0 : N_j ),N_t));
+        std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > omega_ijt((logical_eq(N_i, 1) ? 0 : N_i ), Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>((logical_eq(N_i, 1) ? 0 : N_j ), N_t));
         size_t omega_ijt_j_2_max__ = N_t;
-        size_t omega_ijt_j_1_max__ = N_j;
-        size_t omega_ijt_k_0_max__ = N_i;
+        size_t omega_ijt_j_1_max__ = (logical_eq(N_i, 1) ? 0 : N_j );
+        size_t omega_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t j_2__ = 0; j_2__ < omega_ijt_j_2_max__; ++j_2__) {
             for (size_t j_1__ = 0; j_1__ < omega_ijt_j_1_max__; ++j_1__) {
                 for (size_t k_0__ = 0; k_0__ < omega_ijt_k_0_max__; ++k_0__) {
@@ -566,7 +572,7 @@ public:
                 }
             }
         }
-        size_t omega_ijt_i_0_max__ = N_i;
+        size_t omega_ijt_i_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t i_0__ = 0; i_0__ < omega_ijt_i_0_max__; ++i_0__) {
             try {
                 writer__.matrix_unconstrain(omega_ijt[i_0__]);
@@ -579,13 +585,20 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable rho_i missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("rho_i");
         pos__ = 0U;
-        context__.validate_dims("parameter initialization", "rho_i", "double", context__.to_vec());
-        double rho_i(0);
-        rho_i = vals_r__[pos__++];
-        try {
-            writer__.scalar_lub_unconstrain(-(1), 1, rho_i);
-        } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable rho_i: ") + e.what()), current_statement_begin__, prog_reader__());
+        validate_non_negative_index("rho_i", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+        context__.validate_dims("parameter initialization", "rho_i", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : 1 )));
+        std::vector<double> rho_i((logical_eq(N_i, 1) ? 0 : 1 ), double(0));
+        size_t rho_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_i_k_0_max__; ++k_0__) {
+            rho_i[k_0__] = vals_r__[pos__++];
+        }
+        size_t rho_i_i_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t i_0__ = 0; i_0__ < rho_i_i_0_max__; ++i_0__) {
+            try {
+                writer__.scalar_lub_unconstrain(-(1), 1, rho_i[i_0__]);
+            } catch (const std::exception& e) {
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable rho_i: ") + e.what()), current_statement_begin__, prog_reader__());
+            }
         }
         current_statement_begin__ = 54;
         if (!(context__.contains_r("rho_j")))
@@ -618,13 +631,20 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable rho_ij missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("rho_ij");
         pos__ = 0U;
-        context__.validate_dims("parameter initialization", "rho_ij", "double", context__.to_vec());
-        double rho_ij(0);
-        rho_ij = vals_r__[pos__++];
-        try {
-            writer__.scalar_lub_unconstrain(-(1), 1, rho_ij);
-        } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable rho_ij: ") + e.what()), current_statement_begin__, prog_reader__());
+        validate_non_negative_index("rho_ij", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+        context__.validate_dims("parameter initialization", "rho_ij", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : 1 )));
+        std::vector<double> rho_ij((logical_eq(N_i, 1) ? 0 : 1 ), double(0));
+        size_t rho_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_ij_k_0_max__; ++k_0__) {
+            rho_ij[k_0__] = vals_r__[pos__++];
+        }
+        size_t rho_ij_i_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t i_0__ = 0; i_0__ < rho_ij_i_0_max__; ++i_0__) {
+            try {
+                writer__.scalar_lub_unconstrain(-(1), 1, rho_ij[i_0__]);
+            } catch (const std::exception& e) {
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable rho_ij: ") + e.what()), current_statement_begin__, prog_reader__());
+            }
         }
         current_statement_begin__ = 59;
         if (!(context__.contains_r("sigma_raw")))
@@ -648,13 +668,20 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma_i missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sigma_i");
         pos__ = 0U;
-        context__.validate_dims("parameter initialization", "sigma_i", "double", context__.to_vec());
-        double sigma_i(0);
-        sigma_i = vals_r__[pos__++];
-        try {
-            writer__.scalar_lb_unconstrain(0, sigma_i);
-        } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_i: ") + e.what()), current_statement_begin__, prog_reader__());
+        validate_non_negative_index("sigma_i", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+        context__.validate_dims("parameter initialization", "sigma_i", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : 1 )));
+        std::vector<double> sigma_i((logical_eq(N_i, 1) ? 0 : 1 ), double(0));
+        size_t sigma_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_i_k_0_max__; ++k_0__) {
+            sigma_i[k_0__] = vals_r__[pos__++];
+        }
+        size_t sigma_i_i_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t i_0__ = 0; i_0__ < sigma_i_i_0_max__; ++i_0__) {
+            try {
+                writer__.scalar_lb_unconstrain(0, sigma_i[i_0__]);
+            } catch (const std::exception& e) {
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_i: ") + e.what()), current_statement_begin__, prog_reader__());
+            }
         }
         current_statement_begin__ = 62;
         if (!(context__.contains_r("sigma_j")))
@@ -687,13 +714,20 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma_it missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sigma_it");
         pos__ = 0U;
-        context__.validate_dims("parameter initialization", "sigma_it", "double", context__.to_vec());
-        double sigma_it(0);
-        sigma_it = vals_r__[pos__++];
-        try {
-            writer__.scalar_lb_unconstrain(0, sigma_it);
-        } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_it: ") + e.what()), current_statement_begin__, prog_reader__());
+        validate_non_negative_index("sigma_it", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+        context__.validate_dims("parameter initialization", "sigma_it", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : 1 )));
+        std::vector<double> sigma_it((logical_eq(N_i, 1) ? 0 : 1 ), double(0));
+        size_t sigma_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_it_k_0_max__; ++k_0__) {
+            sigma_it[k_0__] = vals_r__[pos__++];
+        }
+        size_t sigma_it_i_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t i_0__ = 0; i_0__ < sigma_it_i_0_max__; ++i_0__) {
+            try {
+                writer__.scalar_lb_unconstrain(0, sigma_it[i_0__]);
+            } catch (const std::exception& e) {
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_it: ") + e.what()), current_statement_begin__, prog_reader__());
+            }
         }
         current_statement_begin__ = 65;
         if (!(context__.contains_r("sigma_jt")))
@@ -713,26 +747,40 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma_ij missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sigma_ij");
         pos__ = 0U;
-        context__.validate_dims("parameter initialization", "sigma_ij", "double", context__.to_vec());
-        double sigma_ij(0);
-        sigma_ij = vals_r__[pos__++];
-        try {
-            writer__.scalar_lb_unconstrain(0, sigma_ij);
-        } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_ij: ") + e.what()), current_statement_begin__, prog_reader__());
+        validate_non_negative_index("sigma_ij", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+        context__.validate_dims("parameter initialization", "sigma_ij", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : 1 )));
+        std::vector<double> sigma_ij((logical_eq(N_i, 1) ? 0 : 1 ), double(0));
+        size_t sigma_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ij_k_0_max__; ++k_0__) {
+            sigma_ij[k_0__] = vals_r__[pos__++];
+        }
+        size_t sigma_ij_i_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t i_0__ = 0; i_0__ < sigma_ij_i_0_max__; ++i_0__) {
+            try {
+                writer__.scalar_lb_unconstrain(0, sigma_ij[i_0__]);
+            } catch (const std::exception& e) {
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_ij: ") + e.what()), current_statement_begin__, prog_reader__());
+            }
         }
         current_statement_begin__ = 67;
         if (!(context__.contains_r("sigma_ijt")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma_ijt missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sigma_ijt");
         pos__ = 0U;
-        context__.validate_dims("parameter initialization", "sigma_ijt", "double", context__.to_vec());
-        double sigma_ijt(0);
-        sigma_ijt = vals_r__[pos__++];
-        try {
-            writer__.scalar_lb_unconstrain(0, sigma_ijt);
-        } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_ijt: ") + e.what()), current_statement_begin__, prog_reader__());
+        validate_non_negative_index("sigma_ijt", "(logical_eq(N_i, 1) ? 0 : 1 )", (logical_eq(N_i, 1) ? 0 : 1 ));
+        context__.validate_dims("parameter initialization", "sigma_ijt", "double", context__.to_vec((logical_eq(N_i, 1) ? 0 : 1 )));
+        std::vector<double> sigma_ijt((logical_eq(N_i, 1) ? 0 : 1 ), double(0));
+        size_t sigma_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ijt_k_0_max__; ++k_0__) {
+            sigma_ijt[k_0__] = vals_r__[pos__++];
+        }
+        size_t sigma_ijt_i_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t i_0__ = 0; i_0__ < sigma_ijt_i_0_max__; ++i_0__) {
+            try {
+                writer__.scalar_lb_unconstrain(0, sigma_ijt[i_0__]);
+            } catch (const std::exception& e) {
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_ijt: ") + e.what()), current_statement_begin__, prog_reader__());
+            }
         }
         params_r__ = writer__.data_r();
         params_i__ = writer__.data_i();
@@ -771,7 +819,7 @@ public:
             }
             current_statement_begin__ = 42;
             std::vector<local_scalar_t__> beta_i;
-            size_t beta_i_d_0_max__ = N_i;
+            size_t beta_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
             beta_i.reserve(beta_i_d_0_max__);
             for (size_t d_0__ = 0; d_0__ < beta_i_d_0_max__; ++d_0__) {
                 if (jacobian__)
@@ -801,7 +849,7 @@ public:
             }
             current_statement_begin__ = 47;
             std::vector<std::vector<local_scalar_t__> > phi_it;
-            size_t phi_it_d_0_max__ = N_i;
+            size_t phi_it_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
             size_t phi_it_d_1_max__ = N_t;
             phi_it.resize(phi_it_d_0_max__);
             for (size_t d_0__ = 0; d_0__ < phi_it_d_0_max__; ++d_0__) {
@@ -829,7 +877,7 @@ public:
             }
             current_statement_begin__ = 49;
             std::vector<std::vector<local_scalar_t__> > psi_ij;
-            size_t psi_ij_d_0_max__ = N_i;
+            size_t psi_ij_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
             size_t psi_ij_d_1_max__ = N_j;
             psi_ij.resize(psi_ij_d_0_max__);
             for (size_t d_0__ = 0; d_0__ < psi_ij_d_0_max__; ++d_0__) {
@@ -843,21 +891,24 @@ public:
             }
             current_statement_begin__ = 50;
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> > omega_ijt;
-            size_t omega_ijt_d_0_max__ = N_i;
+            size_t omega_ijt_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
             omega_ijt.reserve(omega_ijt_d_0_max__);
             for (size_t d_0__ = 0; d_0__ < omega_ijt_d_0_max__; ++d_0__) {
                 if (jacobian__)
-                    omega_ijt.push_back(in__.matrix_constrain(N_j, N_t, lp__));
+                    omega_ijt.push_back(in__.matrix_constrain((logical_eq(N_i, 1) ? 0 : N_j ), N_t, lp__));
                 else
-                    omega_ijt.push_back(in__.matrix_constrain(N_j, N_t));
+                    omega_ijt.push_back(in__.matrix_constrain((logical_eq(N_i, 1) ? 0 : N_j ), N_t));
             }
             current_statement_begin__ = 53;
-            local_scalar_t__ rho_i;
-            (void) rho_i;  // dummy to suppress unused var warning
-            if (jacobian__)
-                rho_i = in__.scalar_lub_constrain(-(1), 1, lp__);
-            else
-                rho_i = in__.scalar_lub_constrain(-(1), 1);
+            std::vector<local_scalar_t__> rho_i;
+            size_t rho_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+            rho_i.reserve(rho_i_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < rho_i_d_0_max__; ++d_0__) {
+                if (jacobian__)
+                    rho_i.push_back(in__.scalar_lub_constrain(-(1), 1, lp__));
+                else
+                    rho_i.push_back(in__.scalar_lub_constrain(-(1), 1));
+            }
             current_statement_begin__ = 54;
             local_scalar_t__ rho_j;
             (void) rho_j;  // dummy to suppress unused var warning
@@ -873,12 +924,15 @@ public:
             else
                 rho_t = in__.scalar_lub_constrain(-(1), 1);
             current_statement_begin__ = 56;
-            local_scalar_t__ rho_ij;
-            (void) rho_ij;  // dummy to suppress unused var warning
-            if (jacobian__)
-                rho_ij = in__.scalar_lub_constrain(-(1), 1, lp__);
-            else
-                rho_ij = in__.scalar_lub_constrain(-(1), 1);
+            std::vector<local_scalar_t__> rho_ij;
+            size_t rho_ij_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+            rho_ij.reserve(rho_ij_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < rho_ij_d_0_max__; ++d_0__) {
+                if (jacobian__)
+                    rho_ij.push_back(in__.scalar_lub_constrain(-(1), 1, lp__));
+                else
+                    rho_ij.push_back(in__.scalar_lub_constrain(-(1), 1));
+            }
             current_statement_begin__ = 59;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sigma_raw;
             (void) sigma_raw;  // dummy to suppress unused var warning
@@ -887,12 +941,15 @@ public:
             else
                 sigma_raw = in__.vector_lub_constrain(0, 1, nsources);
             current_statement_begin__ = 61;
-            local_scalar_t__ sigma_i;
-            (void) sigma_i;  // dummy to suppress unused var warning
-            if (jacobian__)
-                sigma_i = in__.scalar_lb_constrain(0, lp__);
-            else
-                sigma_i = in__.scalar_lb_constrain(0);
+            std::vector<local_scalar_t__> sigma_i;
+            size_t sigma_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+            sigma_i.reserve(sigma_i_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < sigma_i_d_0_max__; ++d_0__) {
+                if (jacobian__)
+                    sigma_i.push_back(in__.scalar_lb_constrain(0, lp__));
+                else
+                    sigma_i.push_back(in__.scalar_lb_constrain(0));
+            }
             current_statement_begin__ = 62;
             local_scalar_t__ sigma_j;
             (void) sigma_j;  // dummy to suppress unused var warning
@@ -908,12 +965,15 @@ public:
             else
                 sigma_t = in__.scalar_lb_constrain(0);
             current_statement_begin__ = 64;
-            local_scalar_t__ sigma_it;
-            (void) sigma_it;  // dummy to suppress unused var warning
-            if (jacobian__)
-                sigma_it = in__.scalar_lb_constrain(0, lp__);
-            else
-                sigma_it = in__.scalar_lb_constrain(0);
+            std::vector<local_scalar_t__> sigma_it;
+            size_t sigma_it_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+            sigma_it.reserve(sigma_it_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < sigma_it_d_0_max__; ++d_0__) {
+                if (jacobian__)
+                    sigma_it.push_back(in__.scalar_lb_constrain(0, lp__));
+                else
+                    sigma_it.push_back(in__.scalar_lb_constrain(0));
+            }
             current_statement_begin__ = 65;
             local_scalar_t__ sigma_jt;
             (void) sigma_jt;  // dummy to suppress unused var warning
@@ -922,19 +982,25 @@ public:
             else
                 sigma_jt = in__.scalar_lb_constrain(0);
             current_statement_begin__ = 66;
-            local_scalar_t__ sigma_ij;
-            (void) sigma_ij;  // dummy to suppress unused var warning
-            if (jacobian__)
-                sigma_ij = in__.scalar_lb_constrain(0, lp__);
-            else
-                sigma_ij = in__.scalar_lb_constrain(0);
+            std::vector<local_scalar_t__> sigma_ij;
+            size_t sigma_ij_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+            sigma_ij.reserve(sigma_ij_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < sigma_ij_d_0_max__; ++d_0__) {
+                if (jacobian__)
+                    sigma_ij.push_back(in__.scalar_lb_constrain(0, lp__));
+                else
+                    sigma_ij.push_back(in__.scalar_lb_constrain(0));
+            }
             current_statement_begin__ = 67;
-            local_scalar_t__ sigma_ijt;
-            (void) sigma_ijt;  // dummy to suppress unused var warning
-            if (jacobian__)
-                sigma_ijt = in__.scalar_lb_constrain(0, lp__);
-            else
-                sigma_ijt = in__.scalar_lb_constrain(0);
+            std::vector<local_scalar_t__> sigma_ijt;
+            size_t sigma_ijt_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+            sigma_ijt.reserve(sigma_ijt_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < sigma_ijt_d_0_max__; ++d_0__) {
+                if (jacobian__)
+                    sigma_ijt.push_back(in__.scalar_lb_constrain(0, lp__));
+                else
+                    sigma_ijt.push_back(in__.scalar_lb_constrain(0));
+            }
             // transformed parameters
             current_statement_begin__ = 73;
             validate_non_negative_index("mu", "((N_t * N_j) * N_i)", ((N_t * N_j) * N_i));
@@ -949,12 +1015,24 @@ public:
             stan::math::assign(sigma,add(L_sigma, elt_multiply(subtract(U_sigma, L_sigma), sigma_raw)));
             // transformed parameters block statements
             current_statement_begin__ = 80;
-            for (int idx = 1; idx <= num_elements(mu); ++idx) {
+            if (as_bool(logical_gt(N_i, 1))) {
                 current_statement_begin__ = 81;
-                stan::model::assign(mu, 
-                            stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
-                            (((((get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
-                            "assigning variable mu");
+                for (int idx = 1; idx <= num_elements(mu); ++idx) {
+                    current_statement_begin__ = 82;
+                    stan::model::assign(mu, 
+                                stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
+                                ((((((get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(psi_ij, get_base1(ii, idx, "ii", 1), "psi_ij", 1), get_base1(jj, idx, "jj", 1), "psi_ij", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
+                                "assigning variable mu");
+                }
+            } else {
+                current_statement_begin__ = 85;
+                for (int idx = 1; idx <= num_elements(mu); ++idx) {
+                    current_statement_begin__ = 86;
+                    stan::model::assign(mu, 
+                                stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
+                                ((get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)), 
+                                "assigning variable mu");
+                }
             }
             // validate transformed parameters
             const char* function__ = "validate transformed params";
@@ -978,82 +1056,85 @@ public:
                 }
             }
             // model body
-            current_statement_begin__ = 87;
-            lp_accum__.add(normal_log<propto__>(beta_i, 0, sigma_i));
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 93;
             lp_accum__.add(normal_log<propto__>(alpha_j, 0, sigma_j));
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 95;
             for (int s = 1; s <= nsources; ++s) {
-                current_statement_begin__ = 91;
+                current_statement_begin__ = 96;
                 lp_accum__.add(normal_log<propto__>(segment(lambda, s, 1), 0, get_base1(prior_lambda, s, "prior_lambda", 1)));
-                current_statement_begin__ = 92;
-                lp_accum__.add(cauchy_log<propto__>(segment(sigma, s, 1), 0, get_base1(prior_sigma, s, "prior_sigma", 1)));
+                current_statement_begin__ = 97;
+                lp_accum__.add(cauchy_log<propto__>(segment(sigma_raw, s, 1), 0, get_base1(prior_sigma, s, "prior_sigma", 1)));
             }
-            current_statement_begin__ = 97;
+            current_statement_begin__ = 102;
             lp_accum__.add(normal_log<propto__>(get_base1(gamma_t, 1, "gamma_t", 1), 0, stan::math::sqrt((pow(sigma_t, 2) / (1 - pow(rho_t, 2))))));
-            current_statement_begin__ = 99;
+            current_statement_begin__ = 104;
             for (int time = 2; time <= N_t; ++time) {
-                current_statement_begin__ = 100;
+                current_statement_begin__ = 105;
                 lp_accum__.add(normal_log<propto__>(get_base1(gamma_t, time, "gamma_t", 1), (rho_t * get_base1(gamma_t, (time - 1), "gamma_t", 1)), sigma_t));
             }
-            current_statement_begin__ = 104;
-            for (int ctry = 1; ctry <= N_i; ++ctry) {
-                current_statement_begin__ = 105;
-                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(phi_it, ctry, "phi_it", 1), 1, "phi_it", 2), 0, stan::math::sqrt((pow(sigma_it, 2) / (1 - pow(rho_i, 2))))));
-                current_statement_begin__ = 107;
-                for (int time = 2; time <= N_t; ++time) {
-                    current_statement_begin__ = 108;
-                    lp_accum__.add(normal_log<propto__>(get_base1(get_base1(phi_it, ctry, "phi_it", 1), time, "phi_it", 2), (rho_i * get_base1(get_base1(phi_it, ctry, "phi_it", 1), (time - 1), "phi_it", 2)), sigma_it));
-                }
-            }
-            current_statement_begin__ = 113;
+            current_statement_begin__ = 109;
             for (int vax = 1; vax <= N_j; ++vax) {
-                current_statement_begin__ = 114;
+                current_statement_begin__ = 110;
                 lp_accum__.add(normal_log<propto__>(get_base1(get_base1(delta_jt, vax, "delta_jt", 1), 1, "delta_jt", 2), 0, stan::math::sqrt((pow(sigma_jt, 2) / (1 - pow(rho_j, 2))))));
-                current_statement_begin__ = 116;
+                current_statement_begin__ = 112;
                 for (int time = 2; time <= N_t; ++time) {
-                    current_statement_begin__ = 117;
+                    current_statement_begin__ = 113;
                     lp_accum__.add(normal_log<propto__>(get_base1(get_base1(delta_jt, vax, "delta_jt", 1), time, "delta_jt", 2), (rho_j * get_base1(get_base1(delta_jt, vax, "delta_jt", 1), (time - 1), "delta_jt", 2)), sigma_jt));
                 }
             }
-            current_statement_begin__ = 122;
-            for (int ctry = 1; ctry <= N_i; ++ctry) {
-                current_statement_begin__ = 123;
-                for (int vax = 1; vax <= N_j; ++vax) {
-                    current_statement_begin__ = 124;
-                    lp_accum__.add(normal_log<propto__>(get_base1(get_base1(psi_ij, ctry, "psi_ij", 1), vax, "psi_ij", 2), 0, sigma_ij));
-                }
-            }
-            current_statement_begin__ = 129;
-            for (int ctry = 1; ctry <= N_i; ++ctry) {
-                current_statement_begin__ = 130;
-                for (int vax = 1; vax <= N_j; ++vax) {
-                    current_statement_begin__ = 131;
-                    lp_accum__.add(normal_log<propto__>(get_base1(get_base1(omega_ijt, ctry, "omega_ijt", 1), vax, 1, "omega_ijt", 2), 0, stan::math::sqrt((pow(sigma_ijt, 2) / (1 - pow(rho_ij, 2))))));
-                    current_statement_begin__ = 133;
+            current_statement_begin__ = 118;
+            if (as_bool(logical_gt(N_i, 1))) {
+                current_statement_begin__ = 119;
+                lp_accum__.add(normal_log<propto__>(beta_i, 0, get_base1(sigma_i, 1, "sigma_i", 1)));
+                current_statement_begin__ = 122;
+                for (int ctry = 1; ctry <= N_i; ++ctry) {
+                    current_statement_begin__ = 123;
+                    lp_accum__.add(normal_log<propto__>(get_base1(get_base1(phi_it, ctry, "phi_it", 1), 1, "phi_it", 2), 0, stan::math::sqrt((pow(get_base1(sigma_it, 1, "sigma_it", 1), 2) / (1 - pow(get_base1(rho_i, 1, "rho_i", 1), 2))))));
+                    current_statement_begin__ = 125;
                     for (int time = 2; time <= N_t; ++time) {
-                        current_statement_begin__ = 134;
-                        lp_accum__.add(normal_log<propto__>(get_base1(get_base1(omega_ijt, ctry, "omega_ijt", 1), vax, time, "omega_ijt", 2), (rho_ij * get_base1(get_base1(omega_ijt, ctry, "omega_ijt", 1), vax, (time - 1), "omega_ijt", 2)), sigma_ijt));
+                        current_statement_begin__ = 126;
+                        lp_accum__.add(normal_log<propto__>(get_base1(get_base1(phi_it, ctry, "phi_it", 1), time, "phi_it", 2), (get_base1(rho_i, 1, "rho_i", 1) * get_base1(get_base1(phi_it, ctry, "phi_it", 1), (time - 1), "phi_it", 2)), get_base1(sigma_it, 1, "sigma_it", 1)));
+                    }
+                }
+                current_statement_begin__ = 131;
+                for (int ctry = 1; ctry <= N_i; ++ctry) {
+                    current_statement_begin__ = 132;
+                    for (int vax = 1; vax <= N_j; ++vax) {
+                        current_statement_begin__ = 133;
+                        lp_accum__.add(normal_log<propto__>(get_base1(get_base1(psi_ij, ctry, "psi_ij", 1), vax, "psi_ij", 2), 0, get_base1(sigma_ij, 1, "sigma_ij", 1)));
+                    }
+                }
+                current_statement_begin__ = 138;
+                for (int ctry = 1; ctry <= N_i; ++ctry) {
+                    current_statement_begin__ = 139;
+                    for (int vax = 1; vax <= N_j; ++vax) {
+                        current_statement_begin__ = 140;
+                        lp_accum__.add(normal_log<propto__>(get_base1(get_base1(omega_ijt, ctry, "omega_ijt", 1), vax, 1, "omega_ijt", 2), 0, stan::math::sqrt((pow(get_base1(sigma_ijt, 1, "sigma_ijt", 1), 2) / (1 - pow(get_base1(rho_ij, 1, "rho_ij", 1), 2))))));
+                        current_statement_begin__ = 142;
+                        for (int time = 2; time <= N_t; ++time) {
+                            current_statement_begin__ = 143;
+                            lp_accum__.add(normal_log<propto__>(get_base1(get_base1(omega_ijt, ctry, "omega_ijt", 1), vax, time, "omega_ijt", 2), (get_base1(rho_ij, 1, "rho_ij", 1) * get_base1(get_base1(omega_ijt, ctry, "omega_ijt", 1), vax, (time - 1), "omega_ijt", 2)), get_base1(sigma_ijt, 1, "sigma_ijt", 1)));
+                        }
                     }
                 }
             }
             {
-            current_statement_begin__ = 141;
+            current_statement_begin__ = 151;
             int start(0);
             (void) start;  // dummy to suppress unused var warning
             stan::math::fill(start, std::numeric_limits<int>::min());
             stan::math::assign(start,1);
-            current_statement_begin__ = 143;
+            current_statement_begin__ = 153;
             for (int idx = 1; idx <= nsources; ++idx) {
                 {
-                current_statement_begin__ = 144;
+                current_statement_begin__ = 154;
                 int end(0);
                 (void) end;  // dummy to suppress unused var warning
                 stan::math::fill(end, std::numeric_limits<int>::min());
                 stan::math::assign(end,((start + get_base1(sizes, idx, "sizes", 1)) - 1));
-                current_statement_begin__ = 145;
+                current_statement_begin__ = 155;
                 lp_accum__.add(normal_log<propto__>(stan::model::rvalue(y, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "y"), add(get_base1(lambda, get_base1(source, idx, "source", 1), "lambda", 1), stan::model::rvalue(mu, stan::model::cons_list(stan::model::index_multi(stan::model::rvalue(mu_lookup, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "mu_lookup")), stan::model::nil_index_list()), "mu")), get_base1(sigma, get_base1(source, idx, "source", 1), "sigma", 1)));
-                current_statement_begin__ = 147;
+                current_statement_begin__ = 157;
                 stan::math::assign(start, (end + 1));
                 }
             }
@@ -1109,7 +1190,7 @@ public:
         dims__.push_back(nsources);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(N_i);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : N_i ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(N_j);
@@ -1118,7 +1199,7 @@ public:
         dims__.push_back(N_t);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(N_i);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : N_i ));
         dims__.push_back(N_t);
         dimss__.push_back(dims__);
         dims__.resize(0);
@@ -1126,38 +1207,44 @@ public:
         dims__.push_back(N_t);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(N_i);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : N_i ));
         dims__.push_back(N_j);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(N_i);
-        dims__.push_back(N_j);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : N_i ));
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : N_j ));
         dims__.push_back(N_t);
         dimss__.push_back(dims__);
         dims__.resize(0);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : 1 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : 1 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(nsources);
         dimss__.push_back(dims__);
         dims__.resize(0);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : 1 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : 1 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : 1 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
+        dims__.push_back((logical_eq(N_i, 1) ? 0 : 1 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(((N_t * N_j) * N_i));
@@ -1194,12 +1281,12 @@ public:
             vars__.push_back(lambda[k_0__]);
         }
         std::vector<double> beta_i;
-        size_t beta_i_d_0_max__ = N_i;
+        size_t beta_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         beta_i.reserve(beta_i_d_0_max__);
         for (size_t d_0__ = 0; d_0__ < beta_i_d_0_max__; ++d_0__) {
             beta_i.push_back(in__.scalar_constrain());
         }
-        size_t beta_i_k_0_max__ = N_i;
+        size_t beta_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t k_0__ = 0; k_0__ < beta_i_k_0_max__; ++k_0__) {
             vars__.push_back(beta_i[k_0__]);
         }
@@ -1224,7 +1311,7 @@ public:
             vars__.push_back(gamma_t[k_0__]);
         }
         std::vector<std::vector<double> > phi_it;
-        size_t phi_it_d_0_max__ = N_i;
+        size_t phi_it_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t phi_it_d_1_max__ = N_t;
         phi_it.resize(phi_it_d_0_max__);
         for (size_t d_0__ = 0; d_0__ < phi_it_d_0_max__; ++d_0__) {
@@ -1233,7 +1320,7 @@ public:
                 phi_it[d_0__].push_back(in__.scalar_constrain());
             }
         }
-        size_t phi_it_k_0_max__ = N_i;
+        size_t phi_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t phi_it_k_1_max__ = N_t;
         for (size_t k_1__ = 0; k_1__ < phi_it_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < phi_it_k_0_max__; ++k_0__) {
@@ -1258,7 +1345,7 @@ public:
             }
         }
         std::vector<std::vector<double> > psi_ij;
-        size_t psi_ij_d_0_max__ = N_i;
+        size_t psi_ij_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t psi_ij_d_1_max__ = N_j;
         psi_ij.resize(psi_ij_d_0_max__);
         for (size_t d_0__ = 0; d_0__ < psi_ij_d_0_max__; ++d_0__) {
@@ -1267,7 +1354,7 @@ public:
                 psi_ij[d_0__].push_back(in__.scalar_constrain());
             }
         }
-        size_t psi_ij_k_0_max__ = N_i;
+        size_t psi_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t psi_ij_k_1_max__ = N_j;
         for (size_t k_1__ = 0; k_1__ < psi_ij_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < psi_ij_k_0_max__; ++k_0__) {
@@ -1275,14 +1362,14 @@ public:
             }
         }
         std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > omega_ijt;
-        size_t omega_ijt_d_0_max__ = N_i;
+        size_t omega_ijt_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         omega_ijt.reserve(omega_ijt_d_0_max__);
         for (size_t d_0__ = 0; d_0__ < omega_ijt_d_0_max__; ++d_0__) {
-            omega_ijt.push_back(in__.matrix_constrain(N_j, N_t));
+            omega_ijt.push_back(in__.matrix_constrain((logical_eq(N_i, 1) ? 0 : N_j ), N_t));
         }
         size_t omega_ijt_j_2_max__ = N_t;
-        size_t omega_ijt_j_1_max__ = N_j;
-        size_t omega_ijt_k_0_max__ = N_i;
+        size_t omega_ijt_j_1_max__ = (logical_eq(N_i, 1) ? 0 : N_j );
+        size_t omega_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t j_2__ = 0; j_2__ < omega_ijt_j_2_max__; ++j_2__) {
             for (size_t j_1__ = 0; j_1__ < omega_ijt_j_1_max__; ++j_1__) {
                 for (size_t k_0__ = 0; k_0__ < omega_ijt_k_0_max__; ++k_0__) {
@@ -1290,33 +1377,81 @@ public:
                 }
             }
         }
-        double rho_i = in__.scalar_lub_constrain(-(1), 1);
-        vars__.push_back(rho_i);
+        std::vector<double> rho_i;
+        size_t rho_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        rho_i.reserve(rho_i_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < rho_i_d_0_max__; ++d_0__) {
+            rho_i.push_back(in__.scalar_lub_constrain(-(1), 1));
+        }
+        size_t rho_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_i_k_0_max__; ++k_0__) {
+            vars__.push_back(rho_i[k_0__]);
+        }
         double rho_j = in__.scalar_lub_constrain(-(1), 1);
         vars__.push_back(rho_j);
         double rho_t = in__.scalar_lub_constrain(-(1), 1);
         vars__.push_back(rho_t);
-        double rho_ij = in__.scalar_lub_constrain(-(1), 1);
-        vars__.push_back(rho_ij);
+        std::vector<double> rho_ij;
+        size_t rho_ij_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        rho_ij.reserve(rho_ij_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < rho_ij_d_0_max__; ++d_0__) {
+            rho_ij.push_back(in__.scalar_lub_constrain(-(1), 1));
+        }
+        size_t rho_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_ij_k_0_max__; ++k_0__) {
+            vars__.push_back(rho_ij[k_0__]);
+        }
         Eigen::Matrix<double, Eigen::Dynamic, 1> sigma_raw = in__.vector_lub_constrain(0, 1, nsources);
         size_t sigma_raw_j_1_max__ = nsources;
         for (size_t j_1__ = 0; j_1__ < sigma_raw_j_1_max__; ++j_1__) {
             vars__.push_back(sigma_raw(j_1__));
         }
-        double sigma_i = in__.scalar_lb_constrain(0);
-        vars__.push_back(sigma_i);
+        std::vector<double> sigma_i;
+        size_t sigma_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        sigma_i.reserve(sigma_i_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < sigma_i_d_0_max__; ++d_0__) {
+            sigma_i.push_back(in__.scalar_lb_constrain(0));
+        }
+        size_t sigma_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_i_k_0_max__; ++k_0__) {
+            vars__.push_back(sigma_i[k_0__]);
+        }
         double sigma_j = in__.scalar_lb_constrain(0);
         vars__.push_back(sigma_j);
         double sigma_t = in__.scalar_lb_constrain(0);
         vars__.push_back(sigma_t);
-        double sigma_it = in__.scalar_lb_constrain(0);
-        vars__.push_back(sigma_it);
+        std::vector<double> sigma_it;
+        size_t sigma_it_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        sigma_it.reserve(sigma_it_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < sigma_it_d_0_max__; ++d_0__) {
+            sigma_it.push_back(in__.scalar_lb_constrain(0));
+        }
+        size_t sigma_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_it_k_0_max__; ++k_0__) {
+            vars__.push_back(sigma_it[k_0__]);
+        }
         double sigma_jt = in__.scalar_lb_constrain(0);
         vars__.push_back(sigma_jt);
-        double sigma_ij = in__.scalar_lb_constrain(0);
-        vars__.push_back(sigma_ij);
-        double sigma_ijt = in__.scalar_lb_constrain(0);
-        vars__.push_back(sigma_ijt);
+        std::vector<double> sigma_ij;
+        size_t sigma_ij_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        sigma_ij.reserve(sigma_ij_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < sigma_ij_d_0_max__; ++d_0__) {
+            sigma_ij.push_back(in__.scalar_lb_constrain(0));
+        }
+        size_t sigma_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ij_k_0_max__; ++k_0__) {
+            vars__.push_back(sigma_ij[k_0__]);
+        }
+        std::vector<double> sigma_ijt;
+        size_t sigma_ijt_d_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        sigma_ijt.reserve(sigma_ijt_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < sigma_ijt_d_0_max__; ++d_0__) {
+            sigma_ijt.push_back(in__.scalar_lb_constrain(0));
+        }
+        size_t sigma_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ijt_k_0_max__; ++k_0__) {
+            vars__.push_back(sigma_ijt[k_0__]);
+        }
         double lp__ = 0.0;
         (void) lp__;  // dummy to suppress unused var warning
         stan::math::accumulator<double> lp_accum__;
@@ -1338,12 +1473,24 @@ public:
             stan::math::assign(sigma,add(L_sigma, elt_multiply(subtract(U_sigma, L_sigma), sigma_raw)));
             // do transformed parameters statements
             current_statement_begin__ = 80;
-            for (int idx = 1; idx <= num_elements(mu); ++idx) {
+            if (as_bool(logical_gt(N_i, 1))) {
                 current_statement_begin__ = 81;
-                stan::model::assign(mu, 
-                            stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
-                            (((((get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
-                            "assigning variable mu");
+                for (int idx = 1; idx <= num_elements(mu); ++idx) {
+                    current_statement_begin__ = 82;
+                    stan::model::assign(mu, 
+                                stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
+                                ((((((get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(psi_ij, get_base1(ii, idx, "ii", 1), "psi_ij", 1), get_base1(jj, idx, "jj", 1), "psi_ij", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
+                                "assigning variable mu");
+                }
+            } else {
+                current_statement_begin__ = 85;
+                for (int idx = 1; idx <= num_elements(mu); ++idx) {
+                    current_statement_begin__ = 86;
+                    stan::model::assign(mu, 
+                                stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
+                                ((get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)), 
+                                "assigning variable mu");
+                }
             }
             if (!include_gqs__ && !include_tparams__) return;
             // validate transformed parameters
@@ -1362,22 +1509,22 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 155;
+            current_statement_begin__ = 165;
             validate_non_negative_index("log_lik", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, 1> log_lik(N);
             stan::math::initialize(log_lik, DUMMY_VAR__);
             stan::math::fill(log_lik, DUMMY_VAR__);
             // generated quantities statements
-            current_statement_begin__ = 157;
+            current_statement_begin__ = 167;
             for (int idx = 1; idx <= N; ++idx) {
-                current_statement_begin__ = 158;
+                current_statement_begin__ = 168;
                 stan::model::assign(log_lik, 
                             stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
                             normal_log(get_base1(y, idx, "y", 1), (get_base1(lambda, get_base1(source, idx, "source", 1), "lambda", 1) + get_base1(mu, get_base1(mu_lookup, idx, "mu_lookup", 1), "mu", 1)), get_base1(sigma, get_base1(source, idx, "source", 1), "sigma", 1)), 
                             "assigning variable log_lik");
             }
             // validate, write generated quantities
-            current_statement_begin__ = 155;
+            current_statement_begin__ = 165;
             size_t log_lik_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < log_lik_j_1_max__; ++j_1__) {
                 vars__.push_back(log_lik(j_1__));
@@ -1418,7 +1565,7 @@ public:
             param_name_stream__ << "lambda" << '.' << k_0__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t beta_i_k_0_max__ = N_i;
+        size_t beta_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t k_0__ = 0; k_0__ < beta_i_k_0_max__; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "beta_i" << '.' << k_0__ + 1;
@@ -1436,7 +1583,7 @@ public:
             param_name_stream__ << "gamma_t" << '.' << k_0__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t phi_it_k_0_max__ = N_i;
+        size_t phi_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t phi_it_k_1_max__ = N_t;
         for (size_t k_1__ = 0; k_1__ < phi_it_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < phi_it_k_0_max__; ++k_0__) {
@@ -1454,7 +1601,7 @@ public:
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        size_t psi_ij_k_0_max__ = N_i;
+        size_t psi_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t psi_ij_k_1_max__ = N_j;
         for (size_t k_1__ = 0; k_1__ < psi_ij_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < psi_ij_k_0_max__; ++k_0__) {
@@ -1464,8 +1611,8 @@ public:
             }
         }
         size_t omega_ijt_j_2_max__ = N_t;
-        size_t omega_ijt_j_1_max__ = N_j;
-        size_t omega_ijt_k_0_max__ = N_i;
+        size_t omega_ijt_j_1_max__ = (logical_eq(N_i, 1) ? 0 : N_j );
+        size_t omega_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t j_2__ = 0; j_2__ < omega_ijt_j_2_max__; ++j_2__) {
             for (size_t j_1__ = 0; j_1__ < omega_ijt_j_1_max__; ++j_1__) {
                 for (size_t k_0__ = 0; k_0__ < omega_ijt_k_0_max__; ++k_0__) {
@@ -1475,45 +1622,63 @@ public:
                 }
             }
         }
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "rho_i";
-        param_names__.push_back(param_name_stream__.str());
+        size_t rho_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_i_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "rho_i" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "rho_j";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "rho_t";
         param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "rho_ij";
-        param_names__.push_back(param_name_stream__.str());
+        size_t rho_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_ij_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "rho_ij" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         size_t sigma_raw_j_1_max__ = nsources;
         for (size_t j_1__ = 0; j_1__ < sigma_raw_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "sigma_raw" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_i";
-        param_names__.push_back(param_name_stream__.str());
+        size_t sigma_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_i_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_i" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "sigma_j";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "sigma_t";
         param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_it";
-        param_names__.push_back(param_name_stream__.str());
+        size_t sigma_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_it_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_it" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "sigma_jt";
         param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_ij";
-        param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_ijt";
-        param_names__.push_back(param_name_stream__.str());
+        size_t sigma_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ij_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_ij" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
+        size_t sigma_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ijt_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_ijt" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         if (!include_gqs__ && !include_tparams__) return;
         if (include_tparams__) {
             size_t mu_j_1_max__ = ((N_t * N_j) * N_i);
@@ -1547,7 +1712,7 @@ public:
             param_name_stream__ << "lambda" << '.' << k_0__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t beta_i_k_0_max__ = N_i;
+        size_t beta_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t k_0__ = 0; k_0__ < beta_i_k_0_max__; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "beta_i" << '.' << k_0__ + 1;
@@ -1565,7 +1730,7 @@ public:
             param_name_stream__ << "gamma_t" << '.' << k_0__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t phi_it_k_0_max__ = N_i;
+        size_t phi_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t phi_it_k_1_max__ = N_t;
         for (size_t k_1__ = 0; k_1__ < phi_it_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < phi_it_k_0_max__; ++k_0__) {
@@ -1583,7 +1748,7 @@ public:
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        size_t psi_ij_k_0_max__ = N_i;
+        size_t psi_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         size_t psi_ij_k_1_max__ = N_j;
         for (size_t k_1__ = 0; k_1__ < psi_ij_k_1_max__; ++k_1__) {
             for (size_t k_0__ = 0; k_0__ < psi_ij_k_0_max__; ++k_0__) {
@@ -1593,8 +1758,8 @@ public:
             }
         }
         size_t omega_ijt_j_2_max__ = N_t;
-        size_t omega_ijt_j_1_max__ = N_j;
-        size_t omega_ijt_k_0_max__ = N_i;
+        size_t omega_ijt_j_1_max__ = (logical_eq(N_i, 1) ? 0 : N_j );
+        size_t omega_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
         for (size_t j_2__ = 0; j_2__ < omega_ijt_j_2_max__; ++j_2__) {
             for (size_t j_1__ = 0; j_1__ < omega_ijt_j_1_max__; ++j_1__) {
                 for (size_t k_0__ = 0; k_0__ < omega_ijt_k_0_max__; ++k_0__) {
@@ -1604,45 +1769,63 @@ public:
                 }
             }
         }
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "rho_i";
-        param_names__.push_back(param_name_stream__.str());
+        size_t rho_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_i_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "rho_i" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "rho_j";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "rho_t";
         param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "rho_ij";
-        param_names__.push_back(param_name_stream__.str());
+        size_t rho_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < rho_ij_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "rho_ij" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         size_t sigma_raw_j_1_max__ = nsources;
         for (size_t j_1__ = 0; j_1__ < sigma_raw_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "sigma_raw" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_i";
-        param_names__.push_back(param_name_stream__.str());
+        size_t sigma_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_i_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_i" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "sigma_j";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "sigma_t";
         param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_it";
-        param_names__.push_back(param_name_stream__.str());
+        size_t sigma_it_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_it_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_it" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "sigma_jt";
         param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_ij";
-        param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "sigma_ijt";
-        param_names__.push_back(param_name_stream__.str());
+        size_t sigma_ij_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ij_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_ij" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
+        size_t sigma_ijt_k_0_max__ = (logical_eq(N_i, 1) ? 0 : 1 );
+        for (size_t k_0__ = 0; k_0__ < sigma_ijt_k_0_max__; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "sigma_ijt" << '.' << k_0__ + 1;
+            param_names__.push_back(param_name_stream__.str());
+        }
         if (!include_gqs__ && !include_tparams__) return;
         if (include_tparams__) {
             size_t mu_j_1_max__ = ((N_t * N_j) * N_i);
