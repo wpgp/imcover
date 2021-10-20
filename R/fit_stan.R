@@ -141,6 +141,8 @@ multi_lik_stan <- function(X,
                          show_messages = verbose,
                          ...)
 
+  stopifnot(out@mode == 0) # check for model fitting
+
   # calculate prediction ('mu')
   posterior <- t(as.data.frame(out, 'mu'))
   posterior <- invlogit(posterior)
