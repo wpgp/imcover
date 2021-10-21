@@ -46,67 +46,72 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
   # get key dimensions
   n_i <- ncol(beta_i)
   n_j <- ncol(alpha_j)
-  t0 <- ncol(phi_t)
+  t0 <- ncol(gamma_t)
   max_t <- X$labels$lbl_t[t0]
   nsamples <- nrow(beta_i)
 
   for(tt in (t0 + 1:t)){
-    phi_t <- cbind(phi_t, matrix(nrow = nrow(phi_t), ncol = 1))
-    phi_t[, tt] <- rnorm(nsamples, rho_t * phi_t[, tt-1], sigma_t)
+    gamma_t <- cbind(gamma_t, matrix(nrow = nrow(gamma_t), ncol = 1))
+    gamma_t[, tt] <- rnorm(nsamples, rho_t * gamma_t[, tt-1], sigma_t)
   }
 
   # modify arrays
-  gamma_it <- abind::abind(gamma_it, array(NA, dim = c(nsamples, n_i, t)), along = 3)
-  gamma_jt <- abind::abind(gamma_jt, array(NA, dim = c(nsamples, n_j, t)), along = 3)
+  phi_it <- abind::abind(phi_it, array(NA, dim = c(nsamples, n_i, t)), along = 3)
+  delta_jt <- abind::abind(delta_jt, array(NA, dim = c(nsamples, n_j, t)), along = 3)
 
   for(ss in 1:nsamples){
     for(tt in (t0 + 1:t)){
-      gamma_it[ss, , tt] <- rnorm(n_i, rho_i[ss] * gamma_it[ss, , tt-1], sigma_it)
-      gamma_jt[ss, , tt] <- rnorm(n_j, rho_j[ss] * gamma_jt[ss, , tt-1], sigma_jt)
+      phi_it[ss, , tt] <- rnorm(n_i, rho_i[ss] * phi_it[ss, , tt-1], sigma_it[ss])
+      delta_jt[ss, , tt] <- rnorm(n_j, rho_j[ss] * delta_jt[ss, , tt-1], sigma_jt[ss])
     }
   }
 
   # modify array for prediction point
-  delta_ijt <- abind::abind(delta_ijt, array(NA, dim = c(nsamples, n_i, n_j, t)), along = 4)
+  omega_ijt <- abind::abind(omega_ijt, array(NA, dim = c(nsamples, n_i, n_j, t)), along = 4)
 
   for(ss in 1:nsamples){
     for(jj in 1:n_j){
       for(tt in (t0 + 1:t)){
-        delta_ijt[ss, , jj, tt] <- rnorm(n_i, rho_ij[ss] * delta_ijt[ss, , jj, tt-1], sigma_ijt)
+        omega_ijt[ss, , jj, tt] <- rnorm(n_i, rho_ij[ss] * omega_ijt[ss, , jj, tt-1], sigma_ijt[ss])
       }
     }
   }
 
   # combine to generate mu + predictions
-  mu <- abind::abind(mu, array(NA, dim = c(nsamples, n_i, t, n_j)), along = 3)
+  mu_pred <- matrix(NA, nrow = nsamples, ncol = t * n_i * n_j)
+  # flat mu_pred index
+  mu_id <- expand.grid(ii = 1:n_i, jj = 1:n_j, tt = t0+(1:t))
+  mu_id <- mu_id[order(mu_id$ii, mu_id$jj, mu_id$tt), ]
 
+  # generate prediction
   for(ss in 1:nsamples){
-    for(ii in 1:n_i){
-      for(jj in 1:n_j){
-        for(tt in (t0 + 1:t)){
-          mu[ss, ii, tt, jj] <- beta_i[ss, ii] + alpha_j[ss, jj] + phi_t[ss, tt] +
-            gamma_it[ss, ii, tt] + gamma_jt[ss, jj, tt] + gamma_ij[ss, ii, jj] +
-            delta_ijt[ss, ii, jj, tt]
-        }
-      }
+    for(idx in 1:nrow(mu_id)){
+      ii <- mu_id$ii[idx]
+      jj <- mu_id$jj[idx]
+      tt <- mu_id$tt[idx]
+
+      mu_pred[ss, idx] <- beta_i[ss, ii] + alpha_j[ss, jj] + gamma_t[ss, tt] +
+        psi_ij[ss, ii, jj] + phi_it[ss, ii, tt] + delta_jt[ss, jj, tt] +
+        omega_ijt[ss, ii, jj, tt]
     }
   }
 
   ## create prediction data frame
+  mu <- cbind(mu, mu_pred)
   mu <- t(as.data.frame(mu))
   mu <- invlogit(mu)
 
   # create an index to the 'mu' parameter
-  mu_idx <- strsplit(rownames(mu), '.', fixed = T)
-  mu_idx <- do.call(rbind.data.frame, mu_idx)
-  names(mu_idx) <- c("country", "time", "vaccine")
-  mu_idx <- as.data.frame(lapply(mu_idx, function(x) as.numeric(x)))
+  # flat mu_pred index
+  mu_id <- expand.grid(ii = 1:n_i, jj = 1:n_j, tt = 1:(t0+t))
+  mu_id <- mu_id[order(mu_id$ii, mu_id$jj, mu_id$tt), ]
+  names(mu_id) <- c("country", "vaccine", "time")
 
   # name the indices -- add in the new prediction time points to the labels
   mu_names <- cbind.data.frame(
-    'country' = X$labels$lbl_c[mu_idx$country],
-    'time' = c(X$labels$lbl_t, (max_t + 1:t))[mu_idx$time],
-    'vaccine' = X$labels$lbl_v[mu_idx$vaccine]
+    'country' = X$labels$lbl_c[mu_id$country],
+    'time' = c(X$labels$lbl_t, (max_t + 1:t))[mu_id$time],
+    'vaccine' = X$labels$lbl_v[mu_id$vaccine]
   )
 
   # reverse ratio calculation

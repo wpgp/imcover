@@ -2,10 +2,10 @@
 #' Multi-source immunisation coverage model with Stan
 #'
 #' @param X Object of \code{ic.df} for analysis
-#' @param prior_lambda Scale parameter for half-normal prior on source-specific
+#' @param prior_lambda Scale parameter for normal prior on source-specific
 #'   intercepts. See details.
-#' @param prior_sigma Scale parameter for half-Cauchy prior on source-specific
-#'   standard deviations. See details.
+#' @param prior_sigma Scale parameter for the truncated Cauchy prior on
+#'   source-specific standard deviations. See details.
 #' @param upper_sigma Numeric value (or vector) setting the upper bounds on the
 #'   source-specific scale parameter. See details.
 #' @param lower_sigma Numeric value (or vector) setting the lower bounds on the
@@ -22,7 +22,7 @@
 #'   of a list containing multiple \code{icfit} objects.
 #'
 #' @details The default priors for the source-specific intercepts (lambda) and
-#'   standard deviations (sigma) are given by half-normal and half-Cauchy
+#'   standard deviations (sigma) are given by normal and truncated Cauchy
 #'   distributions, respectively. Future version may allow users to specify
 #'   different distributions. Currently, users may only specify the scale
 #'   parameter of these distribution. By default, for lambda all sources are
@@ -36,7 +36,8 @@
 #'   to define the range of the possible values. In general, the lower bounds
 #'   should always be zero and cannot be negative. Similar to the differences in
 #'   the prior distributions, an upper bound of 0.4 is placed on 'survey'
-#'   estimates.
+#'   estimates. In the absence of a user-defined upper-bound, these are set to
+#'   100.
 #'
 #'   Users setting \code{prior_lambda}, \code{prior_sigma}, or
 #'   \code{upper_sigma} should note that the length of values specified must be
