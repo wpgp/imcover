@@ -44,11 +44,11 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
   list2env(ext, envir = environment())
 
   # get key dimensions
-  n_i <- ncol(beta_i)
+  n_i <- length(X$labels$lbl_c)
   n_j <- ncol(alpha_j)
   t0 <- ncol(gamma_t)
   max_t <- X$labels$lbl_t[t0]
-  nsamples <- nrow(beta_i)
+  nsamples <- nrow(lambda)
 
   for(tt in (t0 + 1:t)){
     gamma_t <- cbind(gamma_t, matrix(nrow = nrow(gamma_t), ncol = 1))
@@ -56,26 +56,36 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
   }
 
   # modify arrays
-  phi_it <- abind::abind(phi_it, array(NA, dim = c(nsamples, n_i, t)), along = 3)
   delta_jt <- abind::abind(delta_jt, array(NA, dim = c(nsamples, n_j, t)), along = 3)
 
   for(ss in 1:nsamples){
     for(tt in (t0 + 1:t)){
-      phi_it[ss, , tt] <- rnorm(n_i, rho_i[ss] * phi_it[ss, , tt-1], sigma_it[ss])
       delta_jt[ss, , tt] <- rnorm(n_j, rho_j[ss] * delta_jt[ss, , tt-1], sigma_jt[ss])
     }
   }
 
-  # modify array for prediction point
-  omega_ijt <- abind::abind(omega_ijt, array(NA, dim = c(nsamples, n_i, n_j, t)), along = 4)
+  # multi-country models
+  if(n_i > 1){
+    phi_it <- abind::abind(phi_it, array(NA, dim = c(nsamples, n_i, t)), along = 3)
 
-  for(ss in 1:nsamples){
-    for(jj in 1:n_j){
+    for(ss in 1:nsamples){
       for(tt in (t0 + 1:t)){
-        omega_ijt[ss, , jj, tt] <- rnorm(n_i, rho_ij[ss] * omega_ijt[ss, , jj, tt-1], sigma_ijt[ss])
+        phi_it[ss, , tt] <- rnorm(n_i, rho_i[ss] * phi_it[ss, , tt-1], sigma_it[ss])
+      }
+    }
+
+    # modify array for prediction point
+    omega_ijt <- abind::abind(omega_ijt, array(NA, dim = c(nsamples, n_i, n_j, t)), along = 4)
+
+    for(ss in 1:nsamples){
+      for(jj in 1:n_j){
+        for(tt in (t0 + 1:t)){
+          omega_ijt[ss, , jj, tt] <- rnorm(n_i, rho_ij[ss] * omega_ijt[ss, , jj, tt-1], sigma_ijt[ss])
+        }
       }
     }
   }
+
 
   # combine to generate mu + predictions
   mu_pred <- matrix(NA, nrow = nsamples, ncol = t * n_i * n_j)
@@ -90,9 +100,13 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
       jj <- mu_id$jj[idx]
       tt <- mu_id$tt[idx]
 
-      mu_pred[ss, idx] <- beta_i[ss, ii] + alpha_j[ss, jj] + gamma_t[ss, tt] +
-        psi_ij[ss, ii, jj] + phi_it[ss, ii, tt] + delta_jt[ss, jj, tt] +
-        omega_ijt[ss, ii, jj, tt]
+      if(n_i > 1){
+        mu_pred[ss, idx] <- beta_i[ss, ii] + alpha_j[ss, jj] + gamma_t[ss, tt] +
+          psi_ij[ss, ii, jj] + phi_it[ss, ii, tt] + delta_jt[ss, jj, tt] +
+          omega_ijt[ss, ii, jj, tt]
+      } else{
+        mu_pred[ss, idx] <- alpha_j[ss, jj] + gamma_t[ss, tt] + delta_jt[ss, jj, tt]
+      }
     }
   }
 
