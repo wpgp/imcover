@@ -115,10 +115,12 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
   mu <- t(as.data.frame(mu))
   mu <- invlogit(mu)
 
-  # create an index to the 'mu' parameter
+  # create an index to the 'mu' full parameter
+  mu_id_pred <- mu_id
   # flat mu_pred index
-  mu_id <- expand.grid(ii = 1:n_i, jj = 1:n_j, tt = 1:(t0+t))
+  mu_id <- expand.grid(ii = 1:n_i, jj = 1:n_j, tt = 1:t0)
   mu_id <- mu_id[order(mu_id$ii, mu_id$jj, mu_id$tt), ]
+  mu_id <- rbind(mu_id, mu_id_pred)
   names(mu_id) <- c("country", "vaccine", "time")
 
   # name the indices -- add in the new prediction time points to the labels
