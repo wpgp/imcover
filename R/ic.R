@@ -105,7 +105,8 @@ ic_data.data.frame <- function(X, region = 'region', country = 'code', time = 'y
   if(!dose %in% names(X)){ dose <- NULL }
   if(!population %in% names(X)){ population <- NULL }
 
-  keepnames <- c(varnames, dose, population, coverage)
+  keepnames <- c(region, country, time, vaccine,
+                 coverage, source, dose, population)
   if(drop_cols){
     X <- X[, keepnames]
   } else{
@@ -308,7 +309,3 @@ chknames <- function(x) {
   if (!identical(x, make.names(x)))
     warning("Found potentially invalid names.")
 }
-
-
-
-
