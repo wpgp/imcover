@@ -309,7 +309,3 @@ chknames <- function(x) {
   if (!identical(x, make.names(x)))
     warning("Found potentially invalid names.")
 }
-
-
-
-
