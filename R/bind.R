@@ -63,19 +63,25 @@ rbind.ic.df <- function(..., fill = TRUE, deparse.level = 1){
 merge.ic.df <- function(x, y, attr.x = TRUE, ...) {
   if(attr.x){
     attrs <- attributes(x)
+    drops <- attributes(y)
   } else{
     attrs <- attributes(y)
+    drops <- attributes(x)
   }
   attrs <- attrs[names(attrs) %in% ic_core(survey = TRUE)]
+  drops <- drops[names(drops) %in% ic_core(survey = TRUE)]
+  drops <- setdiff(unlist(drops), unlist(attrs))
 
   df <- merge(as.data.frame(x), as.data.frame(y), ...)
+  df <- df[,!names(df) %in% drops]
 
   if(any(!unlist(attrs) %in% names(df))){
     stop("Invalid columns and attributes.")
   }
-  attributes(df)[names(attrs)] <- attrs
-  class(df) <- list("ic.df", class(df))
-  # df <- do.call("ic_data", c(list(X=df), attrs))
+  # attributes(df)[names(attrs)] <- attrs
+  # class(df) <- list("ic.df", class(df))
+
+  df <- do.call("ic_data", c(list(X=df), attrs))
   stopifnot(is.ic_data(df))
   # print(attributes(df))
 
