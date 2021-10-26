@@ -82,7 +82,7 @@ ic_core <- function(survey = TRUE){
   stopifnot(is.logical(survey))
   if(survey){
     return(c("region", "country", "time", "vaccine", "coverage", "source", "dose",
-             "population", "source", "survey", "evidence", "validity", "sample"))
+             "population", "survey", "evidence", "validity", "sample"))
   } else{
     return(c("region", "country", "time", "vaccine", "coverage",
              "source", "dose", "population"))
