@@ -7,26 +7,28 @@
 #' @param vaccine character vector of vaccine abbreviations to predict
 #' @param t Integer of the number of time steps ahead to predict. Default is 2.
 #' @param return_ic Logical. Should an \code{icfit} object be returned?
-#' @return If \code{return_ic} is \code{FALSE}, then a \code{data.frame} with
-#'   posterior samples for predictions, labelled by 'country', 'vaccine', and
-#'   'time' columns. Return and 'ic' object will modify object \code{X} and
-#'   add/update a the 'prediction' element.
+#' @return If \code{return_ic} is \code{FALSE}, then a \code{data.frame} (or a
+#'   list of data frames) with posterior samples for predictions, labelled by
+#'   'country', 'vaccine', and 'time' columns. Returning an 'ic' object will
+#'   modify object \code{X} and add/update with a the 'prediction' element and
+#'   return the same type as \code{X}.
 #'
 #' @aliases predict
 #' @importFrom stats predict
 #' @export predict.icfit
 #' @export
-predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
+predict.icfit <- function(X, country = NULL, vaccine = NULL,
+                          t = 2, return_ic = TRUE){
 
   # validate inputs
-  if(missing(country)){
+  if(missing(country) | is.null(country)){
     country <- X$labels$lbl_c
   } else{
     country <- intersect(country, X$labels$lbl_c)
     stopifnot(length(country) >= 1L)
   }
 
-  if(missing(vaccine)){
+  if(missing(vaccine) | is.null(vaccine)){
     vaccine <- X$labels$lbl_v
   } else{
     vaccine <- intersect(vaccine, X$labels$lbl_v)
@@ -160,11 +162,15 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
 #' @importFrom stats predict
 #' @export predict.iclist
 #' @export
-predict.iclist <- function(X, country, vaccine, t = 2, return_ic = TRUE){
+predict.iclist <- function(X, country = NULL, vaccine = NULL,
+                           t = 2, return_ic = TRUE){
   out <- lapply(X, FUN = function(fit){
     predict(fit, country, vaccine, t, return_ic)
   })
 
+  if(return_ic){
+    class(out) <- list("iclist", class(out))
+  }
   return(out)
 }
 

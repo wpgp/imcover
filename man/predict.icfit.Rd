@@ -5,7 +5,7 @@
 \alias{predict}
 \title{Posterior predictions of vaccination coverage}
 \usage{
-\method{predict}{icfit}(X, country, vaccine, t = 2, return_ic = TRUE)
+\method{predict}{icfit}(X, country = NULL, vaccine = NULL, t = 2, return_ic = TRUE)
 }
 \arguments{
 \item{X}{object of type \code{icfit} or \code{iclist}}
@@ -19,10 +19,11 @@
 \item{return_ic}{Logical. Should an \code{icfit} object be returned?}
 }
 \value{
-If \code{return_ic} is \code{FALSE}, then a \code{data.frame} with
-posterior samples for predictions, labelled by 'country', 'vaccine', and
-'time' columns. Return and 'ic' object will modify object \code{X} and
-add/update a the 'prediction' element.
+If \code{return_ic} is \code{FALSE}, then a \code{data.frame} (or a
+list of data frames) with posterior samples for predictions, labelled by
+'country', 'vaccine', and 'time' columns. Returning an 'ic' object will
+modify object \code{X} and add/update with a the 'prediction' element and
+return the same type as \code{X}.
 }
 \description{
 Draw from the posterior predictive distribution.

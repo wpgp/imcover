@@ -4,6 +4,7 @@
 \alias{filter_yovi}
 \alias{filter_yovi.ic.df}
 \alias{filter_yovi.icfit}
+\alias{filter_yovi.iclist}
 \title{Filter ic data records based on year of vaccine introduction
 Exclude ic data records for years when a vaccine had not been fully
 introduced in a country.}
@@ -13,6 +14,8 @@ filter_yovi(X, vaccine = NULL, yovi = imcover::get_yovi(), na.rm = FALSE)
 \method{filter_yovi}{ic.df}(X, vaccine = NULL, yovi = imcover::get_yovi(), na.rm = FALSE)
 
 \method{filter_yovi}{icfit}(X, vaccine = NULL, yovi = imcover::get_yovi(), na.rm = FALSE)
+
+\method{filter_yovi}{iclist}(X, vaccine = NULL, yovi = imcover::get_yovi(), na.rm = FALSE)
 }
 \arguments{
 \item{X}{An object of class \code{ic.df} or \code{icfit}.}

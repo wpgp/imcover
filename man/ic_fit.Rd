@@ -7,10 +7,10 @@
 \usage{
 ic_fit(
   X,
-  prior_lambda,
-  prior_sigma,
-  upper_sigma,
-  lower_sigma,
+  prior_lambda = NULL,
+  prior_sigma = NULL,
+  upper_sigma = NULL,
+  lower_sigma = NULL,
   region = TRUE,
   verbose = TRUE,
   ...
@@ -18,10 +18,10 @@ ic_fit(
 
 \method{ic_fit}{ic.df}(
   X,
-  prior_lambda,
-  prior_sigma,
-  upper_sigma,
-  lower_sigma,
+  prior_lambda = NULL,
+  prior_sigma = NULL,
+  upper_sigma = NULL,
+  lower_sigma = NULL,
   region = TRUE,
   verbose = TRUE,
   ...

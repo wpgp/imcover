@@ -248,3 +248,18 @@ filter_yovi.icfit <- function(X,
 }
 
 
+#' @name filter_yovi
+#' @export
+filter_yovi.iclist <- function(X,
+                               vaccine = NULL,
+                               yovi = imcover::get_yovi(),
+                               na.rm = FALSE){
+
+  out <- lapply(X, function(Xsub){
+    filter_yovi(Xsub, vaccine, yovi, na.rm)
+  })
+
+  class(out) <- list("iclist", class(out))
+  return(out)
+}
+

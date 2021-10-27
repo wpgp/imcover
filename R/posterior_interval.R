@@ -30,7 +30,7 @@ ic_coverage.icfit <- function(X,
                               stat = c('mean', 'median', 'sd', 'quantile'),
                               probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
 
-  match.arg(stat)
+  # match.arg(stat)
   stopifnot(all(probs >= 0 & probs <= 1))
 
   X <- X[[object]]
