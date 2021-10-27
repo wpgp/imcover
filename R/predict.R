@@ -17,17 +17,18 @@
 #' @importFrom stats predict
 #' @export predict.icfit
 #' @export
-predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
+predict.icfit <- function(X, country = NULL, vaccine = NULL,
+                          t = 2, return_ic = TRUE){
 
   # validate inputs
-  if(missing(country)){
+  if(missing(country) | is.null(country)){
     country <- X$labels$lbl_c
   } else{
     country <- intersect(country, X$labels$lbl_c)
     stopifnot(length(country) >= 1L)
   }
 
-  if(missing(vaccine)){
+  if(missing(vaccine) | is.null(vaccine)){
     vaccine <- X$labels$lbl_v
   } else{
     vaccine <- intersect(vaccine, X$labels$lbl_v)
@@ -161,7 +162,8 @@ predict.icfit <- function(X, country, vaccine, t = 2, return_ic = TRUE){
 #' @importFrom stats predict
 #' @export predict.iclist
 #' @export
-predict.iclist <- function(X, country, vaccine, t = 2, return_ic = TRUE){
+predict.iclist <- function(X, country = NULL, vaccine = NULL,
+                           t = 2, return_ic = TRUE){
   out <- lapply(X, FUN = function(fit){
     predict(fit, country, vaccine, t, return_ic)
   })
