@@ -259,6 +259,7 @@ filter_yovi.iclist <- function(X,
     filter_yovi(Xsub, vaccine, yovi, na.rm)
   })
 
+  class(out) <- list("iclist", class(out))
   return(out)
 }
 
