@@ -49,8 +49,8 @@
 #' @name ic_fit
 #' @export
 ic_fit <- function(X,
-                   prior_lambda, prior_sigma,
-                   upper_sigma, lower_sigma,
+                   prior_lambda = NULL, prior_sigma = NULL,
+                   upper_sigma = NULL, lower_sigma = NULL,
                    region = TRUE, verbose = TRUE, ...){
   UseMethod("ic_fit")
 }
@@ -59,8 +59,8 @@ ic_fit <- function(X,
 #' @name ic_fit
 #' @export
 ic_fit.ic.df <- function(X,
-                         prior_lambda, prior_sigma,
-                         upper_sigma, lower_sigma,
+                         prior_lambda = NULL, prior_sigma = NULL,
+                         upper_sigma = NULL, lower_sigma = NULL,
                          region = TRUE, verbose = TRUE, ...){
 
   # check data
@@ -117,8 +117,8 @@ ic_fit.ic.df <- function(X,
 #' @name multi_lik_stan
 #' @keywords internal
 multi_lik_stan <- function(X,
-                           prior_lambda, prior_sigma,
-                           upper_sigma, lower_sigma,
+                           prior_lambda = NULL, prior_sigma = NULL,
+                           upper_sigma = NULL, lower_sigma = NULL,
                            verbose = TRUE, ...) {
   if(!is.ic_data(X)) stop("Please provide valid 'ic' data.")
 
@@ -134,7 +134,7 @@ multi_lik_stan <- function(X,
   mu_lookup <- match(paste(vax_data$i, vax_data$j, vax_data$t), paste(mu_id$ii, mu_id$jj, mu_id$tt))
 
   # check/set priors
-  if(!missing(prior_lambda)){
+  if(!is.null(prior_lambda)){
     if(length(prior_lambda) == 1){
       vax_data$prior_lambda <- rep(prior_lambda, vax_data$nsources)
     } else{
@@ -147,7 +147,7 @@ multi_lik_stan <- function(X,
     vax_data$prior_lambda <- rep(0.5, vax_data$nsources)
   }
 
-  if(!missing(prior_sigma)){
+  if(!is.null(prior_sigma)){
     if(length(prior_sigma) == 1){
       vax_data$prior_sigma <- rep(prior_sigma, vax_data$nsources)
     } else{
@@ -162,7 +162,7 @@ multi_lik_stan <- function(X,
     vax_data$prior_sigma <- prior_sigma
   }
 
-  if(!missing(upper_sigma)){
+  if(!is.null(upper_sigma)){
     if(length(upper_sigma) == 1){
       vax_data$U_sigma <- rep(upper_sigma, vax_data$nsources)
     } else{
@@ -177,7 +177,7 @@ multi_lik_stan <- function(X,
     vax_data$U_sigma <- upper_sigma
   }
 
-  if(!missing(lower_sigma)){
+  if(!is.null(lower_sigma)){
     if(length(lower_sigma) == 1){
       vax_data$L_sigma <- rep(lower_sigma, vax_data$nsources)
     } else{
