@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 The goal of the `imcover` package is to provide access to data download,
-processing and modelling tools and to support a Bayesian statistical
+processing and modelling tools to support a Bayesian statistical
 modelling approach to generate national estimates of immunization
 coverage from multiple time series of data on coverage. `imcover` is
 built as part of the open-source statistical computing and modelling
@@ -54,8 +54,8 @@ Developer settings: <https://github.com/setting/tokens>.
 5.  Copy your token somewhere safe and don’t share it! You will need it
     for the next step.
 
-Now, in `R` you can install the package. In the following command insert
-your token as a string:
+Now, in `R`, you can install the package. In the following command
+insert your token as a string:
 
 ``` r
 devtools::install_github('wpgp/imcover@main', auth_token = 'YOUR TOKEN')

@@ -3,7 +3,7 @@
 \name{ic.df}
 \alias{ic.df}
 \alias{[.ic.df}
-\title{Access ic data}
+\title{Extract or replace parts of ic data}
 \usage{
 \method{[}{ic.df}(x, i, j, ..., drop = FALSE)
 }
@@ -17,11 +17,16 @@ or character vector or empty (missing) or NULL.}
 \item{drop}{Can core ic attribute columns be modified? Default is
 \code{FALSE}.}
 }
+\value{
+For \code{[} an \code{ic.df} data frame. For \code{[[} or \code{$}, a
+column of the ic data frame. For \code{[<-}, \code{[[<-}, and \code{$<-}, a
+modified ic data frame.
+}
 \description{
-Operators to extract or replace parts of ic data.
+Operators to extract or replace subsets of ic data objects.
 }
 \details{
-\code{[.ic.df} will generally follow the behaviour of
+The use of \code{[.ic.df} will generally follow the behaviour of
 \code{data.frame}; however, when \code{drop = FALSE} the core 'ic'
 attributes will always be preserved and will always return an object of
 class \code{ic.df}.

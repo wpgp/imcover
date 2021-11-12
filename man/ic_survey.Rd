@@ -71,12 +71,13 @@ which defines the core values for ic survey data.}
 coverage data be removed? Default is \code{TRUE}.}
 
 \item{minSample}{Numeric. Minimum reported sample size needed to keep
-coverage records. Default is 300.}
+coverage records. Default is 300. Only used with \code{reduce} is
+\code{TRUE}.}
 }
 \value{
-An object of class \code{ic.df} which extends \code{data.frame}-like
-objects with attributes to location and preserve core data elements for
-immunisation coverage.
+An object of class \code{ic.df} which extends \code{data.frame} with
+attributes to location and preserve core data elements for immunisation
+coverage.
 }
 \description{
 Create an ic data object from survey data on immunisation

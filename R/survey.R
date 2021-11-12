@@ -1,5 +1,6 @@
 
 #' Create an ic data object
+#'
 #' @description Create an ic data object from survey data on immunisation
 #'   coverage.
 #' @param X Any object with immunisation coverage survey data to convert into an
@@ -13,10 +14,11 @@
 #' @param reduce Should country-vaccine combinations which have insufficient
 #'   coverage data be removed? Default is \code{TRUE}.
 #' @param minSample Numeric. Minimum reported sample size needed to keep
-#'   coverage records. Default is 300.
-#' @return An object of class \code{ic.df} which extends \code{data.frame}-like
-#'   objects with attributes to location and preserve core data elements for
-#'   immunisation coverage.
+#'   coverage records. Default is 300. Only used with \code{reduce} is
+#'   \code{TRUE}.
+#' @return An object of class \code{ic.df} which extends \code{data.frame} with
+#'   attributes to location and preserve core data elements for immunisation
+#'   coverage.
 #' @details \code{ic_survey} is is an extension to \code{ic_data} and is used to
 #'   create a properly formed and processed dataset for immunisation coverage
 #'   modelling based on survey datasets.
@@ -327,21 +329,3 @@ survey_reduce <- function(X,
 
   return(X)
 }
-
-
-#' #' Find survey groups
-#' mark_survey <- function(x){
-#'   if(!is.ic_data(x)){ stop("Please supply a valid 'ic' dataset.") }
-#'   vars <- get_attr(x, c("country", "survey", "time", "vaccine", "coverage", "sample"))
-#'
-#'   x <- as.data.frame(x)
-#'   x$N <- ave(x[[vars["coverage"]]], x[, vars[c("country", "survey", "time")]], FUN = length)
-#'
-#'   x <- x[do.call(order, x[, vars[c("country", "survey", "time")]]), ]
-#'
-#'   x <- within(x, n <- ave(get_attr(x, "coverage"),
-#'                           as.list(c(vars, get_attr(x, "evidence"))),
-#'                           FUN = seq_along))
-#'   return(x)
-#' }
-

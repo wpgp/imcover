@@ -24,7 +24,7 @@ it to one if possible.
 \details{
 Core \code{ic.df} data elements are expected. Specifically, data for
 'region', 'country', 'time', 'vaccine', 'coverage', and 'source' (optionally
-'dose', 'population') are required in this order. The names of these
+'dose' and 'population') are required in this order. The names of these
 elements from \code{...} are passed to \code{ic_data}.
 }
 \seealso{

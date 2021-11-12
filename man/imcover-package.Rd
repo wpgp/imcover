@@ -3,7 +3,7 @@
 \docType{package}
 \name{imcover-package}
 \alias{imcover-package}
-\title{imcover: An R package for spatio-temporal immunisation coverage modelling}
+\title{imcover: An R package for immunisation coverage modelling}
 \description{
 Provides access to WUENIC immunisation data and a Bayesian statistical
 modelling framework to produces country- and region-specific temporal trends

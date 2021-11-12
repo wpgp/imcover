@@ -4,34 +4,34 @@
 #' Create an ic data object, which extends \code{data.frame}-like objects by
 #' defining consistent attributes for required data elements.
 #' @param X An \code{R} object to process and convert to ic data.
-#' @param region,country,time,vaccine,coverage,dose,population Character of the
-#'   name within \code{X} which defines the core value for ic data.
+#' @param region,country,time,vaccine,coverage,source,dose,population Character
+#'   of the name within \code{X} which defines the core value for ic data. See
+#'   details.
 #' @param drop_cols Should other columns in \code{X} be dropped if they are not
 #'   core attributes? Default is \code{FALSE} to retain all data from \code{X}.
 #' @param ... Additional arguments. Not currently used.
-#' @return An object of class \code{ic.df} which extends \code{data.frame}-like
-#'   objects with attributes to location and preserve core data elements for
-#'   immunisation coverage.
+#' @return An object of class \code{ic.df} which extends \code{data.frame} with
+#'   attributes to location and preserve core data elements for immunisation
+#'   coverage.
 #' @details \code{ic_data} is the core function to create a properly formed and
 #'   processed dataset for immunisation coverage modelling. In particular it
 #'   requires some core data elements are present:
 #' \itemize{
 #'   \item{'region'}{ Larger grouping. Used to apply separate models.}
-#'   \item{'country'}{ Aggregate grouping for data records, e.g. country. Country
-#'   can be defined by more than column for a nested hierarchy of units, largest
-#'   to finest grouping. Default name is 'code' referring to an ISO3 code.}
+#'   \item{'country'}{ Aggregate grouping for data records. Default name is
+#'   'code' referring to an ISO3 code.}
 #'   \item{'time'}{ Defines the time period of immunisation records, typically
 #'   an integer year. Default name is 'year'.}
 #'   \item{'vaccine'}{ Code to identify the vaccine records, e.g. 'DTP1'.
 #'   Default name is 'antigen'.}
-#'   \item{'coverage'}{ Pre-calculated coverage percentage. Default name is
-#'   'coverage'.}
+#'   \item{'coverage'}{ Pre-calculated coverage percentage for each country,
+#'   time, vaccine observation. Default name is 'coverage'.}
 #'   \item{'source'}{ Character identifying the source of the data. Default is
 #'   'coverage_category'.}
 #' }
-#'   If 'coverage' is not included, then two other elements are required to be
-#'   specified in order for percent coverage to be calculated. Else, these are
-#'   optional elements for ic data.
+#'   If 'coverage' is not included in \code{X}, then two other elements are
+#'   required to be specified in order for percent coverage to be calculated.
+#'   Else, these are optional elements for ic data.
 #' \itemize{
 #'   \item{'dose'}{ Number of vaccine doses administered. Default name is
 #'   'doses'.}
@@ -137,7 +137,7 @@ ic_data.data.frame <- function(X, region = 'region', country = 'code', time = 'y
 #' @param ... Elements to be combined into an \code{ic.df} object.
 #' @details Core \code{ic.df} data elements are expected. Specifically, data for
 #'   'region', 'country', 'time', 'vaccine', 'coverage', and 'source' (optionally
-#'   'dose', 'population') are required in this order. The names of these
+#'   'dose' and 'population') are required in this order. The names of these
 #'   elements from \code{...} are passed to \code{ic_data}.
 #'
 #' @return An object of type \code{ic.df}.
@@ -184,19 +184,23 @@ is.ic_data <- function(object){
 }
 
 
-#' Access ic data
+#' Extract or replace parts of ic data
 #'
-#' @description Operators to extract or replace parts of ic data.
+#' @description Operators to extract or replace subsets of ic data objects.
 #' @param x Object of class \code{ic.df} from which to extract element(s) or in
 #'   which to replace element(s).
 #' @param i,j,... Indices specifying the elements to extract or replace. Numeric
 #'   or character vector or empty (missing) or NULL.
 #' @param drop Can core ic attribute columns be modified? Default is
 #'   \code{FALSE}.
-#' @details \code{[.ic.df} will generally follow the behaviour of
+#' @details The use of \code{[.ic.df} will generally follow the behaviour of
 #'   \code{data.frame}; however, when \code{drop = FALSE} the core 'ic'
 #'   attributes will always be preserved and will always return an object of
 #'   class \code{ic.df}.
+#' @return For \code{[} an \code{ic.df} data frame. For \code{[[} or \code{$}, a
+#'   column of the ic data frame. For \code{[<-}, \code{[[<-}, and \code{$<-}, a
+#'   modified ic data frame.
+#'
 #' @seealso \code{ic_data}
 #' @name ic.df
 #' @export
@@ -282,6 +286,17 @@ is.ic_data <- function(object){
 }
 
 
+#' The names of an ic object
+#' @description Functions to get or set the names of an \code{ic.df}.
+#' @param x An \code{ic.df} object.
+#' @param value A character vector of up to the same length as \code{x} or NULL.
+#' @details These access and replacement functions which follow the same
+#'   functionality as \code{base::names} for data frames.
+#' @return For \code{names} a character vector the same length as \code{x}. For
+#'   \code{names<-}, the updated ic data frame object is returned.
+#' @seealso \code{ic_data}
+#'
+#' @name names
 #' @export
 'names<-.ic.df' <- function(x, value){
   chknames(value)
@@ -299,12 +314,13 @@ is.ic_data <- function(object){
 }
 
 
+#' @name names
 #' @export
 'names.ic.df' <- function(x){
   names(as.data.frame(x))
 }
 
-
+#' helper function used in renaming
 chknames <- function(x) {
   if (!identical(x, make.names(x)))
     warning("Found potentially invalid names.")

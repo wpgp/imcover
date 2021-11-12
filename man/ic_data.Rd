@@ -51,8 +51,9 @@ ic_data(
 \arguments{
 \item{X}{An \code{R} object to process and convert to ic data.}
 
-\item{region, country, time, vaccine, coverage, dose, population}{Character of the
-name within \code{X} which defines the core value for ic data.}
+\item{region, country, time, vaccine, coverage, source, dose, population}{Character
+of the name within \code{X} which defines the core value for ic data. See
+details.}
 
 \item{drop_cols}{Should other columns in \code{X} be dropped if they are not
 core attributes? Default is \code{FALSE} to retain all data from \code{X}.}
@@ -60,9 +61,9 @@ core attributes? Default is \code{FALSE} to retain all data from \code{X}.}
 \item{...}{Additional arguments. Not currently used.}
 }
 \value{
-An object of class \code{ic.df} which extends \code{data.frame}-like
-objects with attributes to location and preserve core data elements for
-immunisation coverage.
+An object of class \code{ic.df} which extends \code{data.frame} with
+attributes to location and preserve core data elements for immunisation
+coverage.
 }
 \description{
 Create an ic data object, which extends \code{data.frame}-like objects by
@@ -74,21 +75,20 @@ processed dataset for immunisation coverage modelling. In particular it
 requires some core data elements are present:
 \itemize{
 \item{'region'}{ Larger grouping. Used to apply separate models.}
-\item{'country'}{ Aggregate grouping for data records, e.g. country. Country
-can be defined by more than column for a nested hierarchy of units, largest
-to finest grouping. Default name is 'code' referring to an ISO3 code.}
+\item{'country'}{ Aggregate grouping for data records. Default name is
+'code' referring to an ISO3 code.}
 \item{'time'}{ Defines the time period of immunisation records, typically
 an integer year. Default name is 'year'.}
 \item{'vaccine'}{ Code to identify the vaccine records, e.g. 'DTP1'.
 Default name is 'antigen'.}
-\item{'coverage'}{ Pre-calculated coverage percentage. Default name is
-'coverage'.}
+\item{'coverage'}{ Pre-calculated coverage percentage for each country,
+time, vaccine observation. Default name is 'coverage'.}
 \item{'source'}{ Character identifying the source of the data. Default is
 'coverage_category'.}
 }
-If 'coverage' is not included, then two other elements are required to be
-specified in order for percent coverage to be calculated. Else, these are
-optional elements for ic data.
+If 'coverage' is not included in \code{X}, then two other elements are
+required to be specified in order for percent coverage to be calculated.
+Else, these are optional elements for ic data.
 \itemize{
 \item{'dose'}{ Number of vaccine doses administered. Default name is
 'doses'.}
