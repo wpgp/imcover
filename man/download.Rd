@@ -15,7 +15,7 @@ download_wuenic(
   quiet = FALSE,
   attempts = 3,
   mode = "wb",
-  return_ic = FALSE,
+  return_ic = TRUE,
   add_region = "who",
   ...
 )

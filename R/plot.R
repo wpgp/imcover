@@ -41,6 +41,8 @@ plot.iclist <- function(X, ...){
 #'   overlaid on the plot? Default is \code{TRUE}.
 #' @param prediction Logical. If predictions are found in the \code{icfit}
 #'   object, should they be overlaid on the plot? Default is \code{TRUE}.
+#' @param wuenic Logical. Should WUENIC vaccination coverage estimates be
+#'   overlaid on the plot? Default is \code{FALSE}.
 #' @param filter_yovi Logical. Should the estimates be filtered by year of
 #'   vaccine introduction? Default is \code{FALSE}.
 #' @param ncol When plotting multiple countries, the number of plots per page.
@@ -63,6 +65,7 @@ ic_plot <- function(X,
                     vaccine,
                     observed = TRUE,
                     prediction = TRUE,
+                    wuenic = FALSE,
                     filter_yovi = FALSE,
                     ncol = 4,
                     interactive = FALSE){
@@ -77,6 +80,7 @@ ic_plot.icfit <- function(X,
                           vaccine,
                           observed = TRUE,
                           prediction = TRUE,
+                          wuenic = FALSE,
                           filter_yovi = FALSE,
                           ncol = 4,
                           interactive = FALSE){
@@ -111,6 +115,27 @@ ic_plot.icfit <- function(X,
       mu_hat <- rbind(mu_hat, pred)
     } else{
       prediction <- FALSE
+    }
+  }
+
+  # set-up for WUENIC data
+  if(wuenic){
+    wd <- download_wuenic(return_ic = FALSE, quiet = TRUE)
+    # subset cols
+    wd <- wd[, c("ISOCountryCode", "Year", "Vaccine", "WUENIC")]
+    wd$ISOCountryCode <- toupper(wd$ISOCountryCode)
+    wd$Vaccine <- toupper(wd$Vaccine)
+    names(wd) <- c('country', 'time', 'vaccine','coverage')
+    wd$source <- "WUENIC"
+
+    # filter
+    wd <- wd[wd$country %in% list_countries(X), ]
+    wd <- wd[wd$time %in% list_times(X), ]
+    wd <- wd[wd$vaccine %in% list_vaccines(X), ]
+
+    # check
+    if(nrow(wd) == 0L){
+      wuenic <- FALSE
     }
   }
 
@@ -154,6 +179,15 @@ ic_plot.icfit <- function(X,
                             ggplot2::aes(x = .data$time,
                                          y = .data$coverage,
                                          color = source))
+    }
+
+    if(wuenic){
+      plotobj <- plotobj +
+        ggplot2::geom_point(data = wd[wd$vaccine == v & wd$country %in% mu_hat$country, ],
+                            ggplot2::aes(x = .data$time,
+                                         y = .data$coverage,
+                                         color = source),
+                            shape = 17)
     }
 
     plotobj <- plotobj +
