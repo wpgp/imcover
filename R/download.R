@@ -36,7 +36,7 @@
 #' @export
 download_wuenic <- function(destfile, url, use_cache = TRUE,
                             quiet = FALSE, attempts = 3, mode = 'wb',
-                            return_ic = FALSE,
+                            return_ic = TRUE,
                             add_region = 'who', ...){
   if(missing(url)){
     url <- 'https://immunizationdata.who.int/assets/additional-data/wuenic_input_to_pdf.xlsx'
