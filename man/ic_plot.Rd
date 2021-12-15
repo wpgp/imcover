@@ -12,6 +12,7 @@ ic_plot(
   vaccine,
   observed = TRUE,
   prediction = TRUE,
+  wuenic = FALSE,
   filter_yovi = FALSE,
   ncol = 4,
   interactive = FALSE
@@ -23,6 +24,7 @@ ic_plot(
   vaccine,
   observed = TRUE,
   prediction = TRUE,
+  wuenic = FALSE,
   filter_yovi = FALSE,
   ncol = 4,
   interactive = FALSE
@@ -52,6 +54,9 @@ overlaid on the plot? Default is \code{TRUE}.}
 
 \item{prediction}{Logical. If predictions are found in the \code{icfit}
 object, should they be overlaid on the plot? Default is \code{TRUE}.}
+
+\item{wuenic}{Logical. Should WUENIC vaccination coverage estimates be
+overlaid on the plot? Default is \code{FALSE}.}
 
 \item{filter_yovi}{Logical. Should the estimates be filtered by year of
 vaccine introduction? Default is \code{FALSE}.}
