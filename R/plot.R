@@ -100,7 +100,7 @@ ic_plot.icfit <- function(X,
 
   # filter by year of introduction
   if(filter_yovi){
-    X <- filter_yovi(X, na.rm = TRUE)
+    X <- filter_yovi(X, na.rm = FALSE)
   }
 
   # extract posterior values
