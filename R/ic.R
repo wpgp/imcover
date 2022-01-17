@@ -5,41 +5,57 @@
 #' defining consistent attributes for required data elements.
 #' @param X An \code{R} object to process and convert to ic data.
 #' @param region,country,time,vaccine,coverage,source,dose,population Character
-#'   of the name within \code{X} which defines the core value for ic data. See
+#'   of the column name within \code{X} which defines the core value for ic data. See
 #'   details.
 #' @param drop_cols Should other columns in \code{X} be dropped if they are not
 #'   core attributes? Default is \code{FALSE} to retain all data from \code{X}.
 #' @param ... Additional arguments. Not currently used.
 #' @return An object of class \code{ic.df} which extends \code{data.frame} with
-#'   attributes to location and preserve core data elements for immunisation
+#'   attributes to locate and preserve core data elements on immunisation
 #'   coverage.
 #' @details \code{ic_data} is the core function to create a properly formed and
-#'   processed dataset for immunisation coverage modelling. In particular it
-#'   requires some core data elements are present:
+#'   processed dataset for immunisation coverage modelling using \code{imcover}.
+#'   In particular it requires some core data elements are present:
 #' \itemize{
-#'   \item{'region'}{ Larger grouping. Used to apply separate models.}
-#'   \item{'country'}{ Aggregate grouping for data records. Default name is
-#'   'code' referring to an ISO3 code.}
+#'   \item{'region'}{ Larger grouping, such as WHO-defined groups of countries.
+#'   Used to apply separate models.}
+#'   \item{'country'}{ Primary grouping for data records. Default name is
+#'   'code' referring to an ISO3 code of a country.}
 #'   \item{'time'}{ Defines the time period of immunisation records, typically
-#'   an integer year. Default name is 'year'.}
+#'   an integer year. Default column name is 'year'.}
 #'   \item{'vaccine'}{ Code to identify the vaccine records, e.g. 'DTP1'.
-#'   Default name is 'antigen'.}
+#'   Default column name is 'antigen'.}
 #'   \item{'coverage'}{ Pre-calculated coverage percentage for each country,
-#'   time, vaccine observation. Default name is 'coverage'.}
-#'   \item{'source'}{ Character identifying the source of the data. Default is
-#'   'coverage_category'.}
+#'   time, vaccine observation. Default column name is 'coverage'.}
+#'   \item{'source'}{ Character identifying the source of the data. Default
+#'   column name is 'coverage_category'.}
 #' }
 #'   If 'coverage' is not included in \code{X}, then two other elements are
 #'   required to be specified in order for percent coverage to be calculated.
 #'   Else, these are optional elements for ic data.
 #' \itemize{
-#'   \item{'dose'}{ Number of vaccine doses administered. Default name is
+#'   \item{'dose'}{ Number of vaccine doses administered. Default column name is
 #'   'doses'.}
-#'   \item{'population'}{ Total target population for the vaccine. Default name
-#'   is 'target_number.}
+#'   \item{'population'}{ Total target population for the vaccine. Default
+#'   column name is 'target_number.}
 #' }
 #'
-#' @seealso \code{\link[imcover]{ic_expand}}, \code{ic_validate}
+#' This function is for use with administrative records. For survey datasets,
+#' please use \code{\link[imcover]{ic_survey}}.
+#'
+#'@examples
+#'\dontrun{
+#'# assume `df` is a data.frame
+#'
+#'ic_data(df,
+#'        group = "iso3",  # specify the column names found in `df`
+#'        time = "cohortyear",
+#'        vaccine = "vaccine",
+#'        coverage = "coverage")
+#'}
+#'
+#' @seealso \code{\link[imcover]{ic_survey}}, \code{\link[imcover]{ic_expand}},
+#'   \code{\link[imcover]{ic_validate}}
 #' @name ic_data
 #' @export
 ic_data <- function(X, region = 'region', country = 'code', time = 'year',
@@ -135,14 +151,21 @@ ic_data.data.frame <- function(X, region = 'region', country = 'code', time = 'y
 #'   it to one if possible.
 #' @param object Any \code{R} object.
 #' @param ... Elements to be combined into an \code{ic.df} object.
-#' @details Core \code{ic.df} data elements are expected. Specifically, data for
-#'   'region', 'country', 'time', 'vaccine', 'coverage', and 'source' (optionally
-#'   'dose' and 'population') are required in this order. The names of these
-#'   elements from \code{...} are passed to \code{ic_data}.
+#' @details Core \code{ic.df} data elements are expected. Specifically, columns
+#'   of data for 'region', 'country', 'time', 'vaccine', 'coverage', and
+#'   'source' (optionally 'dose' and 'population') are required in this order.
+#'   The names of these elements from \code{...} are passed to \code{ic_data}
+#'   and used along with the default settings.
 #'
 #' @return An object of type \code{ic.df}.
 #'
-#' @seealso \code{ic_data}
+#' @examples
+#' \dontrun{
+#' # convert data.frame to an imcover data frame
+#' ic_df <- as.ic_data(df)
+#' }
+#'
+#' @seealso \code{\link[imcover]{ic_data}}
 #' @name as.ic_data
 #' @export
 as.ic_data <- function(...){
