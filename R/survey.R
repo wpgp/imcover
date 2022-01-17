@@ -1,14 +1,14 @@
 
 #' Create an ic data object
 #'
-#' @description Create an ic data object from survey data on immunisation
-#'   coverage.
+#' @description Create an ic data object from household survey data on
+#'   immunisation coverage.
 #' @param X Any object with immunisation coverage survey data to convert into an
 #'   ic object.
 #' @param ... Additional parameters for names of core data elements to pass on
 #'   to \code{ic_data}. See details and \code{ic_data}.
-#' @param survey,sample,evidence,validity Character of the name within \code{X}
-#'   which defines the core values for ic survey data.
+#' @param survey,sample,evidence,validity Character of the column name within
+#'   \code{X} which defines the core values for ic survey data.
 #' @param drop_cols Should other columns in \code{X} be dropped if they are not
 #'   core attributes? Default is \code{FALSE} to retain all data from \code{X}.
 #' @param reduce Should country-vaccine combinations which have insufficient
@@ -21,11 +21,25 @@
 #'   coverage.
 #' @details \code{ic_survey} is is an extension to \code{ic_data} and is used to
 #'   create a properly formed and processed dataset for immunisation coverage
-#'   modelling based on survey datasets.
+#'   modelling based on household survey datasets.
 #'
-#' The parameters \code{min} and \code{max} are only needed when \code{expand =
-#' TRUE}. If \code{max} is missing, the maximum time value observed in the
-#' dataset will be used.
+#'@examples
+#'\dontrun{
+#'# assume `df` is a data.frame
+#'# convert to an imcover data frame
+#'ic_survey(df,
+#'          group="iso3",  # specify columns names in df
+#'          time="cohortyear",
+#'          vaccine="vaccine",
+#'          coverage = "coverage",
+#'          survey = "surveynameenglish",
+#'          sample = "sample_size",
+#'          evidence = "evidence",
+#'          validity = "validity",
+#'          biasAdjust = TRUE)
+#'}
+#'
+#'
 #' @seealso \code{\link[imcover]{ic_data}}
 #' @name ic_survey
 #' @export
@@ -83,6 +97,8 @@ ic_survey.data.frame <- function(X, ..., drop_cols = FALSE,
 }
 
 
+#' Internal processing step for ic_survey
+#' @NoRd
 make_ic_svy <- function(X, drop_cols, survey, sample, evidence, validity,
                         reduce, minSample){
 
@@ -188,7 +204,8 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     })
     vd1.c <- do.call(rbind, vd1s)
 
-    vd1s <- split(vd1.coh, vd1.coh[, corenames[c("country", "time")]], drop = TRUE)
+    vd1s <- split(vd1.coh, vd1.coh[, corenames[c("country", "time")]],
+                  drop = TRUE)
     vd1s <- lapply(vd1s, FUN = function(vd){
       if(nrow(vd) > 1L){
         if(any(vd[[corenames["validity"]]] == "valid")){
@@ -238,7 +255,8 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     vd3.c$coverage_adj <- vd3.c[[corenames["coverage"]]] * vd3.c[["adj_factor"]]
 
     # update vd3.coh
-    vd3s <- split(vd3.coh, vd3.coh[, corenames[c("country", "time")]], drop = TRUE)
+    vd3s <- split(vd3.coh, vd3.coh[, corenames[c("country", "time")]],
+                  drop = TRUE)
     vd3s <- lapply(vd3s, FUN = function(vd){
       if(nrow(vd) > 1L){
         if(any(vd[[corenames["validity"]]] == "valid")){
@@ -270,23 +288,25 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
     X[[corenames["coverage"]]] <- ifelse(!is.na(X[["coverage_adj"]]),
                                          X[["coverage_adj"]],
                                          X[[corenames["coverage"]]])
-    X <- X[do.call(order, X[, corenames[c("country", "time", "vaccine")], drop = TRUE]), ]
+    X <- X[do.call(order, X[, corenames[c("country", "time", "vaccine")],
+                            drop = TRUE]), ]
   }
   return(X)
 }
 
 
-#' Select survey records
+#' Select survey records from an `ic_survey` dataset
 #'
-#' Reduce immunisation survey coverage records based on set criteria.
-#' @param X Object of type \code{ic.df}
+#' Reduce immunisation survey coverage records based on set criteria of sample
+#' size and/or priority types of reporting.
+#' @param X Object of type \code{ic.df} created with \code{ic_survey}.
 #' @param minSample Minimum number of samples in the survey.
 #' @param priority Character vector of the priority of records when there are
 #'   duplicates records for a given vaccine, survey, and year. Priority is
-#'   established by the 'evidence' field of surveys. The highest record is given
-#'   first in this argument.
-#' @return An \code{ic.df} object with fewer records, based on the selection
-#'   criteria.
+#'   established by the 'evidence' field of many household surveys. The highest
+#'   priority record is given first in this argument.
+#' @return An \code{ic.df} object with possibly fewer records, based on the
+#'   selection criteria.
 #'
 #' @seealso \code{\link[imcover]{ic_survey}}
 #' @name survey_reduce
@@ -315,7 +335,8 @@ survey_reduce <- function(X,
       # find preferred records
       valid_f <- factor(x[[attrs$validity]], levels = c("valid", "crude"))
       evid_f <- factor(x[[attrs$evidence]], levels = priority)
-      x <- x[order(valid_f, evid_f, x[[attrs$sample]], decreasing = c(FALSE, FALSE, TRUE)), ]
+      x <- x[order(valid_f, evid_f, x[[attrs$sample]],
+                   decreasing = c(FALSE, FALSE, TRUE)), ]
       return(x[1L, ])
     } # end else
   })

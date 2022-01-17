@@ -46,7 +46,7 @@
 #'@examples
 #'\dontrun{
 #'# assume `df` is a data.frame
-#'
+#'# convert to an imcover data frame
 #'ic_data(df,
 #'        group = "iso3",  # specify the column names found in `df`
 #'        time = "cohortyear",
