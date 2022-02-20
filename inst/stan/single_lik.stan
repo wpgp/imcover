@@ -1,31 +1,22 @@
 // imcover - Bayesian model of immunisation coverage
 // multi-likelihood, shared latent mean model
 // country + vacc + country x time + vacc x time + country x vacc x time
+// Source-specific random effect
 
 data {
-  int<lower=1> N;  // number of obs
+  int<lower=0> N;  // number of obs
 
-  int<lower=1> N_i;  // number of countries
-  int<lower=1> N_j;  // number of vaccines
-  int<lower=1> N_t;  // number of timepoints
+  int<lower=0> N_i;  // number of countries
+  int<lower=0> N_j;  // number of vaccines
+  int<lower=0> N_t;  // number of timepoints
+  int<lower=0> N_s;  // number of sources
 
   int<lower=1, upper=N_i> i[N];  // country
   int<lower=1, upper=N_j> j[N];  // vaccine
   int<lower=1, upper=N_t> t[N];  // year
+  int<lower=1, upper=N_s> s[N];  // source
 
   vector[N] y;  // logit-coverage (0, 1), corrected for >100%
-
-  int<lower=1> nsources;
-  int<lower=1, upper=nsources> source[N];
-  int<lower=1> sizes[nsources];
-
-  // vector[nsources] U_lambda;  // upper-bounds
-  vector[nsources] U_sigma;
-  // vector[nsources] L_lambda;  // lower-bounds
-  vector[nsources] L_sigma;
-
-  real prior_lambda[nsources]; // priors
-  real prior_sigma[nsources];
 
   // shared mean identifiers
   int<lower=1, upper=N_i * N_j * N_t> mu_lookup[N];  // which record?
@@ -37,10 +28,11 @@ data {
 
 parameters {
   // regression effects
-  real lambda[nsources]; // intercepts
+  real lambda; // intercept
   real beta_i[N_i == 1 ? 0 : N_i];  // i-th country random effect
   real alpha_j[N_j];  // j-th vaccine random effect
-  real gamma_t [N_t];  // t-th time effect
+  real gamma_t[N_t];  // t-th time random effect
+  real eta_s[N_s]; // s-th source random effect
 
   // interactions
   real phi_it[N_i == 1 ? 0 : N_i, N_t];  // t-th time point, replicated per country
@@ -55,7 +47,10 @@ parameters {
   real<lower=-1, upper=1> rho_ij[N_i == 1 ? 0 : 1];
 
   // standard deviation
-  vector<lower=0, upper=1>[nsources] sigma_raw;  // source-specific
+  real<lower=0> sigma;
+  real<lower=0> sigma_lam;
+  real<lower=0> sigma_s;
+  real<lower=0> sigma_s3;
 
   real<lower=0> sigma_i[N_i == 1 ? 0 : 1];
   real<lower=0> sigma_j;
@@ -71,9 +66,6 @@ transformed parameters {
   // shared mean
   vector[N_t * N_j * N_i] mu;
 
-  // varying bounds;
-  vector[nsources] sigma = L_sigma + (U_sigma - L_sigma) .* sigma_raw;
-
   // shared mean
   if(N_i > 1){
     for(idx in 1:num_elements(mu)){
@@ -88,12 +80,20 @@ transformed parameters {
 
 
 model {
+  lambda ~ normal(0, sigma_lam);
+  beta_i ~ normal(0, sigma_i);
   alpha_j ~ normal(0, sigma_j);
 
-  for(s in 1:nsources){
-    segment(lambda, s, 1) ~ normal(0, prior_lambda[s]);
-    segment(sigma_raw, s, 1) ~ cauchy(0, prior_sigma[s]);
-  }
+  eta_s[1] ~ normal(0, sigma_s); //admin
+  eta_s[2] ~ normal(0, sigma_s); //official
+  eta_s[3] ~ normal(0, sigma_s3); //survey
+
+  sigma ~ cauchy(0, 2);
+  sigma_i ~ cauchy(0, 2);
+  sigma_j ~ cauchy(0, 2);
+  sigma_s ~ cauchy(0, 2); //Note that both sigma_s and sigma_s3 are assigned the same priors
+  sigma_s3 ~ cauchy(0, 2); //
+
 
   // Autoregressive models (AR(1))
   // time
@@ -144,15 +144,10 @@ model {
     }
   }
 
-  // likelihoods
+  // likelihood
   {
-    int start = 1;
-    // loop over the different data sources
-    for(idx in 1:nsources){
-      int end = start + sizes[idx] - 1;
-      y[start:end] ~ normal(lambda[source[idx]] + mu[mu_lookup[start:end]], sigma[source[idx]]);
-
-      start = end + 1;
+    for(n in 1:N){
+      y[n] ~ normal(eta_s[s[n]] + mu[mu_lookup[n]], sigma);
     }
   }
 
@@ -162,8 +157,7 @@ model {
 generated quantities{
   vector[N] log_lik;
 
-  for(idx in 1:N){
-    log_lik[idx] = normal_lpdf(y[idx] | lambda[source[idx]] + mu[mu_lookup[idx]], sigma[source[idx]]);
-  }
+  for(n in 1:N)
+    log_lik[n] = normal_lpdf(y[n] | eta_s[s[n]] + mu[mu_lookup[n]], sigma);
 }
 

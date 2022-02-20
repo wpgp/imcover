@@ -25,12 +25,13 @@
 #'   standard deviations (sigma) are given by normal and truncated Cauchy
 #'   distributions, respectively. Future version may allow users to specify
 #'   different distributions. Currently, users may only specify the scale
-#'   parameter of these distribution. By default, for lambda all sources are
+#'   parameter of these distribution. By default, lambda for all sources is
 #'   given a value of 0.5, i.e. a prior distribution of \code{normal(0, 0.5)}.
-#'   For sigma, the default varies by source. While administrative and official
-#'   data are set to a value of 2, survey data is restricted to 0.2, reflecting
-#'   a prior belief in more accurate measurements. These parameters are used in
-#'   a half-Cauchy distribution (e.g. \code{cauchy(0, 0.2)}).
+#'
+#'   For sigma, the default prior varies by source. While administrative and
+#'   official data are set to a value of 2, survey data is restricted to 0.2,
+#'   reflecting a prior belief in more accurate measurements. These parameters
+#'   are used in a half-Cauchy distribution (e.g. \code{cauchy(0, 0.2)}).
 #'
 #'   In addition, the upper and lower bounds of the sigma parameter may be set
 #'   to define the range of the possible values. In general, the lower bounds
