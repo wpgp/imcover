@@ -84,9 +84,9 @@ model {
   beta_i ~ normal(0, sigma_i);
   alpha_j ~ normal(0, sigma_j);
 
-  nu_s[1] ~ normal(0, sigma_s); //admin
-  nu_s[2] ~ normal(0, sigma_s); //official
-  nu_s[3] ~ normal(0, sigma_s3); //survey
+  nu_s[1] ~ normal(0, sigma_s); // admin
+  nu_s[2] ~ normal(0, sigma_s); // official
+  nu_s[3] ~ normal(0, sigma_s3); // survey
 
   sigma ~ cauchy(0, 2);
   sigma_i ~ cauchy(0, 2);
