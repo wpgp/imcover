@@ -9,12 +9,14 @@ data {
   int<lower=0> N_i;  // number of countries
   int<lower=0> N_j;  // number of vaccines
   int<lower=0> N_t;  // number of timepoints
-  int<lower=0> N_s;  // number of sources
+
+  int<lower=1> nsources;
+  int<lower=1, upper=nsources> source[N];
+  //int<lower=1> sizes[nsources];
 
   int<lower=1, upper=N_i> i[N];  // country
   int<lower=1, upper=N_j> j[N];  // vaccine
   int<lower=1, upper=N_t> t[N];  // year
-  int<lower=1, upper=N_s> s[N];  // source
 
   vector[N] y;  // logit-coverage (0, 1), corrected for >100%
 
@@ -32,7 +34,7 @@ parameters {
   real beta_i[N_i == 1 ? 0 : N_i];  // i-th country random effect
   real alpha_j[N_j];  // j-th vaccine random effect
   real gamma_t[N_t];  // t-th time random effect
-  real nu_s[N_s]; // s-th source random effect
+  real nu_s[nsources]; // s-th source random effect
 
   // interactions
   real phi_it[N_i == 1 ? 0 : N_i, N_t];  // t-th time point, replicated per country
@@ -147,7 +149,7 @@ model {
   // likelihood
   {
     for(n in 1:N){
-      y[n] ~ normal(nu_s[s[n]] + mu[mu_lookup[n]], sigma);
+      y[n] ~ normal(nu_s[source[n]] + mu[mu_lookup[n]], sigma);
     }
   }
 
@@ -158,6 +160,6 @@ generated quantities{
   vector[N] log_lik;
 
   for(n in 1:N)
-    log_lik[n] = normal_lpdf(y[n] | nu_s[s[n]] + mu[mu_lookup[n]], sigma);
+    log_lik[n] = normal_lpdf(y[n] | nu_s[source[n]] + mu[mu_lookup[n]], sigma);
 }
 
