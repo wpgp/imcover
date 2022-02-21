@@ -3,6 +3,7 @@
 \name{ic_fit}
 \alias{ic_fit}
 \alias{ic_fit.ic.df}
+\alias{ic_fit_single.ic.df}
 \title{Multi-source immunisation coverage model with Stan}
 \usage{
 ic_fit(
@@ -26,6 +27,8 @@ ic_fit(
   verbose = TRUE,
   ...
 )
+
+\method{ic_fit_single}{ic.df}(X, region = TRUE, verbose = TRUE, ...)
 }
 \arguments{
 \item{X}{Object of \code{ic.df} for analysis}
@@ -65,12 +68,13 @@ The default priors for the source-specific intercepts (lambda) and
 standard deviations (sigma) are given by normal and truncated Cauchy
 distributions, respectively. Future version may allow users to specify
 different distributions. Currently, users may only specify the scale
-parameter of these distribution. By default, for lambda all sources are
+parameter of these distribution. By default, lambda for all sources is
 given a value of 0.5, i.e. a prior distribution of \code{normal(0, 0.5)}.
-For sigma, the default varies by source. While administrative and official
-data are set to a value of 2, survey data is restricted to 0.2, reflecting
-a prior belief in more accurate measurements. These parameters are used in
-a half-Cauchy distribution (e.g. \code{cauchy(0, 0.2)}).
+
+For sigma, the default prior varies by source. While administrative and
+official data are set to a value of 2, survey data is restricted to 0.2,
+reflecting a prior belief in more accurate measurements. These parameters
+are used in a half-Cauchy distribution (e.g. \code{cauchy(0, 0.2)}).
 
 In addition, the upper and lower bounds of the sigma parameter may be set
 to define the range of the possible values. In general, the lower bounds

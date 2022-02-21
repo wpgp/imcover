@@ -52,7 +52,7 @@ ic_data(
 \item{X}{An \code{R} object to process and convert to ic data.}
 
 \item{region, country, time, vaccine, coverage, source, dose, population}{Character
-of the name within \code{X} which defines the core value for ic data. See
+of the column name within \code{X} which defines the core value for ic data. See
 details.}
 
 \item{drop_cols}{Should other columns in \code{X} be dropped if they are not
@@ -62,7 +62,7 @@ core attributes? Default is \code{FALSE} to retain all data from \code{X}.}
 }
 \value{
 An object of class \code{ic.df} which extends \code{data.frame} with
-attributes to location and preserve core data elements for immunisation
+attributes to locate and preserve core data elements on immunisation
 coverage.
 }
 \description{
@@ -71,31 +71,48 @@ defining consistent attributes for required data elements.
 }
 \details{
 \code{ic_data} is the core function to create a properly formed and
-processed dataset for immunisation coverage modelling. In particular it
-requires some core data elements are present:
+processed dataset for immunisation coverage modelling using \code{imcover}.
+In particular it requires some core data elements are present:
 \itemize{
-\item{'region'}{ Larger grouping. Used to apply separate models.}
-\item{'country'}{ Aggregate grouping for data records. Default name is
-'code' referring to an ISO3 code.}
+\item{'region'}{ Larger grouping, such as WHO-defined groups of countries.
+Used to apply separate models.}
+\item{'country'}{ Primary grouping for data records. Default name is
+'code' referring to an ISO3 code of a country.}
 \item{'time'}{ Defines the time period of immunisation records, typically
-an integer year. Default name is 'year'.}
+an integer year. Default column name is 'year'.}
 \item{'vaccine'}{ Code to identify the vaccine records, e.g. 'DTP1'.
-Default name is 'antigen'.}
+Default column name is 'antigen'.}
 \item{'coverage'}{ Pre-calculated coverage percentage for each country,
-time, vaccine observation. Default name is 'coverage'.}
-\item{'source'}{ Character identifying the source of the data. Default is
-'coverage_category'.}
+time, vaccine observation. Default column name is 'coverage'.}
+\item{'source'}{ Character identifying the source of the data. Default
+column name is 'coverage_category'.}
 }
 If 'coverage' is not included in \code{X}, then two other elements are
 required to be specified in order for percent coverage to be calculated.
 Else, these are optional elements for ic data.
 \itemize{
-\item{'dose'}{ Number of vaccine doses administered. Default name is
+\item{'dose'}{ Number of vaccine doses administered. Default column name is
 'doses'.}
-\item{'population'}{ Total target population for the vaccine. Default name
-is 'target_number.}
+\item{'population'}{ Total target population for the vaccine. Default
+column name is 'target_number.}
 }
+
+This function is for use with administrative records. For survey datasets,
+please use \code{\link[imcover]{ic_survey}}.
+}
+\examples{
+\dontrun{
+# assume `df` is a data.frame
+# convert to an imcover data frame
+ic_data(df,
+       group = "iso3",  # specify the column names found in `df`
+       time = "cohortyear",
+       vaccine = "vaccine",
+       coverage = "coverage")
+}
+
 }
 \seealso{
-\code{\link[imcover]{ic_expand}}, \code{ic_validate}
+\code{\link[imcover]{ic_survey}}, \code{\link[imcover]{ic_expand}},
+\code{\link[imcover]{ic_validate}}
 }

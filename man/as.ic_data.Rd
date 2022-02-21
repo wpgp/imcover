@@ -22,11 +22,19 @@ Functions to check if an object is an ic data object, or coerce
 it to one if possible.
 }
 \details{
-Core \code{ic.df} data elements are expected. Specifically, data for
-'region', 'country', 'time', 'vaccine', 'coverage', and 'source' (optionally
-'dose' and 'population') are required in this order. The names of these
-elements from \code{...} are passed to \code{ic_data}.
+Core \code{ic.df} data elements are expected. Specifically, columns
+of data for 'region', 'country', 'time', 'vaccine', 'coverage', and
+'source' (optionally 'dose' and 'population') are required in this order.
+The names of these elements from \code{...} are passed to \code{ic_data}
+and used along with the default settings.
+}
+\examples{
+\dontrun{
+# convert data.frame to an imcover data frame
+ic_df <- as.ic_data(df)
+}
+
 }
 \seealso{
-\code{ic_data}
+\code{\link[imcover]{ic_data}}
 }

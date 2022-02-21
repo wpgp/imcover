@@ -98,7 +98,7 @@ ic_survey.data.frame <- function(X, ..., drop_cols = FALSE,
 
 
 #' Internal processing step for ic_survey
-#' @NoRd
+#' @keywords internal
 make_ic_svy <- function(X, drop_cols, survey, sample, evidence, validity,
                         reduce, minSample){
 
