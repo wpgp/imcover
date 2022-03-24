@@ -1,3 +1,7 @@
+# imcover 0.2.2
+
+* Bug fix in the multilikelihood model.
+
 # imcover 0.2.1
 
 * Minor update to plotting allows overlay of WUENIC data.
