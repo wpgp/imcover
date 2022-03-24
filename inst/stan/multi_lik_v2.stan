@@ -37,7 +37,7 @@ data {
 
 parameters {
   // regression effects
-  real lambda[nsources]; // intercepts
+  vector[nsources] lambda; // intercepts
   real beta_i[N_i == 1 ? 0 : N_i];  // i-th country random effect
   real alpha_j[N_j];  // j-th vaccine random effect
   real gamma_t [N_t];  // t-th time effect
@@ -150,12 +150,13 @@ model {
     // loop over the different data sources
     for(idx in 1:nsources){
       int end = start + sizes[idx] - 1;
-      y[start:end] ~ normal(lambda[source[idx]] + mu[mu_lookup[start:end]], sigma[source[idx]]);
+      y[start:end] ~ normal(lambda[source[start:end]] + mu[mu_lookup[start:end]], sigma[source[start:end]]);
 
       start = end + 1;
     }
   }
 
+  target += sum(sigma_raw);
 }
 
 

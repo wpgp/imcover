@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_multi_lik_v2");
-    reader.add_event(170, 168, "end", "model_multi_lik_v2");
+    reader.add_event(171, 169, "end", "model_multi_lik_v2");
     return reader;
 }
 #include <stan_meta_header.hpp>
@@ -316,7 +316,7 @@ public:
             param_ranges_i__.clear();
             current_statement_begin__ = 40;
             validate_non_negative_index("lambda", "nsources", nsources);
-            num_params_r__ += (1 * nsources);
+            num_params_r__ += nsources;
             current_statement_begin__ = 41;
             validate_non_negative_index("beta_i", "(logical_eq(N_i, 1) ? 0 : N_i )", (logical_eq(N_i, 1) ? 0 : N_i ));
             num_params_r__ += (1 * (logical_eq(N_i, 1) ? 0 : N_i ));
@@ -397,19 +397,16 @@ public:
         vals_r__ = context__.vals_r("lambda");
         pos__ = 0U;
         validate_non_negative_index("lambda", "nsources", nsources);
-        context__.validate_dims("parameter initialization", "lambda", "double", context__.to_vec(nsources));
-        std::vector<double> lambda(nsources, double(0));
-        size_t lambda_k_0_max__ = nsources;
-        for (size_t k_0__ = 0; k_0__ < lambda_k_0_max__; ++k_0__) {
-            lambda[k_0__] = vals_r__[pos__++];
+        context__.validate_dims("parameter initialization", "lambda", "vector_d", context__.to_vec(nsources));
+        Eigen::Matrix<double, Eigen::Dynamic, 1> lambda(nsources);
+        size_t lambda_j_1_max__ = nsources;
+        for (size_t j_1__ = 0; j_1__ < lambda_j_1_max__; ++j_1__) {
+            lambda(j_1__) = vals_r__[pos__++];
         }
-        size_t lambda_i_0_max__ = nsources;
-        for (size_t i_0__ = 0; i_0__ < lambda_i_0_max__; ++i_0__) {
-            try {
-                writer__.scalar_unconstrain(lambda[i_0__]);
-            } catch (const std::exception& e) {
-                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable lambda: ") + e.what()), current_statement_begin__, prog_reader__());
-            }
+        try {
+            writer__.vector_unconstrain(lambda);
+        } catch (const std::exception& e) {
+            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable lambda: ") + e.what()), current_statement_begin__, prog_reader__());
         }
         current_statement_begin__ = 41;
         if (!(context__.contains_r("beta_i")))
@@ -808,15 +805,12 @@ public:
             stan::io::reader<local_scalar_t__> in__(params_r__, params_i__);
             // model parameters
             current_statement_begin__ = 40;
-            std::vector<local_scalar_t__> lambda;
-            size_t lambda_d_0_max__ = nsources;
-            lambda.reserve(lambda_d_0_max__);
-            for (size_t d_0__ = 0; d_0__ < lambda_d_0_max__; ++d_0__) {
-                if (jacobian__)
-                    lambda.push_back(in__.scalar_constrain(lp__));
-                else
-                    lambda.push_back(in__.scalar_constrain());
-            }
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> lambda;
+            (void) lambda;  // dummy to suppress unused var warning
+            if (jacobian__)
+                lambda = in__.vector_constrain(nsources, lp__);
+            else
+                lambda = in__.vector_constrain(nsources);
             current_statement_begin__ = 41;
             std::vector<local_scalar_t__> beta_i;
             size_t beta_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
@@ -1133,12 +1127,14 @@ public:
                 stan::math::fill(end, std::numeric_limits<int>::min());
                 stan::math::assign(end,((start + get_base1(sizes, idx, "sizes", 1)) - 1));
                 current_statement_begin__ = 153;
-                lp_accum__.add(normal_log<propto__>(stan::model::rvalue(y, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "y"), add(get_base1(lambda, get_base1(source, idx, "source", 1), "lambda", 1), stan::model::rvalue(mu, stan::model::cons_list(stan::model::index_multi(stan::model::rvalue(mu_lookup, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "mu_lookup")), stan::model::nil_index_list()), "mu")), get_base1(sigma, get_base1(source, idx, "source", 1), "sigma", 1)));
+                lp_accum__.add(normal_log<propto__>(stan::model::rvalue(y, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "y"), add(stan::model::rvalue(lambda, stan::model::cons_list(stan::model::index_multi(stan::model::rvalue(source, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "source")), stan::model::nil_index_list()), "lambda"), stan::model::rvalue(mu, stan::model::cons_list(stan::model::index_multi(stan::model::rvalue(mu_lookup, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "mu_lookup")), stan::model::nil_index_list()), "mu")), stan::model::rvalue(sigma, stan::model::cons_list(stan::model::index_multi(stan::model::rvalue(source, stan::model::cons_list(stan::model::index_min_max(start, end), stan::model::nil_index_list()), "source")), stan::model::nil_index_list()), "sigma")));
                 current_statement_begin__ = 155;
                 stan::math::assign(start, (end + 1));
                 }
             }
             }
+            current_statement_begin__ = 159;
+            lp_accum__.add(sum(sigma_raw));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
             // Next line prevents compiler griping about no return
@@ -1270,15 +1266,10 @@ public:
         static const char* function__ = "model_multi_lik_v2_namespace::write_array";
         (void) function__;  // dummy to suppress unused var warning
         // read-transform, write parameters
-        std::vector<double> lambda;
-        size_t lambda_d_0_max__ = nsources;
-        lambda.reserve(lambda_d_0_max__);
-        for (size_t d_0__ = 0; d_0__ < lambda_d_0_max__; ++d_0__) {
-            lambda.push_back(in__.scalar_constrain());
-        }
-        size_t lambda_k_0_max__ = nsources;
-        for (size_t k_0__ = 0; k_0__ < lambda_k_0_max__; ++k_0__) {
-            vars__.push_back(lambda[k_0__]);
+        Eigen::Matrix<double, Eigen::Dynamic, 1> lambda = in__.vector_constrain(nsources);
+        size_t lambda_j_1_max__ = nsources;
+        for (size_t j_1__ = 0; j_1__ < lambda_j_1_max__; ++j_1__) {
+            vars__.push_back(lambda(j_1__));
         }
         std::vector<double> beta_i;
         size_t beta_i_d_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
@@ -1509,22 +1500,22 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 163;
+            current_statement_begin__ = 164;
             validate_non_negative_index("log_lik", "N", N);
             Eigen::Matrix<double, Eigen::Dynamic, 1> log_lik(N);
             stan::math::initialize(log_lik, DUMMY_VAR__);
             stan::math::fill(log_lik, DUMMY_VAR__);
             // generated quantities statements
-            current_statement_begin__ = 165;
+            current_statement_begin__ = 166;
             for (int idx = 1; idx <= N; ++idx) {
-                current_statement_begin__ = 166;
+                current_statement_begin__ = 167;
                 stan::model::assign(log_lik, 
                             stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
                             normal_log(get_base1(y, idx, "y", 1), (get_base1(lambda, get_base1(source, idx, "source", 1), "lambda", 1) + get_base1(mu, get_base1(mu_lookup, idx, "mu_lookup", 1), "mu", 1)), get_base1(sigma, get_base1(source, idx, "source", 1), "sigma", 1)), 
                             "assigning variable log_lik");
             }
             // validate, write generated quantities
-            current_statement_begin__ = 163;
+            current_statement_begin__ = 164;
             size_t log_lik_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < log_lik_j_1_max__; ++j_1__) {
                 vars__.push_back(log_lik(j_1__));
@@ -1559,10 +1550,10 @@ public:
                                  bool include_tparams__ = true,
                                  bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
-        size_t lambda_k_0_max__ = nsources;
-        for (size_t k_0__ = 0; k_0__ < lambda_k_0_max__; ++k_0__) {
+        size_t lambda_j_1_max__ = nsources;
+        for (size_t j_1__ = 0; j_1__ < lambda_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "lambda" << '.' << k_0__ + 1;
+            param_name_stream__ << "lambda" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
         size_t beta_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
@@ -1706,10 +1697,10 @@ public:
                                    bool include_tparams__ = true,
                                    bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
-        size_t lambda_k_0_max__ = nsources;
-        for (size_t k_0__ = 0; k_0__ < lambda_k_0_max__; ++k_0__) {
+        size_t lambda_j_1_max__ = nsources;
+        for (size_t j_1__ = 0; j_1__ < lambda_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "lambda" << '.' << k_0__ + 1;
+            param_name_stream__ << "lambda" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
         size_t beta_i_k_0_max__ = (logical_eq(N_i, 1) ? 0 : N_i );
