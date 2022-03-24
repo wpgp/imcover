@@ -64,8 +64,8 @@ to \code{ic_data}. See details and \code{ic_data}.}
 \item{drop_cols}{Should other columns in \code{X} be dropped if they are not
 core attributes? Default is \code{FALSE} to retain all data from \code{X}.}
 
-\item{survey, sample, evidence, validity}{Character of the name within \code{X}
-which defines the core values for ic survey data.}
+\item{survey, sample, evidence, validity}{Character of the column name within
+\code{X} which defines the core values for ic survey data.}
 
 \item{reduce}{Should country-vaccine combinations which have insufficient
 coverage data be removed? Default is \code{TRUE}.}
@@ -80,17 +80,31 @@ attributes to location and preserve core data elements for immunisation
 coverage.
 }
 \description{
-Create an ic data object from survey data on immunisation
-coverage.
+Create an ic data object from household survey data on
+immunisation coverage.
 }
 \details{
 \code{ic_survey} is is an extension to \code{ic_data} and is used to
 create a properly formed and processed dataset for immunisation coverage
-modelling based on survey datasets.
+modelling based on household survey datasets.
+}
+\examples{
+\dontrun{
+# assume `df` is a data.frame
+# convert to an imcover data frame
+ic_survey(df,
+         group="iso3",  # specify columns names in df
+         time="cohortyear",
+         vaccine="vaccine",
+         coverage = "coverage",
+         survey = "surveynameenglish",
+         sample = "sample_size",
+         evidence = "evidence",
+         validity = "validity",
+         biasAdjust = TRUE)
+}
 
-The parameters \code{min} and \code{max} are only needed when \code{expand =
-TRUE}. If \code{max} is missing, the maximum time value observed in the
-dataset will be used.
+
 }
 \seealso{
 \code{\link[imcover]{ic_data}}

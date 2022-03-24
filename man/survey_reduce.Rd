@@ -2,26 +2,27 @@
 % Please edit documentation in R/survey.R
 \name{survey_reduce}
 \alias{survey_reduce}
-\title{Select survey records}
+\title{Select survey records from an \code{ic_survey} dataset}
 \usage{
 survey_reduce(X, minSample = 300, priority = c("card or history", "card"))
 }
 \arguments{
-\item{X}{Object of type \code{ic.df}}
+\item{X}{Object of type \code{ic.df} created with \code{ic_survey}.}
 
 \item{minSample}{Minimum number of samples in the survey.}
 
 \item{priority}{Character vector of the priority of records when there are
 duplicates records for a given vaccine, survey, and year. Priority is
-established by the 'evidence' field of surveys. The highest record is given
-first in this argument.}
+established by the 'evidence' field of many household surveys. The highest
+priority record is given first in this argument.}
 }
 \value{
-An \code{ic.df} object with fewer records, based on the selection
-criteria.
+An \code{ic.df} object with possibly fewer records, based on the
+selection criteria.
 }
 \description{
-Reduce immunisation survey coverage records based on set criteria.
+Reduce immunisation survey coverage records based on set criteria of sample
+size and/or priority types of reporting.
 }
 \seealso{
 \code{\link[imcover]{ic_survey}}

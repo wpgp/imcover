@@ -100,7 +100,7 @@ ic_plot.icfit <- function(X,
 
   # filter by year of introduction
   if(filter_yovi){
-    X <- filter_yovi(X, na.rm = TRUE)
+    X <- filter_yovi(X, na.rm = FALSE)
   }
 
   # extract posterior values
@@ -193,6 +193,8 @@ ic_plot.icfit <- function(X,
     plotobj <- plotobj +
       ggplot2::facet_wrap(. ~ country, scale = 'free', ncol = ncol) +
       ggplot2::ggtitle(v) +
+      ggplot2::xlab('Time') +
+      ggplot2::ylab('Coverage') +
       ggplot2::scale_x_continuous(breaks = lbls,
                                   labels = lbls) +
       ggplot2::theme_bw() +

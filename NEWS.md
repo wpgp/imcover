@@ -1,3 +1,12 @@
+# imcover 0.2.2
+
+* Bug fix in the multilikelihood model.
+
+# imcover 0.2.1
+
+* Minor update to plotting allows overlay of WUENIC data.
+* Changed the default x- and y-axis labels in plots.
+
 # imcover 0.2.0
 
 * Revised `Stan` model to allow variable number of sources.
