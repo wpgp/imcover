@@ -412,7 +412,7 @@ single_lik_stan <- function(X, verbose = TRUE, ...) {
   vax_data$mu_lookup <- mu_lookup
 
   # call stan model
-  out <- rstan::sampling(stanmodels$multi_lik_v2,
+  out <- rstan::sampling(stanmodels$single_lik,
                          data = vax_data,
                          show_messages = verbose,
                          ...)
