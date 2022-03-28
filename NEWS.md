@@ -1,6 +1,10 @@
+# imcover 0.2.3
+
+* Update to the single-likelihood model.
+
 # imcover 0.2.2
 
-* Bug fix in the multilikelihood model.
+* Bug fix in the multi-likelihood model.
 
 # imcover 0.2.1
 
