@@ -1068,7 +1068,7 @@ public:
             current_statement_begin__ = 85;
             lp_accum__.add(normal_log<propto__>(lambda, 0, 1));
             current_statement_begin__ = 86;
-            lp_accum__.add(normal_log<propto__>(beta_i, 0, sigma_i));
+            lp_accum__.add(normal_log<propto__>(beta_i, 0, get_base1(sigma_i, 1, "sigma_i", 1)));
             current_statement_begin__ = 87;
             lp_accum__.add(normal_log<propto__>(alpha_j, 0, sigma_j));
             current_statement_begin__ = 89;

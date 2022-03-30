@@ -83,7 +83,7 @@ transformed parameters {
 
 model {
   lambda ~ normal(0, 1);
-  beta_i ~ normal(0, sigma_i);
+  beta_i ~ normal(0, sigma_i[1]);
   alpha_j ~ normal(0, sigma_j);
 
   nu_s[1] ~ normal(0, sigma_s); // admin
