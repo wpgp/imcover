@@ -243,6 +243,7 @@ multi_lik_stan <- function(X,
   posterior <- cbind(mu_names, posterior)
 
   out <- list('fit' = out,
+              'model' = 'multi-likelihood',
               'posterior' = posterior,
               'data' = X,  # vax_data[[1]],
               'labels' = lbls,
@@ -453,6 +454,7 @@ single_lik_stan <- function(X, verbose = TRUE, ...) {
   posterior <- cbind(mu_names, posterior)
 
   out <- list('fit' = out,
+              'model' = 'single-likelihood',
               'posterior' = posterior,
               'data' = X,  # vax_data[[1]],
               'labels' = lbls,
