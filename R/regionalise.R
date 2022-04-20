@@ -96,7 +96,7 @@ ic_regional.iclist <- function(X,
                                probs = c(0.025, 0.25, 0.5, 0.75, 0.975),
                                filter_yovi = TRUE){
 
-  out <- lapply(X, function(i){ ic_regional(i, stat = stat, probs = probs, filter_yovi = filter_yovi) })
+  out <- lapply(X, function(i){ ic_regional(i, denom = denom, stat = stat, probs = probs, filter_yovi = filter_yovi) })
 
   return(out)
 }
