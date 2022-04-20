@@ -64,7 +64,7 @@ ic_coverage.iclist <- function(X,
                                stat = c('mean', 'median', 'sd', 'quantile'),
                                probs = c(0.025, 0.25, 0.5, 0.75, 0.975)){
   out <- lapply(X, function(Xpost){
-    ic_coverage(Xpost, stat, probs)
+    ic_coverage(Xpost, object, stat, probs)
   })
 
   return(out)
