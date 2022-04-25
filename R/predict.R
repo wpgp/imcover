@@ -6,6 +6,8 @@
 #' @param country character vector of country codes to predict
 #' @param vaccine character vector of vaccine abbreviations to predict
 #' @param t Integer of the number of time steps ahead to predict. Default is 2.
+#' @param ratio_adj Logical. Should multi-dose vaccines modelled by a ratio be
+#'   back-transformed to coverage? Default is \code{TRUE}.
 #' @param return_ic Logical. Should an \code{icfit} object be returned?
 #' @return If \code{return_ic} is \code{FALSE}, then a \code{data.frame} (or a
 #'   list of data frames) with posterior samples for predictions, labelled by
@@ -18,7 +20,7 @@
 #' @export predict.icfit
 #' @export
 predict.icfit <- function(X, country = NULL, vaccine = NULL,
-                          t = 2, return_ic = TRUE){
+                          t = 2, ratio_adj = TRUE, return_ic = TRUE){
 
   # validate inputs
   if(missing(country) | is.null(country)){
@@ -132,9 +134,6 @@ predict.icfit <- function(X, country = NULL, vaccine = NULL,
     'vaccine' = X$labels$lbl_v[mu_id$vaccine]
   )
 
-  # reverse ratio calculation
-  # STILL TO-DO!!!
-
   # convert to coverage percentage
   mu <- mu * 100
 
@@ -147,6 +146,24 @@ predict.icfit <- function(X, country = NULL, vaccine = NULL,
   mu <- mu[mu$country %in% country &
              mu$time %in% seq(max_t + 1, length.out = t) &
              mu$vaccine %in% vaccine, ]
+
+  if(ratio_adj){
+    # reverse ratio calculation
+    if(!is.null(X[['numerator']])){
+      numerator <- X[['numerator']]
+      denominator <- X[['denominator']]
+
+      # apply ratio to dose 1 to calc new dose 3
+      for(i in 1:length(numerator)){
+        num <- mu[which(mu$vaccine == numerator[i]), -c(1:3)]
+        den <- mu[which(mu$vaccine == denominator[i]), -c(1:3)]
+
+        num <- den * (num / 100)
+        # reassemble
+        mu[which(mu$vaccine == numerator[i]), -c(1:3)] <- num
+      }
+    }
+  }
 
   if(return_ic){
     X[['prediction']] <- mu
@@ -163,7 +180,7 @@ predict.icfit <- function(X, country = NULL, vaccine = NULL,
 #' @export predict.iclist
 #' @export
 predict.iclist <- function(X, country = NULL, vaccine = NULL,
-                           t = 2, return_ic = TRUE){
+                           t = 2, ratio_adj = TRUE, return_ic = TRUE){
   out <- lapply(X, FUN = function(fit){
     predict(fit, country, vaccine, t, return_ic)
   })

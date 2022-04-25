@@ -5,7 +5,14 @@
 \alias{predict}
 \title{Posterior predictions of vaccination coverage}
 \usage{
-\method{predict}{icfit}(X, country = NULL, vaccine = NULL, t = 2, return_ic = TRUE)
+\method{predict}{icfit}(
+  X,
+  country = NULL,
+  vaccine = NULL,
+  t = 2,
+  ratio_adj = TRUE,
+  return_ic = TRUE
+)
 }
 \arguments{
 \item{X}{object of type \code{icfit} or \code{iclist}}
@@ -15,6 +22,9 @@
 \item{vaccine}{character vector of vaccine abbreviations to predict}
 
 \item{t}{Integer of the number of time steps ahead to predict. Default is 2.}
+
+\item{ratio_adj}{Logical. Should multi-dose vaccines modelled by a ratio be
+back-transformed to coverage? Default is \code{TRUE}.}
 
 \item{return_ic}{Logical. Should an \code{icfit} object be returned?}
 }

@@ -1,6 +1,7 @@
-# imcover 0.2.3
+# imcover 0.2.4
 
 * Update to the single-likelihood model.
+* Corrected `predict` to back-transform ratio adjustments.
 
 # imcover 0.2.2
 
