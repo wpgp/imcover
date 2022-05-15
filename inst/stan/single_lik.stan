@@ -71,19 +71,19 @@ transformed parameters {
   // shared mean
   if(N_i > 1){
     for(idx in 1:num_elements(mu)){
-      mu[idx] = beta_i[ii[idx]] + alpha_j[jj[idx]] + gamma_t[tt[idx]] + phi_it[ii[idx], tt[idx]] + delta_jt[jj[idx], tt[idx]] + psi_ij[ii[idx], jj[idx]] + omega_ijt[ii[idx], jj[idx], tt[idx]];
+      mu[idx] = lambda + beta_i[ii[idx]] + alpha_j[jj[idx]] + gamma_t[tt[idx]] + phi_it[ii[idx], tt[idx]] + delta_jt[jj[idx], tt[idx]] + psi_ij[ii[idx], jj[idx]] + omega_ijt[ii[idx], jj[idx], tt[idx]];
     }
   } else{
     for(idx in 1:num_elements(mu)){
-      mu[idx] = alpha_j[jj[idx]] + gamma_t[tt[idx]] + delta_jt[jj[idx], tt[idx]];
+      mu[idx] = lambda + alpha_j[jj[idx]] + gamma_t[tt[idx]] + delta_jt[jj[idx], tt[idx]];
     }
   }
 }
 
 
 model {
-  lambda ~ normal(0, sigma_lam);
-  beta_i ~ normal(0, sigma_i);
+  lambda ~ normal(0, 1);
+  beta_i ~ normal(0, sigma_i[1]);
   alpha_j ~ normal(0, sigma_j);
 
   nu_s[1] ~ normal(0, sigma_s); // admin

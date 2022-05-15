@@ -5,7 +5,14 @@
 \alias{predict}
 \title{Posterior predictions of vaccination coverage}
 \usage{
-\method{predict}{icfit}(X, country = NULL, vaccine = NULL, t = 2, return_ic = TRUE)
+\method{predict}{icfit}(
+  X,
+  country = NULL,
+  vaccine = NULL,
+  t = 2,
+  ratio_adj = TRUE,
+  return_ic = TRUE
+)
 }
 \arguments{
 \item{X}{object of type \code{icfit} or \code{iclist}}
@@ -16,6 +23,9 @@
 
 \item{t}{Integer of the number of time steps ahead to predict. Default is 2.}
 
+\item{ratio_adj}{Logical. Should multi-dose vaccines modelled by a ratio be
+back-transformed to coverage? Default is \code{TRUE}.}
+
 \item{return_ic}{Logical. Should an \code{icfit} object be returned?}
 }
 \value{
@@ -24,6 +34,10 @@ list of data frames) with posterior samples for predictions, labelled by
 'country', 'vaccine', and 'time' columns. Returning an 'ic' object will
 modify object \code{X} and add/update with a the 'prediction' element and
 return the same type as \code{X}.
+
+The default behaviour is to back-transform multi-dose vaccines which have
+been converted to ratios into coverages. This is done by predicting the
+ratio and multiplying the later dose ratio by the earlier dose's coverage.
 }
 \description{
 Draw from the posterior predictive distribution.

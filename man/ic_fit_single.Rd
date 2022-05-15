@@ -29,5 +29,9 @@ Sampling from a single likelihood model using a random effect
 for data source.
 }
 \details{
-TBD.
+The current version of \code{imcover} does not allow for users to
+modify the prior distributions in the single likelihood model. Future
+versions of the package may enable this functionality. Lambda is assigned a
+prior distribution of \code{normal(0, 1)} and the sigma parameters are
+assigned half-Cauchy priors with a scale of 2.
 }

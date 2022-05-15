@@ -1039,7 +1039,7 @@ public:
                     current_statement_begin__ = 74;
                     stan::model::assign(mu, 
                                 stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
-                                ((((((get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(psi_ij, get_base1(ii, idx, "ii", 1), "psi_ij", 1), get_base1(jj, idx, "jj", 1), "psi_ij", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
+                                (((((((lambda + get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1)) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(psi_ij, get_base1(ii, idx, "ii", 1), "psi_ij", 1), get_base1(jj, idx, "jj", 1), "psi_ij", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
                                 "assigning variable mu");
                 }
             } else {
@@ -1048,7 +1048,7 @@ public:
                     current_statement_begin__ = 78;
                     stan::model::assign(mu, 
                                 stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
-                                ((get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)), 
+                                (((lambda + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)), 
                                 "assigning variable mu");
                 }
             }
@@ -1066,9 +1066,9 @@ public:
             }
             // model body
             current_statement_begin__ = 85;
-            lp_accum__.add(normal_log<propto__>(lambda, 0, sigma_lam));
+            lp_accum__.add(normal_log<propto__>(lambda, 0, 1));
             current_statement_begin__ = 86;
-            lp_accum__.add(normal_log<propto__>(beta_i, 0, sigma_i));
+            lp_accum__.add(normal_log<propto__>(beta_i, 0, get_base1(sigma_i, 1, "sigma_i", 1)));
             current_statement_begin__ = 87;
             lp_accum__.add(normal_log<propto__>(alpha_j, 0, sigma_j));
             current_statement_begin__ = 89;
@@ -1491,7 +1491,7 @@ public:
                     current_statement_begin__ = 74;
                     stan::model::assign(mu, 
                                 stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
-                                ((((((get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(psi_ij, get_base1(ii, idx, "ii", 1), "psi_ij", 1), get_base1(jj, idx, "jj", 1), "psi_ij", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
+                                (((((((lambda + get_base1(beta_i, get_base1(ii, idx, "ii", 1), "beta_i", 1)) + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(phi_it, get_base1(ii, idx, "ii", 1), "phi_it", 1), get_base1(tt, idx, "tt", 1), "phi_it", 2)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)) + get_base1(get_base1(psi_ij, get_base1(ii, idx, "ii", 1), "psi_ij", 1), get_base1(jj, idx, "jj", 1), "psi_ij", 2)) + get_base1(get_base1(omega_ijt, get_base1(ii, idx, "ii", 1), "omega_ijt", 1), get_base1(jj, idx, "jj", 1), get_base1(tt, idx, "tt", 1), "omega_ijt", 2)), 
                                 "assigning variable mu");
                 }
             } else {
@@ -1500,7 +1500,7 @@ public:
                     current_statement_begin__ = 78;
                     stan::model::assign(mu, 
                                 stan::model::cons_list(stan::model::index_uni(idx), stan::model::nil_index_list()), 
-                                ((get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)), 
+                                (((lambda + get_base1(alpha_j, get_base1(jj, idx, "jj", 1), "alpha_j", 1)) + get_base1(gamma_t, get_base1(tt, idx, "tt", 1), "gamma_t", 1)) + get_base1(get_base1(delta_jt, get_base1(jj, idx, "jj", 1), "delta_jt", 1), get_base1(tt, idx, "tt", 1), "delta_jt", 2)), 
                                 "assigning variable mu");
                 }
             }
