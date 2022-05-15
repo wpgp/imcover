@@ -49,24 +49,10 @@ described here:
 
 ## Installing `imcover`
 
-The `imcover` package is not yet on CRAN and can be installed from Github. 
-
-Because this is still in a private repository, you must first create an
-authentication token. To do this, log in to github.com and got to the Developer
-settings:
-[https://github.com/setting/tokens](https://github.com/setting/tokens).
-
-1. Select the button to "Generate new token" at the top of the page.
-2. Optionally type a note to remind yourself what this token is.
-3. Set an expiration date.
-4. Check the box for **repo** scope to give access to private repositories
-5. Copy your token somewhere safe and don't share it! You will need it for the
-next step.
-
-Now, in `R`, you can install the package. In the following command insert your
-token as a string:
+The `imcover` package is not yet on CRAN and can be installed from Github using
+the following command:
 ```{r, install, eval = FALSE}
-devtools::install_github('wpgp/imcover@main', auth_token = 'YOUR TOKEN')
+devtools::install_github('wpgp/imcover@main')
 ```
 
 The build process takes some time because it is compiling the C++ code for the
@@ -77,4 +63,10 @@ The build process takes some time because it is compiling the C++ code for the
 Feedback and contributions are welcome. Please raise or respond to an issue, or
 create a new branch to develop a feature/modification and submit a pull request.
 
+## Acknowledements
+
+This work was funded by WHO and carried out by members of the WorldPop project
+at the University of Southampton, United Kingdom. The authors gratefully
+acknowledge the WHO-UNICEF immunization coverage working group for their
+valuable inputs and feedback during model and software development.
 

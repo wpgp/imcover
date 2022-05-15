@@ -6,7 +6,7 @@
 \title{imcover: An R package for immunisation coverage modelling}
 \description{
 Provides access to WUENIC immunisation data and a Bayesian statistical
-modelling framework to produces country- and region-specific temporal trends
+modelling framework to produce country- and region-specific temporal trends
 in immunisation coverage.
 }
 \section{Credits}{

@@ -112,8 +112,8 @@ ic_fit.ic.df <- function(X,
 #' @param lower_sigma Numeric value (or vector) setting the lower bounds on the
 #'   source-specific scale parameter. See details.
 #' @param verbose Logical. Should messages be displayed? Default is \code{TRUE}.
-#' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
-#' @return An object of class `stanfit` returned by `rstan::sampling`
+#' @param ... Arguments passed to \code{rstan::sampling} (e.g. iter, chains).
+#' @return An object of class \code{stanfit} returned by \code{rstan::sampling}.
 #'
 #' @name multi_lik_stan
 #' @keywords internal
@@ -273,7 +273,11 @@ multi_lik_stan <- function(X,
 #'   attributes related to the fitting. An \code{iclist} object is an extension
 #'   of a list containing multiple \code{icfit} objects.
 #'
-#' @details TBD.
+#' @details The current version of \code{imcover} does not allow for users to
+#'   modify the prior distributions in the single likelihood model. Future
+#'   versions of the package may enable this functionality. Lambda is assigned a
+#'   prior distribution of \code{normal(0, 1)} and the sigma parameters are
+#'   assigned half-Cauchy priors with a scale of 2.
 #'
 #' @name ic_fit_single
 #' @export

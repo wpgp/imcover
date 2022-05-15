@@ -15,6 +15,10 @@
 #'   modify object \code{X} and add/update with a the 'prediction' element and
 #'   return the same type as \code{X}.
 #'
+#'   The default behaviour is to back-transform multi-dose vaccines which have
+#'   been converted to ratios into coverages. This is done by predicting the
+#'   ratio and multiplying the later dose ratio by the earlier dose's coverage.
+#'
 #' @aliases predict
 #' @importFrom stats predict
 #' @export predict.icfit

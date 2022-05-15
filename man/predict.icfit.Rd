@@ -34,6 +34,10 @@ list of data frames) with posterior samples for predictions, labelled by
 'country', 'vaccine', and 'time' columns. Returning an 'ic' object will
 modify object \code{X} and add/update with a the 'prediction' element and
 return the same type as \code{X}.
+
+The default behaviour is to back-transform multi-dose vaccines which have
+been converted to ratios into coverages. This is done by predicting the
+ratio and multiplying the later dose ratio by the earlier dose's coverage.
 }
 \description{
 Draw from the posterior predictive distribution.

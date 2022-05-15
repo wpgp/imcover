@@ -34,7 +34,7 @@ source-specific scale parameter. See details.}
 \item{...}{Arguments passed to \code{rstan::sampling} (e.g. iter, chains).}
 }
 \value{
-An object of class \code{stanfit} returned by \code{rstan::sampling}
+An object of class \code{stanfit} returned by \code{rstan::sampling}.
 }
 \description{
 Multi-source immunisation coverage model with Stan
