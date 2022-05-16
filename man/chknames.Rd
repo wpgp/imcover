@@ -9,3 +9,4 @@ chknames(x)
 \description{
 helper function used in renaming
 }
+\keyword{internal}
