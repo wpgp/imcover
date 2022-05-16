@@ -344,6 +344,7 @@ is.ic_data <- function(object){
 }
 
 #' helper function used in renaming
+#' @keywords internal
 chknames <- function(x) {
   if (!identical(x, make.names(x)))
     warning("Found potentially invalid names.")

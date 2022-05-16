@@ -189,10 +189,12 @@ swap_names <- function(X){
 #' @return A numeric vector the same length as \code{x}.
 #' @name logit
 #' @export
+#' @keywords internal
 logit <- function(x) stats::qlogis(x)
 
 
 #' @rdname logit
 #' @export
+#' @keywords internal
 invlogit <- function(x) stats::plogis(x)
 

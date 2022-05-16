@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Model-based approaches to immunization coverage estimations in <code>R</code>: An introduction to the <code>imcover</code> package</h1>
                         <h4 class="author">Chris Jochem (<a href="mailto:w.c.jochem@soton.ac.uk" class="email">w.c.jochem@soton.ac.uk</a>)</h4>
             
-            <h4 class="date">May 15, 2022</h4>
+            <h4 class="date">May 16, 2022</h4>
       
       
       <div class="hidden name"><code>intro.Rmd</code></div>
@@ -142,48 +142,48 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># inspect a random sample of records</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;        region code year antigen coverage coverage_category   doses</span>
-<span class="co">#&gt; 207931  SEARO  NPL 1989 TT2PLUS    21.00             admin      NA</span>
-<span class="co">#&gt; 140816   AFRO  KEN 2020   ROTAC    84.25             admin 1259221</span>
-<span class="co">#&gt; 22811    AFRO  BFA 2016    DTP3   102.96             admin  769490</span>
-<span class="co">#&gt; 83270    EMRO  EGY 2006    VAD1    97.78             admin 1752483</span>
-<span class="co">#&gt; 52075    WPRO  CHN 1992 TT2PLUS     2.00          official      NA</span>
-<span class="co">#&gt; 152894   EMRO  LBN 2019    DTP3    93.48          official      NA</span>
-<span class="co">#&gt;        target_number         name</span>
-<span class="co">#&gt; 207931            NA        Nepal</span>
-<span class="co">#&gt; 140816       1494648        Kenya</span>
-<span class="co">#&gt; 22811         747362 Burkina Faso</span>
-<span class="co">#&gt; 83270        1792361        Egypt</span>
-<span class="co">#&gt; 52075             NA        China</span>
-<span class="co">#&gt; 152894            NA      Lebanon</span>
+<span class="co">#&gt;        region code year antigen coverage coverage_category  doses target_number</span>
+<span class="co">#&gt; 16396    EURO  AZE 2020    DTP3     79.0             admin  99582        126055</span>
+<span class="co">#&gt; 166906   &lt;NA&gt;  MAC 1999 TT2PLUS     77.7          official     NA            NA</span>
+<span class="co">#&gt; 228713   &lt;NA&gt;  PSE 2019    MCV2    100.0          official     NA            NA</span>
+<span class="co">#&gt; 174780   AMRO  MEX 2017    POL3     85.0          official     NA            NA</span>
+<span class="co">#&gt; 195704   AFRO  NAM 2017   HEPB3     88.0             admin  73431         83869</span>
+<span class="co">#&gt; 222438   EURO  POL 2018   TTCV4     89.7             admin 341849        381193</span>
+<span class="co">#&gt;                                                            name</span>
+<span class="co">#&gt; 16396                                                Azerbaijan</span>
+<span class="co">#&gt; 166906                                         China, Macao SAR</span>
+<span class="co">#&gt; 228713 occupied Palestinian territory, including east Jerusalem</span>
+<span class="co">#&gt; 174780                                                   Mexico</span>
+<span class="co">#&gt; 195704                                                  Namibia</span>
+<span class="co">#&gt; 222438                                                   Poland</span>
 <span class="co">#&gt;                                                antigen_description</span>
-<span class="co">#&gt; 207931 Tetanus toxoid-containing vaccine, 2nd and subsequent doses</span>
-<span class="co">#&gt; 140816                                        Rotavirus, last dose</span>
-<span class="co">#&gt; 22811                             DTP-containing vaccine, 3rd dose</span>
-<span class="co">#&gt; 83270                                          Vitamin A, 1st dose</span>
-<span class="co">#&gt; 52075  Tetanus toxoid-containing vaccine, 2nd and subsequent doses</span>
-<span class="co">#&gt; 152894                            DTP-containing vaccine, 3rd dose</span>
+<span class="co">#&gt; 16396                             DTP-containing vaccine, 3rd dose</span>
+<span class="co">#&gt; 166906 Tetanus toxoid-containing vaccine, 2nd and subsequent doses</span>
+<span class="co">#&gt; 228713                        Measles-containing vaccine, 2nd dose</span>
+<span class="co">#&gt; 174780                                             Polio, 3rd dose</span>
+<span class="co">#&gt; 195704                                                       HepB3</span>
+<span class="co">#&gt; 222438          Tetanus-containing vaccine, 4th dose (1st booster)</span>
 <span class="co">#&gt;        coverage_category_description surveyNameEnglish evidence validity</span>
-<span class="co">#&gt; 207931       Administrative coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="co">#&gt; 140816       Administrative coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="co">#&gt; 22811        Administrative coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="co">#&gt; 83270        Administrative coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="co">#&gt; 52075              Official coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="co">#&gt; 152894             Official coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="co">#&gt; 16396        Administrative coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="co">#&gt; 166906             Official coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="co">#&gt; 228713             Official coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="co">#&gt; 174780             Official coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="co">#&gt; 195704       Administrative coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="co">#&gt; 222438       Administrative coverage              &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;</span>
 <span class="co">#&gt;        Sample_Size surveyNameProduction collectBegin collectEnd cardsSeen</span>
-<span class="co">#&gt; 207931          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
-<span class="co">#&gt; 140816          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
-<span class="co">#&gt; 22811           NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
-<span class="co">#&gt; 83270           NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
-<span class="co">#&gt; 52075           NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
-<span class="co">#&gt; 152894          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
+<span class="co">#&gt; 16396           NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
+<span class="co">#&gt; 166906          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
+<span class="co">#&gt; 228713          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
+<span class="co">#&gt; 174780          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
+<span class="co">#&gt; 195704          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
+<span class="co">#&gt; 222438          NA                 &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;        NA</span>
 <span class="co">#&gt;        ageVaccination ageInterview  sex adj_factor coverage_adj</span>
-<span class="co">#&gt; 207931           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
-<span class="co">#&gt; 140816           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
-<span class="co">#&gt; 22811            &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
-<span class="co">#&gt; 83270            &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
-<span class="co">#&gt; 52075            &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
-<span class="co">#&gt; 152894           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span></code></pre></div>
+<span class="co">#&gt; 16396            &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
+<span class="co">#&gt; 166906           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
+<span class="co">#&gt; 228713           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
+<span class="co">#&gt; 174780           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
+<span class="co">#&gt; 195704           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span>
+<span class="co">#&gt; 222438           &lt;NA&gt;         &lt;NA&gt; &lt;NA&gt;         NA           NA</span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># note the type object</span>
 <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
@@ -343,16 +343,16 @@ Example results of modelled immunization coverage estimates for selected countri
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ic</span>, <span class="fl">10</span><span class="op">)</span>
 <span class="co">#&gt;        country time vaccine     2.5%      50%    97.5%</span>
-<span class="co">#&gt; mu[1]      AGO 2000    DTP1 48.71852 67.83581 81.76032</span>
-<span class="co">#&gt; mu[2]      AGO 2001    DTP1 32.13896 62.44410 84.02413</span>
-<span class="co">#&gt; mu[3]      AGO 2002    DTP1 39.57595 70.26706 86.64744</span>
-<span class="co">#&gt; mu[4]      AGO 2003    DTP1 44.89012 72.22582 89.35642</span>
-<span class="co">#&gt; mu[5]      AGO 2004    DTP1 52.35678 75.80592 91.26388</span>
-<span class="co">#&gt; mu[6]      AGO 2005    DTP1 52.34921 74.65095 87.82431</span>
-<span class="co">#&gt; mu[7]      AGO 2006    DTP1 55.65966 78.36558 90.90806</span>
-<span class="co">#&gt; mu[8]      AGO 2007    DTP1 80.96794 88.97504 94.92721</span>
-<span class="co">#&gt; mu[9]      AGO 2008    DTP1 91.13137 96.88844 98.99340</span>
-<span class="co">#&gt; mu[10]     AGO 2009    DTP1 86.65440 94.36350 98.19124</span></code></pre></div>
+<span class="co">#&gt; mu[1]      AGO 2000    DTP1 43.16206 65.09245 79.41213</span>
+<span class="co">#&gt; mu[2]      AGO 2001    DTP1 34.13583 59.68096 82.58923</span>
+<span class="co">#&gt; mu[3]      AGO 2002    DTP1 40.38493 66.99820 87.66832</span>
+<span class="co">#&gt; mu[4]      AGO 2003    DTP1 42.76260 68.12311 87.75516</span>
+<span class="co">#&gt; mu[5]      AGO 2004    DTP1 46.78410 72.83099 89.71176</span>
+<span class="co">#&gt; mu[6]      AGO 2005    DTP1 45.44075 72.14182 87.56244</span>
+<span class="co">#&gt; mu[7]      AGO 2006    DTP1 57.28637 78.51181 90.14268</span>
+<span class="co">#&gt; mu[8]      AGO 2007    DTP1 75.84889 88.43659 93.76432</span>
+<span class="co">#&gt; mu[9]      AGO 2008    DTP1 91.22958 96.79864 98.80278</span>
+<span class="co">#&gt; mu[10]     AGO 2009    DTP1 83.42451 94.24143 97.89507</span></code></pre></div>
 </div>
 <div id="predictions" class="section level3">
 <h3 class="hasAnchor">
@@ -449,7 +449,7 @@ Example reults of estimated immunization coverage with future predictions to the
 
 
       <footer><div class="copyright">
-  <p>Developed by Warren Jochem, Edson Utazi, Sahu Sujit.</p>
+  <p>Developed by Warren C. Jochem, Edson Utazi, Sahu Sujit.</p>
 </div>
 
 <div class="pkgdown">

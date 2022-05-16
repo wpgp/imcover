@@ -20,3 +20,4 @@ A numeric vector the same length as \code{x}.
 Logit calculations
 Helper function to calculate the logit and inverse-logit transforms.
 }
+\keyword{internal}

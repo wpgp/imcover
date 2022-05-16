@@ -3,7 +3,7 @@ Title: Spatio-temporal Modelling of Immunisation Coverage
 Version: 0.2.4
 Date: 2022-04-25
 Authors@R: 
-    c(person(given = "Warren",
+    c(person(given = "Warren C.",
            family = "Jochem",
            role = c("aut", "cre"),
            email = "w.c.jochem@soton.ac.uk",
