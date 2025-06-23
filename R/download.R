@@ -109,7 +109,8 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
                               return_ic = TRUE,
                               add_region = 'who', ...){
   if(missing(url)){
-    url <- 'https://whowiise.blob.core.windows.net/upload/coverage--2020.xlsx'
+    # url <- 'https://whowiise.blob.core.windows.net/upload/coverage--2020.xlsx'
+    url <- 'https://srhdpeuwpubsa-geecgzbpd5h0fueu.z01.azurefd.net/whdh/WIISE/export/coverage-data.xlsx'
   }
 
   if(missing(destfile)){
@@ -140,7 +141,7 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
   dat <- data.frame(readxl::read_excel(destfile, sheet = 1))
   names(dat) <- tolower(names(dat))
 
-  dat <- dat[dat$group == 'Countries', ]  # drop aggregations
+  dat <- dat[dat$group == 'COUNTRIES', ]  # drop aggregations
   dat$group <- NULL  # drop from data.frame
 
   # drop empty records

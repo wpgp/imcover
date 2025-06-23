@@ -231,6 +231,7 @@ plot(ic_filter(fit1, vaccine = 'DTP1',
                country = c('BWA', 'SLE', 'GHA', 'NGA')),
      ncol = 2)
 ```
+
 ```{r plotCov2, fig.width = 5, fig.height = 5, fig.cap = "Example results of modelled immunization coverage estimates for selected countries and vaccines."}
 plot(ic_filter(fit1, vaccine = 'DTP3',
                country = c('BWA', 'SLE', 'GHA', 'NGA')),
