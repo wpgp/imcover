@@ -63,7 +63,7 @@ Southampton (https://www.worldpop.org/)](https://www.worldpop.org/).
 If a user does not have a dataset on their local computer, the first step in
 analysis is to acquire standardised data. Within `imcover` there is
 functionality to download several datasets from the WHO Immunization data portal
-([https://immunizationdata.who.int/listing.html](https://immunizationdata.who.int/listing.html)).
+([https://immunizationdata.who.int/](https://immunizationdata.who.int/)).
 These datasets include official coverage reports, administrative records, as
 well as household survey datasets.
 
