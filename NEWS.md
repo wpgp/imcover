@@ -1,3 +1,8 @@
+# imcover 0.2.5
+
+* Fix linking of Stan code and rebuilding models.
+* Update links to download input datasets.
+
 # imcover 0.2.4
 
 * Updated documentation
