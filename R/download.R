@@ -39,7 +39,7 @@ download_wuenic <- function(destfile, url, use_cache = TRUE,
                             return_ic = TRUE,
                             add_region = 'who', ...){
   if(missing(url)){
-    url <- 'https://immunizationdata.who.int/assets/additional-data/wuenic_input_to_pdf.xlsx'
+    url <- 'https://immunizationdata.who.int/docs/librariesprovider21/additional-datasets/wuenic-input-to-pdf.xlsx'
   }
 
   if(missing(destfile)){
@@ -109,7 +109,8 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
                               return_ic = TRUE,
                               add_region = 'who', ...){
   if(missing(url)){
-    url <- 'https://whowiise.blob.core.windows.net/upload/coverage--2020.xlsx'
+    # url <- 'https://whowiise.blob.core.windows.net/upload/coverage--2020.xlsx'
+    url <- 'https://srhdpeuwpubsa-geecgzbpd5h0fueu.z01.azurefd.net/whdh/WIISE/export/coverage-data.xlsx'
   }
 
   if(missing(destfile)){
@@ -140,7 +141,7 @@ download_coverage <- function(destfile, url, use_cache = TRUE,
   dat <- data.frame(readxl::read_excel(destfile, sheet = 1))
   names(dat) <- tolower(names(dat))
 
-  dat <- dat[dat$group == 'Countries', ]  # drop aggregations
+  dat <- dat[dat$group == 'COUNTRIES', ]  # drop aggregations
   dat$group <- NULL  # drop from data.frame
 
   # drop empty records
@@ -170,11 +171,11 @@ download_survey <- function(destfile, url, use_cache = TRUE,
                             add_region = 'who', ...){
 
   if(missing(url)){
-    url <- 'https://immunizationdata.who.int/assets/additional-data/coverage_survey_data.xls'
+    url <- 'https://immunizationdata.who.int/docs/librariesprovider21/additional-datasets/coverage-survey-data.xlsx'
   }
 
   if(missing(destfile)){
-    destfile <- file.path(tempdir(), 'survey.xls')  # tempfile(fileext = '.xls')
+    destfile <- file.path(tempdir(), 'survey.xlsx')  # tempfile(fileext = '.xls')
   }
 
   tries <- 1
@@ -228,7 +229,7 @@ download_survey <- function(destfile, url, use_cache = TRUE,
 download_denom <- function(destfile, url, use_cache = TRUE,
                            quiet = FALSE, attempts = 3, mode = 'wb', ...){
   if(missing(url)){
-    url <- 'https://immunizationdata.who.int/assets/additional-data/wuenic_input_to_pdf.xlsx'
+    url <- 'https://immunizationdata.who.int/docs/librariesprovider21/additional-datasets/wuenic-input-to-pdf.xlsx'
   }
 
   if(missing(destfile)){

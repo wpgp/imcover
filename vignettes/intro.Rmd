@@ -63,7 +63,7 @@ Southampton (https://www.worldpop.org/)](https://www.worldpop.org/).
 If a user does not have a dataset on their local computer, the first step in
 analysis is to acquire standardised data. Within `imcover` there is
 functionality to download several datasets from the WHO Immunization data portal
-([https://immunizationdata.who.int/listing.html](https://immunizationdata.who.int/listing.html)).
+([https://immunizationdata.who.int/](https://immunizationdata.who.int/)).
 These datasets include official coverage reports, administrative records, as
 well as household survey datasets.
 
@@ -231,6 +231,7 @@ plot(ic_filter(fit1, vaccine = 'DTP1',
                country = c('BWA', 'SLE', 'GHA', 'NGA')),
      ncol = 2)
 ```
+
 ```{r plotCov2, fig.width = 5, fig.height = 5, fig.cap = "Example results of modelled immunization coverage estimates for selected countries and vaccines."}
 plot(ic_filter(fit1, vaccine = 'DTP3',
                country = c('BWA', 'SLE', 'GHA', 'NGA')),
