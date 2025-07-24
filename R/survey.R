@@ -124,7 +124,7 @@ make_ic_svy <- function(X, drop_cols, survey, sample, evidence, validity,
 
   # process to select preferred vacc record
   if(reduce){
-    X <- survey_reduce(X, minSample)
+    X <- survey_reduce(X, minSample, priority = c("record or recall", "record"))
   }
 
   if(drop_cols){
@@ -185,8 +185,9 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
 
     # alternative to reshaping
     # vd1 <- as.data.frame(X[X[[attrs$vaccine]] == paste0(v, 1), ])
-    vd1.c <- vd1[vd1[[corenames["evidence"]]] %in% c("card"), ]
-    vd1.coh <- vd1[vd1[[corenames["evidence"]]] %in% c("card or history"), ]
+    vd1.c <- vd1[vd1[[corenames["evidence"]]] %in% c("card", "record"), ]
+    vd1.coh <- vd1[vd1[[corenames["evidence"]]] %in% c("card or history",
+                                                       "record or recall"), ]
 
     # find preferred data
     vd1s <- split(vd1.c, vd1.c[, corenames[c("country", "time")]], drop = TRUE)
@@ -228,8 +229,9 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
 
 
     # repeat for dose 3
-    vd3.c <- vd3[vd3[[corenames["evidence"]]] %in% c("card"), ]
-    vd3.coh <- vd3[vd3[[corenames["evidence"]]] %in% c("card or history"), ]
+    vd3.c <- vd3[vd3[[corenames["evidence"]]] %in% c("card", "record"), ]
+    vd3.coh <- vd3[vd3[[corenames["evidence"]]] %in% c("card or history",
+                                                       "record or recall"), ]
 
     # find preferred data
     vd3s <- split(vd3.c, vd3.c[, corenames[c("country", "time")]], drop = TRUE)
@@ -283,7 +285,8 @@ survey_adjust <- function(X, adjVacc = c("DTP", "PCV")){
 
     # update main dataset
     X <- X[!(X[[attrs$vaccine]] == paste0(v, 3) &
-             X[[corenames["evidence"]]] %in% c("card or history")), ]
+             X[[corenames["evidence"]]] %in% c("card or history",
+                                               "record or recall")), ]
     X <- rbind(X, vd3.coh, fill = TRUE)
     X[[corenames["coverage"]]] <- ifelse(!is.na(X[["coverage_adj"]]),
                                          X[["coverage_adj"]],

@@ -1,7 +1,7 @@
 Package: imcover
 Title: Spatio-temporal Modelling of Immunisation Coverage
 Version: 0.2.5
-Date: 2025-06-23
+Date: 2025-07-24
 Authors@R: 
     c(person(given = "Warren C.",
            family = "Jochem",

@@ -2,6 +2,7 @@
 
 * Fix linking of Stan code and rebuilding models.
 * Update links to download input datasets.
+* Handle alternate survey evidence types.
 
 # imcover 0.2.4
 
